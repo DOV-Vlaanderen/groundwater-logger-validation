@@ -4,10 +4,20 @@ Analysis on validation methods for groundwater logger data
 
 ## Rationale (dutch)
 
-Het OIS grondwater heeft als doel om meer en betere grondwatergegevens sneller ter beschikking stellen via het DOV-portaal. Met de verschillende partners willen we hiervoor de validatie procedures beter overeenstemmen, zodat de data die op DOV ter beschikking zal gesteld worden zo consistent mogelijk is voor de externe gebruiker.
+Het OIS grondwater heeft als doel om meer en betere grondwatergegevens sneller ter beschikking stellen via het DOV-portaal. Met de verschillende partners willen we hiervoor de validatie procedures van (hoogfrequente) grondwater loggers beter overeenstemmen, zodat de data die op DOV ter beschikking zal gesteld worden zo consistent mogelijk is voor de externe gebruiker.
 
+Bij de datatstroom tussen ruwe data en gekalibreerd peil zijn er validatiestappen op het level van (1) de ruwe data zelf, (2) de waterpeilen en (3) vergelijking met referentiewaarden, ook wel kalibratie genoemd:
 
+![](/home/stijn_vanhoey/githubs/groundwater-logger-validation/docs/static/workflow_data_validation.png)
 
+De methodes/algoritmes die in dit project getest en ontwikkeld worden hebben als doen om validatieprocedures te voorzien die operationeel kunnen worden ingezet door instanties die grondwaterpeilen aan DOV aanleveren. Meer achtergrond over het voortraject iste vinden op [confluence](https://www.milieuinfo.be/confluence/display/GWM/Compilatie+workshop+validatie+diver+metingen+2018-09-14) (login required).
+
+De doelstellingen zijn:
+
+- Een set van robuste en geteste methodes voor data validatie van ruwe loggerdata en peilen.
+- Documentatie over de algoritmes, de noodzakelijke inputs, de toepassingsmogelijkheden  (randvoorwaarden waarvoor het algoritme werkt).
+- Documentatie van een _controlled vocabulary_ van error/warning flags.
+- Een referentie-implementatie van de verschillende algoritmes.
 
 ## Workflow
 
