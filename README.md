@@ -8,7 +8,7 @@ Het OIS grondwater heeft als doel om meer en betere grondwatergegevens sneller t
 
 Bij de datatstroom tussen ruwe data en gekalibreerd peil zijn er validatiestappen op het level van (1) de ruwe data zelf, (2) de waterpeilen en (3) vergelijking met referentiewaarden, ook wel kalibratie genoemd:
 
-![](/home/stijn_vanhoey/githubs/groundwater-logger-validation/docs/static/workflow_data_validation.png)
+![](/docs/static/workflow_data_validation.png)
 
 De methodes/algoritmes die in dit project getest en ontwikkeld worden hebben als doen om validatieprocedures te voorzien die operationeel kunnen worden ingezet door instanties die grondwaterpeilen aan DOV aanleveren. Meer achtergrond over het voortraject iste vinden op [confluence](https://www.milieuinfo.be/confluence/display/GWM/Compilatie+workshop+validatie+diver+metingen+2018-09-14) (login required).
 
