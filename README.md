@@ -1,10 +1,13 @@
-# groundwater-logger-validation
+# Validation of groundwater loggere data
 
 Analysis on validation methods for groundwater logger data 
 
-## Rationale
+## Rationale (dutch)
 
-...
+Het OIS grondwater heeft als doel om meer en betere grondwatergegevens sneller ter beschikking stellen via het DOV-portaal. Met de verschillende partners willen we hiervoor de validatie procedures beter overeenstemmen, zodat de data die op DOV ter beschikking zal gesteld worden zo consistent mogelijk is voor de externe gebruiker.
+
+
+
 
 ## Workflow
 
