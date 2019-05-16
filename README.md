@@ -50,6 +50,5 @@ The repository structure is based on [Cookiecutter Data Science](http://drivenda
 [List of contributors](https://github.com/DOV-Vlaanderen/groundwater-logger-validation/graphs/contributors)
 
 ## License
-
-[BSD 3-Clause License](https://github.com/DOV-Vlaanderen/groundwater-logger-validation/blob/master/LICENSE) for the code and documentation in this repository. The included data is released under another license, which depends on the data provider. For groundwater logger data access, check the [DOV portal](https://www.dov.vlaanderen.be/portaal/?module=verkenner#ModulePage) or machine access using [pydov](https://pydov.readthedocs.io/en/stable/).
+[MIT License](https://github.com/DOV-Vlaanderen/groundwater-logger-validation/blob/master/LICENSE) for the code and documentation in this repository. The included data is released under another license, which depends on the data provider. For groundwater logger data access, check the [DOV portal](https://www.dov.vlaanderen.be/portaal/?module=verkenner#ModulePage) or machine access using [pydov](https://pydov.readthedocs.io/en/stable/).
 
