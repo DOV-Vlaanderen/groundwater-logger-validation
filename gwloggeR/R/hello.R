@@ -20,6 +20,7 @@
 #' @examples
 #' hello()
 #'
+#' @export
 hello <- function() {
   print("Hello, world!")
 }
