@@ -19,6 +19,10 @@ De doelstellingen zijn:
 - Documentatie van een _controlled vocabulary_ van error/warning flags.
 - Een referentie-implementatie van de verschillende algoritmes.
 
+## Package
+
+For package related to this project, see subfolder [gwloggeR](https://github.com/DOV-Vlaanderen/groundwater-logger-validation/tree/master/gwloggeR).
+
 ## Workflow
 
 ...
