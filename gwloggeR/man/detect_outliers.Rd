@@ -16,9 +16,15 @@ logical vector with same length as x, specifying TRUE for outlier
 This function marks outliers in the input vector.
 }
 \examples{
-\dontrun{
-if(interactive()){
- #EXAMPLE1
- }
-}
+# In case of a vector
+x <- c(1:10, 100)
+detect_outliers(x)
+
+# In case of a dataframe, select the column:
+detect_outliers(cars$dist)
+
+# Or use the tidyverse approach:
+library(magrittr)
+cars \%>\% plyr::mutate("outlier" = detect_outliers(dist))
+
 }
