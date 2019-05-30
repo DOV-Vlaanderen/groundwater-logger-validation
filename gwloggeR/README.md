@@ -11,9 +11,9 @@ As the `gwloggeR` package is not available on CRAN, the easiest way of installin
 devtools::install_github("DOV-Vlaanderen/groundwater-logger-validation", subdir = "gwloggeR")
 ```
 
-Remark that the package itself is stored in a subfolder of the repository, which is tackled by the `subdir` command.
+Note that the package is stored in a subfolder of the repository, which is specified by the `subdir` command.
 
-One installed, the functionalities can be derived by loading the package:
+Once installed, the functionalities can be derived by loading the package:
 
 ``` r
 library("gwloggeR")
