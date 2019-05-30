@@ -1,4 +1,4 @@
-# Validation of groundwater loggere data
+# Validation of groundwater logger data
 
 Analysis on validation methods for groundwater logger data 
 
