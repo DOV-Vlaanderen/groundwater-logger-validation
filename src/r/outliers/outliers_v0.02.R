@@ -36,8 +36,15 @@ df <- data.table::rbindlist(
   })
 )
 
-with(df, hist(DRME_DRU, breaks = 1000, main = ''))
-qqnorm(df$DRME_DRU)
+with(df, {
+  hist(DRME_DRU, breaks = 1000, probability = TRUE, main = '')
+  curve(dnorm(x, mean = mean(DRME_DRU), sd = sqrt(var(DRME_DRU))), add = TRUE, col = 'red')
+})
+with(df, {
+  qqnorm(DRME_DRU)
+  qqline(DRME_DRU)
+})
+
 
 M <- median(df$DRME_DRU)
 MAD <- mad(df$DRME_DRU)
