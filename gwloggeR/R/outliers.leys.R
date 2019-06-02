@@ -2,12 +2,14 @@
 #' @description
 #' This function is based on Leys, C. e.a., Detecting outliers, 2013.
 #'
-detect_outliers_leys <- function(x, p.value = 0.0005, verbose = FALSE, M = mean(x), MAD = mad(x)) {
+detect_outliers_leys <- function(x, p.value = 0.0005, verbose = FALSE,
+                                 M = median(x, na.rm = TRUE),
+                                 MAD = mad(x, na.rm = TRUE)) {
   if (is.na(MAD) | MAD == 0) {
     return(rep(FALSE, length(x)))
   }
   # sigma.reject is the sigma after which we reject points. The 0.0005 means that
-  # in 1 of 5000 calculations, we will reject a value we shouldn't have.
+  # in 1 of 2000 (1/0.0005) calculations, we will reject a value we shouldn't have.
   sigma.reject <- qnorm(p = (1 - p.value)^(1 / length(x)))
   x.rejects <- abs((x - M) / MAD) > sigma.reject
   x.rejects[which(is.na(x.rejects))] <- FALSE # NA's are no outliers

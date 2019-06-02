@@ -5,7 +5,7 @@
 \title{Detects outliers}
 \usage{
 detect_outliers_leys(x, p.value = 5e-04, verbose = FALSE,
-  M = mean(x), MAD = mad(x))
+  M = median(x, na.rm = TRUE), MAD = mad(x, na.rm = TRUE))
 }
 \description{
 This function is based on Leys, C. e.a., Detecting outliers, 2013.
