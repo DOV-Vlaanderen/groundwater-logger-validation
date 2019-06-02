@@ -10,9 +10,5 @@ knitr::opts_chunk$set(fig.pos = 'H', fig.path='figures/', warning=FALSE,
                       cache = FALSE, autodep = TRUE, cache.path = 'cache/', out.height='150px'
 )
 
-
-# memory in MB
-utils::memory.limit(size = 30000)
-
 cat(".Rprofile file loaded for project.\n")
 cat("#########################################################\n")
