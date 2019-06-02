@@ -1,26 +1,5 @@
 library(ggplot2)
-
-#' Detects outliers
-#'
-#' This function is based on Leys, C. e.a., Detecting outliers, 2013.
-detect.outliers <- function(y, p.value = 0.0005, verbose = FALSE, M, MAD) {
-  if (is.na(MAD) | MAD == 0) {
-    return(rep(FALSE, length(y)))
-  }
-  # sigma.reject is the sigma after which we reject points. The 0.0005 means that
-  # in 1 of 5000 calculations, we will reject a value we shouldn't have.
-  sigma.reject <- qnorm(p = (1 - p.value)^(1 / length(y)))
-  y.rejects <- abs((y - M) / MAD) > sigma.reject
-  y.rejects[which(is.na(y.rejects))] <- FALSE # NA's are no outliers
-  if (verbose) {
-    print(sprintf(
-      "M: %.3f | MAD: %.3f | sigma.reject: %.3f | # rejects: %i | sd: %.3f | sd.clean: %.3f",
-      M, MAD, sigma.reject, sum(y.rejects, na.rm = TRUE),
-      sqrt(var(y, na.rm = TRUE)), sqrt(var(y[!y.rejects], na.rm = TRUE))
-    ))
-  }
-  y.rejects
-}
+library(gwloggeR)
 
 # load all data for M and MAD computation
 df <- data.table::rbindlist(
@@ -46,9 +25,9 @@ with(df, {
   qqline(DRME_DRU)
 })
 
-
-M <- median(df$DRME_DRU)
-MAD <- mad(df$DRME_DRU)
+median(df$DRME_DRU)
+mad(df$DRME_DRU)^2
+(ap <- apriori("air pressure", "cmH2O"))
 
 local({
   folder <- "./../../data/raw/inbo/"
@@ -62,7 +41,7 @@ local({
     p <- ggplot(data = df_raw, mapping = aes(x = if (all(is.na(DRME_OCR_UTC_DTE))) SEQUENCE
                                                  else DRME_OCR_UTC_DTE, DRME_DRU)) +
       geom_line() +
-      geom_point(mapping = aes(color = detect.outliers(DRME_DRU, M = M, MAD = MAD)), show.legend = FALSE) +
+      geom_point(mapping = aes(color = detect_outliers(DRME_DRU, apriori = ap)), show.legend = FALSE) +
       scale_color_manual(values = c("FALSE" = "black", "TRUE" = "red")) + ggtitle(f)
 
     print(p)
