@@ -1,7 +1,7 @@
 #' @title Detects outliers
 #' @description
 #' This function is based on Leys, C. e.a., Detecting outliers, 2013.
-#'
+#' @keywords internal
 detect_outliers_leys <- function(x, p.value = 0.0005, verbose = FALSE,
                                  M = median(x, na.rm = TRUE),
                                  MAD = mad(x, na.rm = TRUE)) {

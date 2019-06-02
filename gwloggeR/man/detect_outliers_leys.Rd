@@ -10,3 +10,4 @@ detect_outliers_leys(x, p.value = 5e-04, verbose = FALSE,
 \description{
 This function is based on Leys, C. e.a., Detecting outliers, 2013.
 }
+\keyword{internal}
