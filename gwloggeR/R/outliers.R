@@ -13,7 +13,7 @@
 #'
 #' # Or use the tidyverse approach:
 #' library(magrittr)
-#' cars %>% plyr::mutate("outlier" = detect_outliers(dist))
+#' cars %>% dplyr::mutate("outlier" = detect_outliers(dist))
 #'
 #' @export
 #' @rdname detect_outliers
