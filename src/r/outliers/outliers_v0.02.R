@@ -26,9 +26,10 @@ detect.outliers <- function(y, p.value = 0.0005, verbose = FALSE, M, MAD) {
 df <- data.table::rbindlist(
   use.names = TRUE,
   lapply(list.files("./../../data/raw/inbo/", pattern = "BAOL.*\\.csv", full.names = TRUE), function(file) {
-    # if (grepl("BAOL", file)) return(data.table::data.table()) #excluded
+    if (grepl("BAOL089|BAOL079|BAOL006", file)) return(data.table::data.table()) #excluded
     df_raw <- data.table::fread(file, dec = ",")
-    df_raw <- df_raw[DRME_DRU > 500,]
+    df_raw <- df_raw[DRME_DRU > 800,]
+    df_raw <- df_raw[DRME_DRU < 1200,]
     df_raw[, DRME_OCR_UTC_DTE := as.POSIXct(gsub("(.*):", "\\1", DRME_OCR_UTC_DTE),
                                             format = "%d/%m/%Y %H:%M:%S %z", tz = 'UTC')]
     df_raw[, DRME_DRU_DIFF := DRME_DRU - data.table::shift(DRME_DRU)]
