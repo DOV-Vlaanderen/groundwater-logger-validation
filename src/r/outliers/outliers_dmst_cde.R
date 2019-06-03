@@ -25,7 +25,8 @@ local({
       ggtitle(f, subtitle = with(df_raw, {
         freq <- table(DRME_DMST_CDE)
         dupes <- sum(duplicated(DRME_OCR_UTC_DTE, incomparables = NA))
-        paste(c(names(freq), 'DUPES'), c(freq, dupes), sep = '=', collapse = ', ')})) +
+        notime <- sum(is.na(DRME_OCR_UTC_DTE))
+        paste(c(names(freq), 'DUPES', 'NOTIME'), c(freq, dupes, notime), sep = '=', collapse = ', ')})) +
       theme(legend.position="bottom", legend.justification = 1) +
       xlab('')
 
