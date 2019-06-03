@@ -15,7 +15,7 @@ apriori(data_type = c("air pressure"), units = c("cmH2O"))
 A-priori object.
 }
 \description{
-This function creates an a-priori class based on input.
+This function creates an apriori class based on input.
 }
 \examples{
 # For example:

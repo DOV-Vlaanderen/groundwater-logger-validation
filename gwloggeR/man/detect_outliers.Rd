@@ -15,6 +15,8 @@ detect_outliers(x, apriori)
 }
 \arguments{
 \item{x}{numeric vector of values}
+
+\item{apriori}{\link{apriori} class}
 }
 \value{
 Logical vector with same length as x, specifying TRUE for an outlier.
