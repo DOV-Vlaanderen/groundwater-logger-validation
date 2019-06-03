@@ -1,0 +1,51 @@
+library(ggplot2)
+library(gwloggeR)
+
+# load all data for M and MAD computation
+df <- data.table::rbindlist(
+  use.names = TRUE,
+  lapply(list.files("./../../data/raw/inbo/", pattern = "BAOL.*\\.csv", full.names = TRUE), function(file) {
+    if (grepl("BAOL089|BAOL079|BAOL006", file)) return(data.table::data.table()) #excluded
+    df_raw <- data.table::fread(file, dec = ",")
+    df_raw <- df_raw[DRME_DRU > 800,]
+    df_raw <- df_raw[DRME_DRU < 1200,]
+    df_raw[, DRME_OCR_UTC_DTE := as.POSIXct(gsub("(.*):", "\\1", DRME_OCR_UTC_DTE),
+                                            format = "%d/%m/%Y %H:%M:%S %z", tz = 'UTC')]
+    df_raw[, DRME_DRU_DIFF := DRME_DRU - data.table::shift(DRME_DRU)]
+    df_raw
+  })
+)
+
+with(df, {
+  hist(DRME_DRU, breaks = 1000, probability = TRUE, main = '')
+  curve(dnorm(x, mean = mean(DRME_DRU), sd = sqrt(var(DRME_DRU))), add = TRUE, col = 'red')
+})
+with(df, {
+  qqnorm(DRME_DRU)
+  qqline(DRME_DRU)
+})
+
+median(df$DRME_DRU)
+mad(df$DRME_DRU)^2
+(ap <- apriori("air pressure", "cmH2O"))
+
+local({
+  folder <- "./../../data/raw/inbo/"
+  pdf(file = './outliers/outliers_v0.02.pdf', width = 14, height = 7)
+  for (f in list.files(folder, pattern = "BAOL.*\\.csv")) {
+    df_raw <- data.table::fread(paste0(folder, f), dec = ",")
+    df_raw[, DRME_OCR_UTC_DTE := as.POSIXct(gsub("(.*):", "\\1", DRME_OCR_UTC_DTE),
+                                            format = "%d/%m/%Y %H:%M:%S %z", tz = 'UTC')]
+    df_raw[, SEQUENCE := 1:.N]
+    #if (f == "BAOL006X_179843.csv") browser()
+    p <- ggplot(data = df_raw, mapping = aes(x = if (all(is.na(DRME_OCR_UTC_DTE))) SEQUENCE
+                                                 else DRME_OCR_UTC_DTE, DRME_DRU)) +
+      geom_line() +
+      geom_point(mapping = aes(color = detect_outliers(DRME_DRU, apriori = ap)), show.legend = FALSE) +
+      scale_color_manual(values = c("FALSE" = "black", "TRUE" = "red")) + ggtitle(f)
+
+    print(p)
+  }
+  dev.off()
+})
+

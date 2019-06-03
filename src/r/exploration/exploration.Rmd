@@ -1,0 +1,75 @@
+---
+output:
+  html_document: default
+  pdf_document: default
+---
+
+```{r}
+library(ggplot2)
+```
+
+# BAO (L - Luchtdruk)
+
+```{r}
+df <- data.table::rbindlist(
+  use.names = TRUE,
+  lapply(list.files("./../../../data/raw/inbo/", pattern = "BAOL.*\\.csv", full.names = TRUE), function(file) {
+    df_raw <- data.table::fread(file, dec = ",")
+    df_raw <- df_raw[DRME_DRU > 500,]
+    df_raw <- df_raw[DRME_TPU < 100,]
+    df_raw[, FILE := basename(file)]
+    df_raw[, N := .N]
+    df_raw[, DRME_OCR_UTC_DTE := as.POSIXct(gsub("(.*):", "\\1", DRME_OCR_UTC_DTE),
+                                            format = "%d/%m/%Y %H:%M:%S %z", tz = 'UTC')]
+    df_raw[, DRME_DRU_DIFF := DRME_DRU - data.table::shift(DRME_DRU)]
+    df_raw
+  })
+)
+```
+
+## DRME_DRU
+
+### Boxplot comparison
+
+```{r}
+ggplot(data = df, mapping = aes(y = DRME_DRU, x = paste(FILE, "-", N))) + geom_boxplot() + coord_flip()
+```
+
+# In function of temperature
+
+```{r}
+summary(lm(data = df, DRME_DRU ~ DRME_TPU))
+plot(lm(data = df, DRME_DRU ~ DRME_TPU))
+```
+
+### Univariate analysis
+
+```{r}
+univar <- function(field = 'DRME_DRU'){
+  par(mfrow = c(2,2))
+  for (f in unique(df$FILE)) {
+    dfp <- df[FILE == f,]
+    
+    # hist
+    hist(dfp[[field]], breaks = 1000, probability = TRUE, main = paste(f, ':', field))
+    curve(dnorm(x, mean = mean(dfp[[field]]), sd = sqrt(var(dfp[[field]]))), add = TRUE, col = 'red')
+    
+    # qqplot
+    qqnorm(dfp[[field]])
+    qqline(dfp[[field]])
+  }
+}
+```
+
+
+```{r}
+univar('DRME_DRU')
+univar('DRME_TPU')
+```
+
+## Diff
+
+```{r}
+with(df, hist(DRME_DRU, breaks = 1000))
+```
+
