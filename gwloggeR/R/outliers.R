@@ -2,6 +2,7 @@
 #' @description
 #' This function marks outliers in the input vector.
 #' @param x numeric vector of values
+#' @param apriori \link{apriori} class
 #' @return Logical vector with same length as x, specifying TRUE for an outlier.
 #' @examples
 #' # In case of a vector:
