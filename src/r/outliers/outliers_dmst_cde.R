@@ -7,7 +7,7 @@ source('outliers/outliers_dmst_cde.plot.R')
 
 local({
   folder <- "./../../data/raw/inbo/"
-  pdf(file = './outliers/outliers_dmst_cde.pdf', width = 14, height = 7)
+  pdf(file = './outliers/outliers_dmst_cde.pdf', width = 14, height = 7, compress = FALSE)
   for (f in list.files(folder, full.names = TRUE, pattern = ".*\\.csv")) {
     print(plot.dmst_cde(f))
   }
