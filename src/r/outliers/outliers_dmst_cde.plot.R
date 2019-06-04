@@ -22,5 +22,5 @@ plot.dmst_cde <- function(file) {
       notime <- sum(is.na(DRME_OCR_UTC_DTE))
       paste(c(names(freq), 'DUPES', 'NOTIME'), c(freq, dupes, notime), sep = '=', collapse = ', ')})) +
     theme(legend.position="bottom", legend.justification = 1) +
-    xlab('')
+    theme(axis.title.x=element_blank())
 }
