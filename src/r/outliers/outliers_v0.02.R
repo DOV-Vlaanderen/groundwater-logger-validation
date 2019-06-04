@@ -39,7 +39,7 @@ local({
     df_raw[, DRME_OCR_UTC_DTE := as.POSIXct(gsub("(.*):", "\\1", DRME_OCR_UTC_DTE),
                                             format = "%d/%m/%Y %H:%M:%S %z", tz = 'UTC')]
 
-    print(with(df_raw, plot.outliers(x = if (any(!is.na(DRME_OCR_UTC_DTE))) DRME_OCR_UTC_DTE,
+    print(with(df_raw, plot.outliers(x = DRME_OCR_UTC_DTE,
                                      y = DRME_DRU,
                                      outliers = detect_outliers(DRME_DRU, apriori = ap),
                                      title = basename(f))))

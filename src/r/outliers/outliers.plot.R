@@ -3,15 +3,15 @@ plot.outliers <- function(x = NULL, y, outliers, title = NULL) {
 
   stopifnot(is.logical(outliers))
 
-  df <- data.frame("x" = if (!is.null(x)) x else 1L:length(y),
+  df <- data.frame("x" = if (all(is.na(x))) 1L:length(y) else x,
                    "y" = y,
                    "outliers" = outliers)
 
-  title <- ggtitle(title, subtitle = with(df, {
-    freq <- table(outliers)
-    notime <- sum(is.na(x))
-    paste(c(names(freq), 'NOTIME'), c(freq, notime), sep = '=', collapse = ', ')
-  }))
+  freq <- table(outliers)
+  notime <- sum(is.na(x))
+  title <- ggtitle(title, subtitle = paste(c(names(freq), 'NOTIME'),
+                                           c(freq, notime),
+                                           sep = '=', collapse = ', '))
 
   ggplot(data = df, mapping = aes(x = x, y = y)) +
     geom_line() +
@@ -35,7 +35,8 @@ plot.dmst_cde <- function(x = NULL, y, dmst_cde, title = NULL) {
   notime <- sum(is.na(x))
   title <- ggtitle(title,
                    subtitle = paste(c(names(freq), 'DUPES', 'NOTIME'),
-                                    c(freq, dupes, notime), sep = '=', collapse = ', '))
+                                    c(freq, dupes, notime),
+                                    sep = '=', collapse = ', '))
 
   # in case of overlap, render according to this order:
   df <- df[order(factor(df$dmst_cde, levels = c("ENT","INV","DEL","VLD"))),]
