@@ -29,15 +29,22 @@ with(df, {
 
 median(df$DRME_DRU)
 mad(df$DRME_DRU)^2
-(ap <- apriori("air pressure", "cmH2O"))
+apriori("air pressure", "cmH2O")
 
 local({
   folder <- "./../../data/raw/inbo/"
   pdf(file = './outliers/outliers_v0.02.pdf', width = 14, height = 7, compress = FALSE)
-  for (f in list.files(folder, full.names = TRUE, pattern = "BAOL.*\\.csv")) {
+  for (f in list.files(folder, full.names = TRUE, pattern = ".*\\.csv")) {
     df_raw <- data.table::fread(f, dec = ",")
     df_raw[, DRME_OCR_UTC_DTE := as.POSIXct(gsub("(.*):", "\\1", DRME_OCR_UTC_DTE),
                                             format = "%d/%m/%Y %H:%M:%S %z", tz = 'UTC')]
+
+    point_sample_type <- substr(basename(f), 4L, 4L)
+    ap <- switch (point_sample_type,
+      "L" = apriori("air pressure", "cmH2O"),
+      "P" = apriori("diver", "cmH2O"),
+      "S" = apriori("diver", "cmH2O")
+    )
 
     print(with(df_raw, plot.outliers(x = DRME_OCR_UTC_DTE,
                                      y = DRME_DRU,
