@@ -4,7 +4,8 @@
 \alias{detect_outliers_norm}
 \title{Detects outliers}
 \usage{
-detect_outliers_norm(x, p.value = 5e-04, verbose = FALSE, x.mean, x.sd)
+detect_outliers_norm(x, p.value = 5e-04, verbose = FALSE, x.mean, x.sd,
+  type = c("two.sided", "less", "greater"))
 }
 \description{
 ...
