@@ -18,6 +18,7 @@
 #'
 #' @export
 #' @rdname detect_outliers
+
 setGeneric("detect_outliers",
            signature = c("x", "apriori"),
            valueClass = "logical",
@@ -29,6 +30,7 @@ setGeneric("detect_outliers",
 #' A normal distribution is assumed with mean and variance estimated using
 #' median and MAD as described in Leys, 2013.
 #' @references Leys, C. e.a., Detecting outliers, 2013.
+
 setMethod('detect_outliers',
           signature = c(x = "numeric", apriori = "missing"),
           function(x) {
@@ -37,8 +39,24 @@ setMethod('detect_outliers',
 
 #' @describeIn detect_outliers
 #' Takes _a-priori_ data information into consideration.
+
 setMethod('detect_outliers',
           signature = c(x = "numeric", apriori = "apriori"),
           function(x, apriori) {
-  detect_outliers_norm(x, x.mean = apriori$mean, x.sd = sqrt(apriori$var))
+
+  if (apriori$data_type == "air pressure") return (
+    detect_outliers_norm(x, x.mean = apriori$mean, x.sd = sqrt(apriori$var))
+  )
+
+  if (apriori$data_type == "diver") return ({
+    # It is very unlikely that diver pressure is lower than a-priori air pressure.
+    l <- detect_outliers_norm(x, x.mean = apriori$mean,
+                              x.sd = sqrt(apriori$var), type = "less")
+    # We use the detect_outliers(x) method on remaining data points.
+    r <- detect_outliers_norm(x, x.mean = median(x[!l], na.rm = TRUE),
+                              x.sd = mad(x[!l], na.rm = TRUE), type = "greater")
+    l | r
+  })
+
+  NULL
 })
