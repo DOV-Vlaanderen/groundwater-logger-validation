@@ -10,14 +10,16 @@
 #'
 #' @export
 #'
-apriori <- function(data_type = c("air pressure"), units = c("cmH2O")) {
+apriori <- function(data_type = c("air pressure", "diver"), units = c("cmH2O")) {
   data_type <- match.arg(data_type)
   units <- match.arg(units)
 
   structure(
-    list(mean = 1034.2,
-         var = 98.67283),
-    class = 'apriori')
+    list("mean" = 1034.2,
+         "var" = 98.67283,
+         "data_type" = data_type,
+         "units" = units),
+    class = "apriori")
 }
 
-setOldClass('apriori')
+setOldClass("apriori")

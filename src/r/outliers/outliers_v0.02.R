@@ -1,6 +1,8 @@
 library(ggplot2)
 library(gwloggeR)
 
+source("outliers/outliers.plot.R")
+
 # load all data for M and MAD computation
 df <- data.table::rbindlist(
   use.names = TRUE,
@@ -27,24 +29,27 @@ with(df, {
 
 median(df$DRME_DRU)
 mad(df$DRME_DRU)^2
-(ap <- apriori("air pressure", "cmH2O"))
+apriori("air pressure", "cmH2O")
 
 local({
   folder <- "./../../data/raw/inbo/"
-  pdf(file = './outliers/outliers_v0.02.pdf', width = 14, height = 7)
-  for (f in list.files(folder, pattern = "BAOL.*\\.csv")) {
-    df_raw <- data.table::fread(paste0(folder, f), dec = ",")
+  pdf(file = './outliers/outliers_v0.02.pdf', width = 14, height = 7, compress = FALSE)
+  for (f in list.files(folder, full.names = TRUE, pattern = ".*\\.csv")) {
+    df_raw <- data.table::fread(f, dec = ",")
     df_raw[, DRME_OCR_UTC_DTE := as.POSIXct(gsub("(.*):", "\\1", DRME_OCR_UTC_DTE),
                                             format = "%d/%m/%Y %H:%M:%S %z", tz = 'UTC')]
-    df_raw[, SEQUENCE := 1:.N]
-    #if (f == "BAOL006X_179843.csv") browser()
-    p <- ggplot(data = df_raw, mapping = aes(x = if (all(is.na(DRME_OCR_UTC_DTE))) SEQUENCE
-                                                 else DRME_OCR_UTC_DTE, DRME_DRU)) +
-      geom_line() +
-      geom_point(mapping = aes(color = detect_outliers(DRME_DRU, apriori = ap)), show.legend = FALSE) +
-      scale_color_manual(values = c("FALSE" = "black", "TRUE" = "red")) + ggtitle(f)
 
-    print(p)
+    point_sample_type <- substr(basename(f), 4L, 4L)
+    ap <- switch (point_sample_type,
+      "L" = apriori("air pressure", "cmH2O"),
+      "P" = apriori("diver", "cmH2O"),
+      "S" = apriori("diver", "cmH2O")
+    )
+
+    print(with(df_raw, plot.outliers(x = DRME_OCR_UTC_DTE,
+                                     y = DRME_DRU,
+                                     outliers = detect_outliers(DRME_DRU, apriori = ap),
+                                     title = basename(f))))
   }
   dev.off()
 })
