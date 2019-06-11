@@ -31,7 +31,7 @@ DRME_OCR_UTC_DTE | Date of measurement (datetimeoffset UTC) |
 DRME_DRU | Measurement value (pressure) | NULL allowed
 DRME_TPU | Measurement value (temperature) | NULL allowed
 DRME_DMTP_CDE | Type of measurement | LDME = air pressure, DRME = pressure
-DRME_DMST_CDE | Validation status of measurement | ENT (entered) is the basic status meaning that these measurements are used in the workflow; DEL (deleted) and INV (invalid) are measurements that were visually detected by users as being suspicious, hence those that have to be detected by the algorithm. 
+DRME_DMST_CDE | Validation status of measurement | ENT (entered) is the basic status meaning that these measurements are used in the workflow; DEL (deleted) and INV (invalid) are measurements that were visually detected by users as being suspicious, hence those that have to be detected by the algorithm. --> no constistent use in the database, of little value to evaluate the algorithms
 
 
 ## Geotechniek
