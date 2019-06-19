@@ -22,6 +22,7 @@ df <- data.table::rbindlist(
     df_raw[, DRME_OCR_UTC_DTE := as.POSIXct(gsub("(.*):", "\\1", DRME_OCR_UTC_DTE),
                                             format = "%d/%m/%Y %H:%M:%S %z", tz = 'UTC')]
     df_raw[, DRME_DRU_DIFF := DRME_DRU - data.table::shift(DRME_DRU)]
+    df_raw[, N_NO_TIMESTAMP := sum(is.na(DRME_OCR_UTC_DTE))]
     df_raw
   })
 )
@@ -33,6 +34,14 @@ df <- data.table::rbindlist(
 
 ```{r}
 ggplot(data = df, mapping = aes(y = DRME_DRU, x = paste(FILE, "-", N))) + geom_boxplot() + coord_flip()
+```
+
+### No TimeStamp comparison
+
+```{r}
+ggplot(data = unique(df[, .(FILE, 'NO_TIMESTAMP_PERCENTAGE' = N_NO_TIMESTAMP/N, N)]), 
+       mapping = aes(y = NO_TIMESTAMP_PERCENTAGE, x = paste(FILE, "-", N))) + 
+  geom_bar(stat = 'identity') + coord_flip()
 ```
 
 # In function of temperature
