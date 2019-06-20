@@ -11,7 +11,9 @@ detect_outliers_norm <- function(x, p.value = 0.0005, verbose = FALSE, x.mean, x
 
   # sigma.reject is the sigma after which we reject points. The 0.0005 means that
   # in 1 of 2000 (1/0.0005) calculations, we will reject a value we shouldn't have.
-  sigma.reject <- qnorm(p = (1 - p.value)^(1 / length(x)))
+  N <- length(x)
+  TS <- if (type == "two.sided") 2 else 1
+  sigma.reject <- qnorm(p = (1 - p.value)^(1 / (N*TS)))
   x.norm <- (x - x.mean) / x.sd
   x.rejects <- switch (type,
     "two.sided" = abs(x.norm) > sigma.reject,
