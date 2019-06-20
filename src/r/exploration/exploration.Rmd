@@ -21,8 +21,12 @@ df <- data.table::rbindlist(
     df_raw[, N := .N]
     df_raw[, DRME_OCR_UTC_DTE := as.POSIXct(gsub("(.*):", "\\1", DRME_OCR_UTC_DTE),
                                             format = "%d/%m/%Y %H:%M:%S %z", tz = 'UTC')]
+    data.table::setkey(df_raw, DRME_OCR_UTC_DTE)
     df_raw[, DRME_DRU_DIFF := DRME_DRU - data.table::shift(DRME_DRU)]
     df_raw[, N_NO_TIMESTAMP := sum(is.na(DRME_OCR_UTC_DTE))]
+    df_raw[, DRME_OCR_UTC_DTE_DIFF := as.integer(difftime(DRME_OCR_UTC_DTE, 
+                                                          data.table::shift(DRME_OCR_UTC_DTE), 
+                                                          units = 'secs'))]
     df_raw
   })
 )
@@ -81,4 +85,3 @@ univar('DRME_TPU')
 ```{r}
 with(df, hist(DRME_DRU, breaks = 1000))
 ```
-
