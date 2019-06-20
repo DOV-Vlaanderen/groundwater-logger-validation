@@ -40,14 +40,6 @@ df <- data.table::rbindlist(
 ggplot(data = df, mapping = aes(y = DRME_DRU, x = paste(FILE, "-", N))) + geom_boxplot() + coord_flip()
 ```
 
-### No TimeStamp comparison
-
-```{r}
-ggplot(data = unique(df[, .(FILE, 'NO_TIMESTAMP_PERCENTAGE' = N_NO_TIMESTAMP/N, N)]), 
-       mapping = aes(y = NO_TIMESTAMP_PERCENTAGE, x = paste(FILE, "-", N))) + 
-  geom_bar(stat = 'identity') + coord_flip()
-```
-
 # In function of temperature
 
 ```{r}
