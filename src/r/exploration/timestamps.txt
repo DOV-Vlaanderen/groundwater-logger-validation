@@ -1,0 +1,551 @@
+[1] "BAOL001X_D0939.csv"
+Frequency table:
+    0 43200 
+   16  5390 
+
+[1] "BAOL002X_78678.csv"
+Frequency table:
+43200 
+ 3288 
+
+[1] "BAOL004X_77561.csv"
+Frequency table:
+43200 
+ 5600 
+
+[1] "BAOL005X_72525.csv"
+Frequency table:
+43200 
+ 3041 
+
+[1] "BAOL005X_B5551.csv"
+Frequency table:
+43200 
+ 3943 
+
+[1] "BAOL006X_179843.csv"
+Frequency table:< table of extent 0 >
+
+[1] "BAOL008X_72528.csv"
+Frequency table:
+43200 
+ 4548 
+
+[1] "BAOL009X_78680.csv"
+Frequency table:
+43200 
+ 1203 
+
+[1] "BAOL009X_78681.csv"
+Frequency table:
+43200 
+ 4021 
+
+[1] "BAOL010X_78686.csv"
+Frequency table:
+43200 
+ 6411 
+
+[1] "BAOL012X_78680.csv"
+Frequency table:
+43200 
+ 1571 
+
+[1] "BAOL012X_D1095.csv"
+Frequency table:
+43200 
+ 3353 
+
+[1] "BAOL013A_L2546.csv"
+Frequency table:
+14400 
+10534 
+
+[1] "BAOL014X_R6519.csv"
+Frequency table:
+43200 
+ 2097 
+
+[1] "BAOL015X_72527.csv"
+Frequency table:
+43200 
+ 4419 
+
+[1] "BAOL016X_77551.csv"
+Frequency table:
+43200 
+ 5928 
+
+[1] "BAOL017X_72523.csv"
+Frequency table:
+43200 
+ 5443 
+
+[1] "BAOL018X_42112.csv"
+Frequency table:
+86400 
+ 1684 
+
+[1] "BAOL019X_77560.csv"
+Frequency table:
+43200 
+ 6656 
+
+[1] "BAOL021X_78685.csv"
+Frequency table:
+43200 
+ 4952 
+
+[1] "BAOL022X_B5469.csv"
+Frequency table:
+43200 
+ 6972 
+
+[1] "BAOL023X_77556.csv"
+Frequency table:
+43200 
+ 6806 
+
+[1] "BAOL023X_L2520.csv"
+Frequency table:
+43200 
+ 2338 
+
+[1] "BAOL024X_B1015.csv"
+Frequency table:
+43200 
+ 3229 
+
+[1] "BAOL027X_77554.csv"
+Frequency table:
+43200 
+ 6064 
+
+[1] "BAOL028X_78683.csv"
+Frequency table:
+43200 
+ 1966 
+
+[1] "BAOL028X_B5467.csv"
+Frequency table:
+   43200 26175600 
+    2961        1 
+
+[1] "BAOL031X_A7250.csv"
+Frequency table:
+43200 
+ 3478 
+
+[1] "BAOL031X_B5554.csv"
+Frequency table:
+43200 
+  880 
+
+[1] "BAOL032X_C7836.csv"
+Frequency table:
+43200 
+  867 
+
+[1] "BAOL033X_C6550.csv"
+Frequency table:
+   1685    1915    3600    7200   18000   32400   36000 5162400 
+   7452    7452   78278       1       1       2       1       1 
+
+[1] "BAOL034X_F9154.csv"
+Frequency table:
+ 3600 
+23999 
+
+[1] "BAOL036X_72524.csv"
+Frequency table:
+43200 
+ 2848 
+
+[1] "BAOL037X_C7829.csv"
+Frequency table:
+43200 
+ 6950 
+
+[1] "BAOL038X_59979.csv"
+Frequency table:
+43200 
+ 1720 
+
+[1] "BAOL040X_171285.csv"
+Frequency table:< table of extent 0 >
+
+[1] "BAOL045X_59223.csv"
+Frequency table:
+ 3600 
+10232 
+
+[1] "BAOL050X_56819.csv"
+Frequency table:
+     1800     43200   8208000 102958200 
+    12299      4360         1         1 
+
+[1] "BAOL051X_D2544.csv"
+Frequency table:
+    0 43200 
+  980   979 
+
+[1] "BAOL052X_F6620.csv"
+Frequency table:
+43200 
+ 2351 
+
+[1] "BAOL053X_L2518.csv"
+Frequency table:
+43200 
+ 4438 
+
+[1] "BAOL054X_F6598.csv"
+Frequency table:
+43200 
+ 2182 
+
+[1] "BAOL056X_D0924.csv"
+Frequency table:
+43200 
+ 4532 
+
+[1] "BAOL057X_78680.csv"
+Frequency table:
+    0 43200 49463 
+  365  1474     1 
+
+[1] "BAOL064X_59976.csv"
+Frequency table:
+  43200 1296000 1468800 
+   4986       1       1 
+
+[1] "BAOL064X_A7255.csv"
+Frequency table:
+43200 
+ 1255 
+
+[1] "BAOL066X_B5554.csv"
+Frequency table:
+43200 
+ 5789 
+
+[1] "BAOL068X_180816.csv"
+Frequency table:
+39600 43200 46800 
+ 1050  3129  1050 
+
+[1] "BAOL070X_B9393.csv"
+Frequency table:
+86400 
+  774 
+
+[1] "BAOL071X_H4445.csv"
+Frequency table:
+43200 
+ 1538 
+
+[1] "BAOL072X_180758.csv"
+Frequency table:
+43200 
+ 4040 
+
+[1] "BAOL077X_26425.csv"
+Frequency table:
+  42345   42554   42796   42929   43070   43200   43252   43293   43372   43801   43819   43846   44601  129358 5442710 7818222 7905716 
+      1       1       1       1       1    2454       1       1       1       1       1       1       1       1       1       1       1 
+
+[1] "BAOL079X_177936.csv"
+Frequency table:< table of extent 0 >
+
+[1] "BAOL086X_179793.csv"
+Frequency table:
+21600 
+ 6804 
+
+[1] "BAOL087X_179808.csv"
+Frequency table:
+43200 
+ 3902 
+
+[1] "BAOL088X_B5548.csv"
+Frequency table:
+43200 
+  840 
+
+[1] "BAOL089X_362591.csv"
+Frequency table:< table of extent 0 >
+
+[1] "BAOL091X_73922.csv"
+Frequency table:
+86400 
+  960 
+
+[1] "BAOL092X_42183.csv"
+Frequency table:
+10848 75552 
+  414   413 
+
+[1] "BAOL093X_78679.csv"
+Frequency table:
+43200 
+ 3782 
+
+[1] "BAOL094X_R0051.csv"
+Frequency table:
+     0  41400  43200  86400 259200 
+    97      1   1251      4      1 
+
+[1] "BAOL096X_177936.csv"
+Frequency table:< table of extent 0 >
+
+[1] "BAOL800X_P2_15615.csv"
+Frequency table:
+43200 
+  853 
+
+[1] "BAOL801X_P2_15706.csv"
+Frequency table:
+43200 
+  853 
+
+[1] "BAOL802X_P2_15659.csv"
+Frequency table:
+43200 
+  851 
+
+[1] "BAOL803X_P2_15640.csv"
+Frequency table:
+43200 
+  851 
+
+[1] "BAOL804X_P2_15641.csv"
+Frequency table:
+43200 
+  851 
+
+[1] "BAOL805X_P2_15643.csv"
+Frequency table:
+43200 
+  847 
+
+[1] "BAOL806X_P2_15633.csv"
+Frequency table:
+43200 
+  847 
+
+[1] "BAOL807X_P2_15709.csv"
+Frequency table:
+43200 
+  847 
+
+[1] "BAOL808X_P2_15637.csv"
+Frequency table:
+43200 
+  847 
+
+[1] "BAOL809X_P2_15697.csv"
+Frequency table:
+43200 
+  847 
+
+[1] "BAOL810X_P2_15618.csv"
+Frequency table:
+    3600     7200   601200 17902800 
+   30187        1        1        1 
+
+[1] "BAOL826X_P2_15615.csv"
+Frequency table:
+43200 
+  678 
+
+[1] "DYLP003E_80766.csv"
+Frequency table:
+43200 
+ 7860 
+
+[1] "DYLP004B_80760.csv"
+Frequency table:
+43200 
+ 7853 
+
+[1] "DYLP005D_80759.csv"
+Frequency table:
+43200 
+ 7609 
+
+[1] "DYLP005E_80759.csv"
+Frequency table:
+43200 
+  247 
+
+[1] "DYLP006X_80773.csv"
+Frequency table:
+43200 
+ 7860 
+
+[1] "DYLP023A_S3804.csv"
+Frequency table:
+     60    3600    7200   10800   14340   14400   18000   21600   28800   43200   64800   79200   86400  129600  140400  151200  172800  194400 
+   1741   15930       6    4817       1     567       1     604       2      33       6       1      47       1       1       1       1       1 
+ 259200  320400  324000  406800  604800  864000 9882000 
+      2       1       1       1       1       1       1 
+
+[1] "DYLP023X_80770.csv"
+Frequency table:
+43200 
+ 4178 
+
+[1] "DYLP028B_80757.csv"
+Frequency table:
+43200 
+ 7856 
+
+[1] "DYLP029A_S4054.csv"
+Frequency table:
+   3600    7200   10800   14400   18000   21600   25200   28800   32400   36000   39600   43200   46800   50400   57600   61200   68400   75600 
+  16067     123    5289      10       1     995       7       2      17       3       1      11       4       2       1       5       1       2 
+  79200   86400   97200  133200  140400  212400  262800  270000  334800  356400  410400  432000  475200  493200  604800  608400  640800 4147200 
+      2       9       1       1       2       1       1       1       1       1       1       1       1       1       1       1       1       1 
+
+[1] "DYLP037X_80768.csv"
+Frequency table:
+43200 
+ 7858 
+
+[1] "DYLP085A_80769.csv"
+Frequency table:
+43200 
+ 7854 
+
+[1] "DYLP108A_D7570.csv"
+Frequency table:
+43200 
+ 6282 
+
+[1] "DYLP109A_80765.csv"
+Frequency table:
+43200 
+ 7856 
+
+[1] "DYLP112B_F6835.csv"
+Frequency table:
+43200 85429 86400 
+ 3005     1   306 
+
+[1] "DYLP113X_65285.csv"
+Frequency table:
+   697  42503  43200  85703  86400 734400 
+     1      1   2941      1    329      1 
+
+[1] "DYLP115A_G4375.csv"
+Frequency table:
+ 4704 43200 81696 
+  307  3005   307 
+
+[1] "DYLP116X_79035.csv"
+Frequency table:
+ 7956 78444 
+  330   329 
+
+[1] "DYLP116X_C5615.csv"
+Frequency table:
+43200 
+  271 
+
+[1] "DYLP126X_F6843.csv"
+Frequency table:
+86400 
+  305 
+
+[1] "DYLP127B_W1134.csv"
+Frequency table:
+    60    120    180   1200   3600   3780   7200  10800  14400  18000  21600  28800  32400  36000  43200  54000  64800  90000  93600 108000 
+  1329      2      8      1   2556      1      2   1731      1      1   2226      1      5      1     60      1     14      1      1      1 
+129600 151200 162000 201600 248400 320400 403200 493200 507600 576000 626400 
+     1      1      1      1      1      1      1      1      1      1      1 
+
+[1] "DYLP132X_N0693.csv"
+Frequency table:
+  2669  43200  83731 172800 
+   306    900    305      1 
+
+[1] "DYLP156A_15664.csv"
+Frequency table:
+43200 
+ 2316 
+
+[1] "DYLP161A_B5260.csv"
+Frequency table:
+    43200     86400 118324629 
+      271       305         1 
+
+[1] "DYLP162X_F6887.csv"
+Frequency table:
+86400 
+  305 
+
+[1] "DYLP171A_G4252.csv"
+Frequency table:
+ 5109 81291 
+  330   329 
+
+[1] "DYLP171A_U7619.csv"
+Frequency table:
+43200 
+  976 
+
+[1] "DYLP200X_79034.csv"
+Frequency table:
+ 43200  86400 172617 
+   900    305      1 
+
+[1] "DYLP222A_G4201.csv"
+Frequency table:
+   43200    86400 83210078 
+     155      329        1 
+
+[1] "DYLP222A_N0693.csv"
+Frequency table:
+43200 
+  640 
+
+[1] "DYLP223X_G4340.csv"
+Frequency table:
+43200 86075 86400 
+ 3250     1   306 
+
+[1] "DYLP224X_79036.csv"
+Frequency table:
+ 5691 80709 
+  330   329 
+
+[1] "DYLP225X_U7582.csv"
+Frequency table:
+43200 
+  973 
+
+[1] "DYLS010X_B5259.csv"
+Frequency table:
+ 3197 83203 
+  307   306 
+
+[1] "DYLS014X_B5261.csv"
+Frequency table:
+13551 43200 72849 86400 
+    4  3005     3     1 
+
+[1] "DYLS102X_80761.csv"
+Frequency table:
+ 57600 169200 
+  2941      1 
+
+[1] "DYLS102X_K4967.csv"
+Frequency table:
+43200 
+ 2365 
+
+[1] "DYLS102X_M8883.csv"
+Frequency table:
+43200 
+ 1285 
+
