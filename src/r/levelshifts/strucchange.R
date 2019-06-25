@@ -1,8 +1,8 @@
 source("./data.R")
 
-library(doSNOW)
-cl <- parallel::makeCluster(6)
-registerDoSNOW(cl)
+# library(doSNOW)
+# cl <- parallel::makeCluster(6)
+# registerDoSNOW(cl)
 
 local({
   print(Sys.time())
@@ -13,9 +13,9 @@ local({
 
     # remove no-timestamp
     df <- df[!is.na(DRME_OCR_UTC_DTE),]
-    if(nrow(df) == 0L) next()
+    if(nrow(df) == 0L | nrow(df) > 25000L) next()
 
-    b <- strucchange::breakpoints(formula = DRME_DRU ~ 1, data = df, hpc = "foreach")
+    b <- strucchange::breakpoints(formula = DRME_DRU ~ 1, data = df)
 
     df[, FITTED := fitted(b)]
     df[, RESIDUALS := residuals(b)]
@@ -36,7 +36,7 @@ local({
   print(Sys.time())
 })
 
-parallel::stopCluster(cl)
+# parallel::stopCluster(cl)
 
 
 df <- Logger('BAOL008X_72528')$df
