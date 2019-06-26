@@ -13,6 +13,7 @@ local({
 
     # remove no-timestamp
     df <- df[!is.na(DRME_OCR_UTC_DTE),]
+    data.table::setkey(df, DRME_OCR_UTC_DTE)
     if(nrow(df) == 0L | nrow(df) > 25000L) next()
 
     b <- strucchange::breakpoints(formula = DRME_DRU ~ 1, data = df)
