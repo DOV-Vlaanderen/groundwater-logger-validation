@@ -48,8 +48,8 @@ setMethod('detect_outliers',
     detect_outliers_norm(x, x.mean = apriori$mean, x.sd = sqrt(apriori$var))
   )
 
-  if (apriori$data_type == "diver") return ({
-    # It is very unlikely that diver pressure is lower than a-priori air pressure.
+  if (apriori$data_type == "hydrostatic pressure") return ({
+    # It is very unlikely that hydrostatic pressure pressure is lower than a-priori air pressure.
     l <- detect_outliers_norm(x, x.mean = apriori$mean,
                               x.sd = sqrt(apriori$var), type = "less")
     # We use the detect_outliers(x) method on remaining data points.

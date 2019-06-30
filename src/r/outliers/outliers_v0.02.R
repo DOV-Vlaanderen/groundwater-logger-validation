@@ -43,8 +43,8 @@ local({
     point_sample_type <- substr(basename(f), 4L, 4L)
     ap <- switch (point_sample_type,
       "L" = apriori("air pressure", "cmH2O"),
-      "P" = apriori("diver", "cmH2O"),
-      "S" = apriori("diver", "cmH2O")
+      "P" = apriori("hydrostatic pressure", "cmH2O"),
+      "S" = apriori("hydrostatic pressure", "cmH2O")
     )
 
     print(with(df_raw, plot.outliers(x = DRME_OCR_UTC_DTE,
