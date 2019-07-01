@@ -16,10 +16,10 @@ Logger <- function(name) {
        df = data.table::copy(df))
 }
 
-get_loggers <- function(partner = c('inbo'), full_names = FALSE) {
+get_loggers <- function(partner = c('inbo'), full_names = FALSE, pattern = ".*\\.csv") {
   partner <- match.arg(partner)
   root <- sprintf("./../../data/raw/%s/", partner)
-  list.files(root, full.names = full_names, pattern = ".*\\.csv")
+  list.files(root, full.names = full_names, pattern = pattern)
 }
 
 aggregate_ts <- function(x, ts) {
