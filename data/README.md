@@ -48,14 +48,17 @@ Vervolgens wordt de het tijdstip van de meting (kolom 1), de meetwaarde voor de 
 De aangeleverde data omvat:
 
 3 divers van dossier GEO-08/051:
+
   * ff_b29d
   * ff_b51d
   * ff_b59d
+  
 4 divers van dossier GEO-10/108:
   * pp01-1
   * pp08-2
   * pp09-1
   * pp09-2
+  
 5 divers van dossier GEO-15/079:
   * born_pb71
   * born_pb94d
