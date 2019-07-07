@@ -16,35 +16,37 @@ histogram <- function(x, mean, sd, cutpoints) {
 }
 
 #' @keywords internal
-qqplot <- function(x, outliers, cutpoints) {
+qqplot <- function(x, outliers) {
   probs <- c(0.25, 0.75)
   fit <- lm(quantile(x, probs, names = FALSE, na.rm = TRUE) ~ qnorm(probs))
   ggplot2::ggplot(data = data.frame('sample' = x, 'theoretical' = qqnorm(x, plot.it = FALSE)$x, outliers)) +
     ggplot2::geom_abline(intercept = coef(fit)[1], slope = coef(fit)[2]) + # inspired by qqline()
     ggplot2::geom_point(mapping = ggplot2::aes(x = theoretical, y = sample, color = outliers), show.legend = FALSE) +
     ggplot2::scale_color_manual(name = "OUTLIER", values = c("FALSE" = "black", "TRUE" = "red")) +
-    ggplot2::geom_hline(yintercept = cutpoints, color = 'red') +
+    ggplot2::geom_hline(yintercept = attr(outliers, 'cutpoints'), color = 'red') +
     ggplot2::ylab('x') + ggplot2::xlab('theoretical quantiles') +
     ggplot2::theme_light()
 }
 
 #' @keywords internal
-scatterplot <- function(x, outliers, cutpoints) {
+scatterplot <- function(x, outliers) {
   n <- length(x)
   ggplot2::ggplot(data = data.frame(x = 1:n, y = x, outliers), mapping = ggplot2::aes(x = x, y = y)) +
     ggplot2::geom_line() +
     ggplot2::geom_point(mapping = ggplot2::aes(color = outliers), show.legend = FALSE) +
     ggplot2::scale_color_manual(name = "OUTLIER", values = c("FALSE" = "black", "TRUE" = "red")) +
-    ggplot2::geom_hline(yintercept = cutpoints, color = 'red') +
+    ggplot2::geom_hline(yintercept = attr(outliers, 'cutpoints'), color = 'red') +
     ggplot2::ylab('x') + ggplot2::xlab('sequence') +
     ggplot2::theme_light()
 }
 
 #' @keywords internal
-outlierplot <- function(x, outliers, cutpoints, mean, sd) {
-  h <- histogram(x, mean = mean, sd = sd, cutpoints = cutpoints)
-  q <- qqplot(x, outliers, cutpoints)
-  s <- scatterplot(x, outliers = outliers, cutpoints = cutpoints)
+outlierplot <- function(x, outliers) {
+  h <- histogram(x, mean = attr(outliers, 'x.mean'),
+                 sd = attr(outliers, 'x.sd'),
+                 cutpoints = attr(outliers, 'cutpoints'))
+  q <- qqplot(x, outliers)
+  s <- scatterplot(x, outliers = outliers)
   layout_matrix <- rbind(c(1,2),
                          c(3,3))
   gridExtra::grid.arrange(h, q, s, layout_matrix = layout_matrix)
