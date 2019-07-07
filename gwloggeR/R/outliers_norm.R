@@ -9,7 +9,8 @@ detect_outliers_norm <- function(x, p.value = 0.0005, verbose = FALSE, x.mean, x
   return.obj <- function(x.rejects, sigma.reject = NULL) {
     structure(x.rejects, "x.mean" = x.mean, "x.sd" = x.sd,
               "p.value" = p.value, "type" = type,
-              "sigma.reject" = sigma.reject)
+              "sigma.reject" = sigma.reject,
+              "cutpoints" = c(-1, 1) * sigma.reject * x.sd + x.mean)
   }
 
   if (is.na(x.sd) | x.sd == 0) {
