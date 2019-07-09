@@ -1,6 +1,15 @@
 ---
 title: "User documentation"
-output: rmarkdown::html_vignette
+date: "`r Sys.Date()`"
+output: 
+  rmarkdown::html_vignette:
+    fig_width: 7
+    fig_height: 4
+    toc: true
+    toc_depth: 4
+    number_sections: false
+    df_print: paged # default, kable, tibble
+    fig_caption: true
 vignette: >
   %\VignetteIndexEntry{User documentation}
   %\VignetteEngine{knitr::rmarkdown}
@@ -17,3 +26,101 @@ knitr::opts_chunk$set(
 ```{r setup}
 library(gwloggeR)
 ```
+
+# Outliers
+
+Outliers are single measurements that are considered very unlikely to occur. 
+
+## `detect_outliers(x)`
+
+This function take in a vector of datapoints and returns a boolean vector of outlier indicators:
+
+```{r}
+x <- c(1000:1005, 975)
+x
+detect_outliers(x)
+```
+
+So why is $975$ considered an outlier? We can understand the decision procedure better if we add some comprehensive plots:
+
+```{r}
+detect_outliers(x, plot = TRUE, verbose = TRUE)
+```
+
+The underlying assumption for outlier detection is normality of $x$. Top left plot shows the histogram of the data points. The green curve is the best-fit normal distribution, based on robust estimates of $\mu$ and $\sigma$. The cutoff points are signified by red vertical lines. The top right is the QQ-plot with cutoff points as horizontal lines. The bottom plot is the sequential data, with outliers in red.
+
+### Estimation of cutoff lines
+
+How do we determine where to place the red cutoff lines? Well, for start, we want to minimize false positives. Suppose that we take $100$ random points from a standard normal distribution. If we place the cutoff lines at $\sigma = 1.96$ then we expect to find $5$ outliers on average. But these are not outliers! There are no outliers in this set because we have taken the points from a standard normal distribution. So we want to set the cutoff lines at the optimal place: not too small, but also not big either, because in case of the latter, we might miss real outliers.
+
+Let us formalize the above intuition. Assume that $\mathbf{x}$ consists of $n$ independent and identically distributed datapoints $(x_1, x_2, \dots, x_n)$ taken from a standard normal distribution with fixed $\mu$ and $\sigma$. Now we take some $c$ as the cutoff line. We can then calculate the probability of at least one outlier detected in the `detect_outliers(x)` process:
+
+$$
+P(|x_1| > c \lor |x_2| > c \lor \; \dots \; \lor |x_n| > c) = \alpha
+$$
+
+That probability is $\alpha$. We want to set $c$ such that $\alpha$ is low. How low? Well, if we set it to $1/2000$ then it means that we will one or more outliers in $1$ out of $2000$ `detect_outliers(x)` processes. Obviously, on average, this $1$ time we will be wrong, but in $1999$ of the other cases we will not. This seems a good value for a production setting.
+
+Ok, so now that we know our optimal $\alpha$, how do we compute $c$? We first massage a bit the above equation:
+
+$$
+P(|x_1| > c \lor |x_2| > c \lor \; \dots \; \lor |x_n| > c) = \alpha \\
+1 - P(|x_1| \le c \land |x_2| \le c \land \; \dots \; \land |x_n| \le c) = \alpha \\
+1 - \prod_i \Phi(|x_i| \le c) = \alpha \\
+1 - \left[ 1 - 2\Phi(x < -c) \right]^n = \alpha
+$$
+
+Now solving for $c$ is easy:
+
+$$
+c = -\Phi^{-1} \left( \frac{1-(1-\alpha)^\frac{1}{n}}{2} \right)
+$$
+
+where $\Phi^{-1}(\cdot)$ is the standard normal quantile function.
+
+#### Example
+
+This is how $c$ behaves in function of $n$ with fixed $\alpha = 1/2000$.
+
+```{r}
+ggplot2::ggplot(data = data.frame(n = 5:10000), mapping = ggplot2::aes(x = n)) + 
+  ggplot2::stat_function(fun = function(n) -qnorm((1-(1-1/2000)^(1/n))/2), col = 'black') + 
+  ggplot2::theme_light() + ggplot2::ylab('c')
+```
+
+Note that this function is implemented in `gwloggeR:::outliers_sigma(alpha, n)`. So as long as we set $c$ to the optimal value we make sure that we will make a wrong `detect_outliers(x)` run (i.e. one or more false ouliers) in $1/2000$ times.
+
+```{r}
+# e.g. pptimal c for 5000 points:
+gwloggeR:::outliers_sigma(alpha = 1/2000, n = 5000, type = "two.sided")
+```
+
+#### Estimation of $\mu$ and $\sigma$
+
+
+
+#### Simulation
+
+TODO....
+
+## `detect_outliers(x, apriori("air pressure", units = "cmdH2O"))`
+
+We can improve the outlier detection by providing _a-priori_ information about $x$. For example:
+
+```{r}
+x <- c(990:999)
+detect_outliers(x, apriori = apriori("air pressure", "cmH2O"), plot = TRUE)
+```
+
+Top left is again the histogram of $x$. But the green density this time is not a robust estimate based on $x$. Instead it is the hardcoded _a-priori_ density distribution of air pressure ($cmH_2O$) in Belgium. Given the $10$ points and assuming that we want to detect falsely one outlier in $2000$ tests, we set the red cutoffs appropriately. This results in $4$ first points being identified as outliers.
+
+## `detect_outliers(x, apriori("hydrostatic pressure", units = "cmdH2O"))`
+
+Hydrostatic pressure incorporates _a-priori_ information about air pressure as the lower limit. The upper limit is determined with the detect_outliers(x) approach (i.e. without _a-priori_ information). The following example explains:
+
+```{r}
+x <- c(985, 1070:1080, 1100)
+detect_outliers(x, apriori = apriori("hydrostatic pressure", "cmH2O"), plot = TRUE)
+```
+
+The top left histogram now has a bimodal density. The first is just the _a-priori_ air pressure, and the second is the robust estimate of the datapoints themselves, excluding the left outliers, using `detect_outliers(x)`. The reasoning is that hydrostatic pressure should never be higher than air pressure. Thus, since $985 \; cmH_2O$ is very unlikely given our $13$ measurements, it is considered an outlier. Subsequently, robust estimates of $\mu$ and $\sigma$ are made based on remaining $x$, from which $1100 \; cmH_2O$ also seems very unlikely.
