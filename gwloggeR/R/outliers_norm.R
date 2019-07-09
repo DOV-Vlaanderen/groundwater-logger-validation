@@ -9,18 +9,18 @@ outliers_sigma <- function(alpha, n, type = c("two.sided", "one.sided")) {
 
 
 #' @title Detects outliers
-#' @description ...
+#' @description Detect outliers based on normality assumption.
 #' @keywords internal
-detect_outliers_norm <- function(x, alpha = 0.0005, verbose = FALSE, x.mean, x.sd,
+detect_outliers_norm <- function(x, alpha = CONST.ALPHA, verbose = FALSE, x.mean, x.sd,
                                  type = c("two.sided", "less", "greater")) {
   type <- match.arg(type)
   N <- length(x)
 
   return.obj <- function(x.rejects, sigma.reject = NULL) {
-    structure(x.rejects, "x.mean" = x.mean, "x.sd" = x.sd,
-              "alpha" = alpha, "type" = type,
-              "sigma.reject" = sigma.reject,
-              "cutpoints" = c(-1, 1) * sigma.reject * x.sd + x.mean)
+    Outliers(x.rejects, x.mean = x.mean, x.sd = x.sd,
+             sigma.reject = sigma.reject, alpha = alpha, type = type,
+             fun.density = function(x) dnorm(x, x.mean, x.sd),
+             cutpoints = c(-1, 1) * sigma.reject * x.sd + x.mean)
   }
 
   if (is.na(x.sd) | x.sd == 0) {

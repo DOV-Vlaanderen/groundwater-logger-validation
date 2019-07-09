@@ -1,3 +1,21 @@
+#' @keywords internal
+CONST.ALPHA <- 1/2000
+
+
+#' @title Outliers object
+#' @description Outliers object holds all the necessary information about detected outiers.
+#' @keywords internal
+
+Outliers <- function(x.rejects, x.mean, x.sd,
+                     sigma.reject, alpha, type,
+                     fun.density, cutpoints) {
+  structure(x.rejects, "class" = c("logical", "Outliers"),
+            "x.mean" = x.mean, "x.sd" = x.sd,
+            "sigma.reject" = sigma.reject, "alpha" = alpha, "type" = type,
+            "fun.density" = fun.density, "cutpoints" = cutpoints)
+}
+
+
 #' @title Detect outliers
 #' @description
 #' This function marks outliers in the input vector.
@@ -24,7 +42,7 @@
 setGeneric("detect_outliers",
            signature = c("x", "apriori"),
            valueClass = "logical",
-           function(x, apriori, plot = FALSE, verbose = FALSE) standardGeneric('detect_outliers')
+           function(x, apriori, ...) standardGeneric('detect_outliers')
 )
 
 #' @describeIn detect_outliers
@@ -42,32 +60,49 @@ setMethod(
     x.sd <- mad(x, na.rm = TRUE)
     outliers <- detect_outliers_norm(x, x.mean = x.mean, x.sd = x.sd)
 
-    if (plot) outlierplot(x = x, outliers = outliers)
-    if (verbose) cat(outliers_verbose(outliers))
+    if (plot) outliers_plot(x = x, outliers = outliers)
 
-    as.vector(outliers)
+    if (verbose) outliers else as.vector(outliers)
 })
 
 #' @describeIn detect_outliers
-#' Takes _a-priori_ data information into consideration.
+#' Takes _a-priori_ information about x into consideration.
 
-setMethod('detect_outliers',
-          signature = c(x = "numeric", apriori = "apriori"),
-          function(x, apriori) {
+setMethod(
+  'detect_outliers',
+  signature = c(x = "numeric", apriori = "apriori"),
+  function(x, apriori, plot = FALSE, verbose = FALSE) {
 
-  if (apriori$data_type == "air pressure") return (
-    detect_outliers_norm(x, x.mean = apriori$mean, x.sd = sqrt(apriori$var))
-  )
+    if (apriori$data_type == "air pressure") return ({
+      outliers <- detect_outliers_norm(x, x.mean = apriori$mean, x.sd = sqrt(apriori$var))
+      if (plot) outliers_plot(x = x, outliers = outliers, show.qqplot = FALSE)
+      if (verbose) outliers else as.vector(outliers)
+    })
 
-  if (apriori$data_type == "hydrostatic pressure") return ({
-    # It is very unlikely that hydrostatic pressure pressure is lower than a-priori air pressure.
-    l <- detect_outliers_norm(x, x.mean = apriori$mean,
-                              x.sd = sqrt(apriori$var), type = "less")
-    # We use the detect_outliers(x) method on remaining data points.
-    r <- detect_outliers_norm(x, x.mean = median(x[!l], na.rm = TRUE),
-                              x.sd = mad(x[!l], na.rm = TRUE), type = "greater")
-    l | r
-  })
+    if (apriori$data_type == "hydrostatic pressure") return ({
+      # It is very unlikely that hydrostatic pressure is lower than a-priori air pressure.
+      # We lover the alpha to adjust for the area-increase on left side due to type = "less".
+      l <- detect_outliers_norm(x, x.mean = apriori$mean, alpha = CONST.ALPHA/2,
+                                x.sd = sqrt(apriori$var), type = "less")
+      # We use the detect_outliers(x) method on remaining data points.
+      r <- detect_outliers_norm(x, x.mean = median(x[!l], na.rm = TRUE), alpha = CONST.ALPHA/2,
+                                x.sd = mad(x[!l], na.rm = TRUE), type = "greater")
 
-  NULL
+      fun.density <- function(x) {
+        d1 <- dnorm(x, attr(l, 'x.mean'), attr(l, 'x.sd'))
+        d2 <- dnorm(x, attr(r, 'x.mean'), attr(r, 'x.sd'))
+        (d1 + d2)/2
+      }
+
+      cutpoints <- c(attr(l, "cutpoints")[1], attr(r, "cutpoints")[2])
+
+      outliers <- Outliers(l | r, x.mean = NULL, x.sd = NULL, alpha = NULL, sigma.reject = NULL,
+                           type = "two.sided", fun.density = fun.density, cutpoints = cutpoints)
+
+      if (plot) outliers_plot(x, outliers = outliers, show.qqplot = FALSE)
+
+      if (verbose) outliers else as.vector(outliers)
+    })
+
+    NULL
 })

@@ -1,16 +1,17 @@
 #' @keywords internal
-histogram <- function(x, mean, sd, cutpoints) {
+histogram <- function(x, outliers) {
   # Freedman–Diaconis rule
   # https://en.wikipedia.org/wiki/Freedman%E2%80%93Diaconis_rule
   # The multiplier is adjusted to allow for slightly more bins.
   multiplier <- 1.5
   n <- length(x)
   binwidth <- multiplier * IQR(x) / n ^ (1/3)
+  fun.density <- attr(outliers, "fun.density")
   ggplot2::ggplot(data = data.frame(x), mapping = ggplot2::aes(x = x)) +
     ggplot2::geom_histogram(binwidth = binwidth, fill = 'black') +
-    ggplot2::stat_function(fun = function(x) dnorm(x, mean = mean, sd = sd) * n * binwidth,
+    ggplot2::stat_function(fun =  function(x) fun.density(x) * n * binwidth,
                   color = "green", geom = 'density', fill = 'green', alpha = 0.2) +
-    ggplot2::geom_vline(xintercept = cutpoints, color = 'red') +
+    ggplot2::geom_vline(xintercept = attr(outliers, "cutpoints"), color = 'red') +
     ggplot2::ylab('frequency') +
     ggplot2::theme_light()
 }
@@ -41,11 +42,9 @@ scatterplot <- function(x, outliers) {
 }
 
 #' @keywords internal
-outlierplot <- function(x, outliers) {
-  h <- histogram(x, mean = attr(outliers, 'x.mean'),
-                 sd = attr(outliers, 'x.sd'),
-                 cutpoints = attr(outliers, 'cutpoints'))
-  q <- qqplot(x, outliers)
+outliers_plot <- function(x, outliers, show.qqplot = TRUE) {
+  h <- histogram(x, outliers = outliers)
+  q <- if (show.qqplot) qqplot(x, outliers) else grid::grob()
   s <- scatterplot(x, outliers = outliers)
   layout_matrix <- rbind(c(1,2),
                          c(3,3))
@@ -53,7 +52,7 @@ outlierplot <- function(x, outliers) {
 }
 
 #set.seed(2019)
-#print(histogram(rnorm(10000), 0, 1, c(-3.5, 3.5)))
+#print(histogram(rnorm(10000), function(x) dnorm(x, 0, 1), c(-3.5, 3.5)))
 #print(qqplot(rnorm(10000), c(TRUE, rep(FALSE, 9999)), c(-3.5, 3.5)))
 #print(scatterplot(rnorm(10000), FALSE, c(-3.5, 3.5)))
 #outlierplot(rnorm(10000), FALSE, c(-3.5, 3.5), 0, 1)
