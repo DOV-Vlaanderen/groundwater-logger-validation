@@ -3,6 +3,8 @@
 #' This function marks outliers in the input vector.
 #' @param x numeric vector of values
 #' @param apriori \link{apriori} class
+#' @param plot prints comprehensive plots
+#' @param verbose prints comprehensive information
 #' @return Logical vector with same length as x, specifying TRUE for an outlier.
 #' @examples
 #' # In case of a vector:
@@ -22,7 +24,7 @@
 setGeneric("detect_outliers",
            signature = c("x", "apriori"),
            valueClass = "logical",
-           function(x, apriori) standardGeneric('detect_outliers')
+           function(x, apriori, plot = FALSE, verbose = FALSE) standardGeneric('detect_outliers')
 )
 
 #' @describeIn detect_outliers
@@ -31,10 +33,19 @@ setGeneric("detect_outliers",
 #' median and MAD as described in Leys, 2013.
 #' @references Leys, C. e.a., Detecting outliers, 2013.
 
-setMethod('detect_outliers',
-          signature = c(x = "numeric", apriori = "missing"),
-          function(x) {
-  detect_outliers_norm(x, x.mean = median(x, na.rm = TRUE), x.sd = mad(x, na.rm = TRUE))
+setMethod(
+  'detect_outliers',
+  signature = c(x = "numeric", apriori = "missing"),
+  function(x, plot = FALSE, verbose = FALSE) {
+
+    x.mean <- median(x, na.rm = TRUE)
+    x.sd <- mad(x, na.rm = TRUE)
+    outliers <- detect_outliers_norm(x, x.mean = x.mean, x.sd = x.sd)
+
+    if (plot) outlierplot(x = x, outliers = outliers)
+    if (verbose) cat(outliers_verbose(outliers))
+
+    as.vector(outliers)
 })
 
 #' @describeIn detect_outliers

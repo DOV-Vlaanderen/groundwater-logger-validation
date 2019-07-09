@@ -7,9 +7,10 @@
 \alias{detect_outliers,numeric,apriori-method}
 \title{Detect outliers}
 \usage{
-detect_outliers(x, apriori)
+detect_outliers(x, apriori, plot = FALSE, verbose = FALSE)
 
-\S4method{detect_outliers}{numeric,missing}(x)
+\S4method{detect_outliers}{numeric,missing}(x, plot = FALSE,
+  verbose = FALSE)
 
 \S4method{detect_outliers}{numeric,apriori}(x, apriori)
 }
@@ -17,6 +18,10 @@ detect_outliers(x, apriori)
 \item{x}{numeric vector of values}
 
 \item{apriori}{\link{apriori} class}
+
+\item{plot}{prints comprehensive plots}
+
+\item{verbose}{prints comprehensive information}
 }
 \value{
 Logical vector with same length as x, specifying TRUE for an outlier.
