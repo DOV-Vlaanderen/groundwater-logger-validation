@@ -1,19 +1,36 @@
-#' @title Detects outliers
-#' @description ...
 #' @keywords internal
-detect_outliers_norm <- function(x, p.value = 0.0005, verbose = FALSE, x.mean, x.sd,
-                                 type = c("two.sided", "less", "greater")) {
+c.optimal <- function(alpha, n, type = c("two.sided", "one.sided")) {
   type <- match.arg(type)
 
+  TS <- if (type == "two.sided") 2 else 1
+
+  -qnorm((1-(1-alpha)^(1/n))/TS)
+}
+
+
+#' @title Detects outliers
+#' @description Detect outliers based on normality assumption.
+#' @keywords internal
+detect_outliers_norm <- function(x, alpha = CONST.ALPHA, verbose = FALSE, x.mean, x.sd,
+                                 type = c("two.sided", "less", "greater")) {
+  type <- match.arg(type)
+  N <- length(x)
+
+  return.obj <- function(x.rejects, sigma.reject = NULL) {
+    Outliers(x.rejects, x.mean = x.mean, x.sd = x.sd,
+             sigma.reject = sigma.reject, alpha = alpha, type = type,
+             fun.density = function(x) dnorm(x, x.mean, x.sd),
+             cutpoints = c(-1, 1) * sigma.reject * x.sd + x.mean)
+  }
+
   if (is.na(x.sd) | x.sd == 0) {
-    return(rep(FALSE, length(x)))
+    return(return.obj(rep(FALSE, N)))
   }
 
   # sigma.reject is the sigma after which we reject points. The 0.0005 means that
-  # in 1 of 2000 (1/0.0005) calculations, we will reject a value we shouldn't have.
-  N <- length(x)
-  TS <- if (type == "two.sided") 2 else 1
-  sigma.reject <- qnorm(p = (1 - p.value)^(1 / (N*TS)))
+  # in 1 of 2000 calculations, we will reject a value we shouldn't have.
+  sigma.reject <- c.optimal(alpha = alpha, n = N,
+                            type = if (type == "two.sided") "two.sided" else "one.sided")
   x.norm <- (x - x.mean) / x.sd
   x.rejects <- switch (type,
     "two.sided" = abs(x.norm) > sigma.reject,
@@ -30,5 +47,5 @@ detect_outliers_norm <- function(x, p.value = 0.0005, verbose = FALSE, x.mean, x
     ))
   }
 
-  x.rejects
+  return.obj(x.rejects, sigma.reject = sigma.reject)
 }

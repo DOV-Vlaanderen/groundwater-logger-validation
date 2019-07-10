@@ -7,16 +7,24 @@
 \alias{detect_outliers,numeric,apriori-method}
 \title{Detect outliers}
 \usage{
-detect_outliers(x, apriori)
+detect_outliers(x, apriori, ...)
 
-\S4method{detect_outliers}{numeric,missing}(x)
+\S4method{detect_outliers}{numeric,missing}(x, plot = FALSE,
+  verbose = FALSE)
 
-\S4method{detect_outliers}{numeric,apriori}(x, apriori)
+\S4method{detect_outliers}{numeric,apriori}(x, apriori, plot = FALSE,
+  verbose = FALSE)
 }
 \arguments{
 \item{x}{numeric vector of values}
 
 \item{apriori}{\link{apriori} class}
+
+\item{...}{optional parameters, depending on signature:}
+
+\item{plot}{prints comprehensive plots}
+
+\item{verbose}{prints comprehensive information}
 }
 \value{
 Logical vector with same length as x, specifying TRUE for an outlier.
@@ -30,7 +38,7 @@ This function marks outliers in the input vector.
 A normal distribution is assumed with mean and variance estimated using
 median and MAD as described in Leys, 2013.
 
-\item \code{x = numeric,apriori = apriori}: Takes \emph{a-priori} data information into consideration.
+\item \code{x = numeric,apriori = apriori}: Takes \emph{a-priori} information about x into consideration.
 }}
 
 \examples{

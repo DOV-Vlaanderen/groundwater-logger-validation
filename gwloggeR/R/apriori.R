@@ -10,7 +10,7 @@
 #'
 #' @export
 #'
-apriori <- function(data_type = c("air pressure", "diver"), units = c("cmH2O")) {
+apriori <- function(data_type = c("air pressure", "hydrostatic pressure"), units = c("cmH2O")) {
   data_type <- match.arg(data_type)
   units <- match.arg(units)
 
