@@ -21,6 +21,7 @@ Outliers <- function(x.rejects, x.mean, x.sd,
 #' This function marks outliers in the input vector.
 #' @param x numeric vector of values
 #' @param apriori \link{apriori} class
+#' @param ... optional parameters, depending on signature:
 #' @param plot prints comprehensive plots
 #' @param verbose prints comprehensive information
 #' @return Logical vector with same length as x, specifying TRUE for an outlier.

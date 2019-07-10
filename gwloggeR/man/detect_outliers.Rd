@@ -20,6 +20,8 @@ detect_outliers(x, apriori, ...)
 
 \item{apriori}{\link{apriori} class}
 
+\item{...}{optional parameters, depending on signature:}
+
 \item{plot}{prints comprehensive plots}
 
 \item{verbose}{prints comprehensive information}
