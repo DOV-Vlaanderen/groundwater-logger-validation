@@ -2,7 +2,6 @@ library(ggplot2)
 library(gwloggeR)
 
 source("outliers/outliers.plot.R")
-source("./data.R")
 
 # load all data for M and MAD computation
 df <- data.table::rbindlist(
