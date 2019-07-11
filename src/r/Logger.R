@@ -41,6 +41,9 @@ Logger <- function(name) {
     df[, PRESSURE_VALUE := V3]
     df[, PRESSURE_UNIT := "cmH2O"]
     df[, c("V1","V2","V3","V4") := NULL]
+
+    data.table::setkey(df, MEASUREMENT_ID)
+
     df
   }
 
@@ -53,6 +56,9 @@ Logger <- function(name) {
     df[, PRESSURE_VALUE := DRME_DRU]
     df[, PRESSURE_UNIT := "cmH2O"]
     df[, (cols.selected) := NULL]
+
+    data.table::setkey(df, MEASUREMENT_ID)
+
     df
   }
 
