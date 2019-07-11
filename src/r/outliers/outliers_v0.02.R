@@ -52,3 +52,20 @@ local({
   dev.off()
 })
 
+local({
+  pdf(file = './outliers/outliers_v0.02_diag.pdf', width = 14, height = 7, compress = FALSE)
+  for (f in Logger::enumerate(partner = 'inbo')) {
+    print(basename(f))
+    df <- Logger(f)$df
+
+    point_sample_type <- substr(basename(f), 4L, 4L)
+    ap <- switch (point_sample_type,
+                  "L" = apriori("air pressure", "cmH2O"),
+                  "P" = apriori("hydrostatic pressure", "cmH2O"),
+                  "S" = apriori("hydrostatic pressure", "cmH2O")
+    )
+
+    detect_outliers(df$PRESSURE_VALUE, apriori = ap, plot = TRUE, title = basename(f))
+  }
+  dev.off()
+})
