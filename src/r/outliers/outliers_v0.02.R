@@ -46,9 +46,9 @@ local({
       "S" = apriori("hydrostatic pressure", "cmH2O")
     )
 
-    print(with(df_raw, plot.outliers(x = DRME_OCR_UTC_DTE,
-                                     y = DRME_DRU,
-                                     outliers = detect_outliers(DRME_DRU, apriori = ap),
+    print(with(df_raw, plot.outliers(x = TIMESTAMP_UTC,
+                                     y = PRESSURE_VALUE,
+                                     outliers = detect_outliers(PRESSURE_VALUE, apriori = ap),
                                      title = basename(f))))
   }
   dev.off()
