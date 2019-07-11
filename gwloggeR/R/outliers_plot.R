@@ -42,13 +42,15 @@ scatterplot <- function(x, outliers) {
 }
 
 #' @keywords internal
-outliers_plot <- function(x, outliers, show.qqplot = TRUE) {
+outliers_plot <- function(x, outliers, show.qqplot = TRUE, title) {
   h <- histogram(x, outliers = outliers)
   q <- if (show.qqplot) qqplot(x, outliers) else grid::grob()
   s <- scatterplot(x, outliers = outliers)
   layout_matrix <- rbind(c(1,2),
                          c(3,3))
-  gridExtra::grid.arrange(h, q, s, layout_matrix = layout_matrix)
+  grob.title <- if (!is.null(title)) grid::textGrob(title, x = 0.05, hjust = 0)
+  gridExtra::grid.arrange(h, q, s, layout_matrix = layout_matrix,
+                          top = grob.title)
 }
 
 #set.seed(2019)
