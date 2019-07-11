@@ -33,9 +33,8 @@ mad(df$DRME_DRU)^2
 apriori("air pressure", "cmH2O")
 
 local({
-  folder <- "./../../data/raw/inbo/"
   pdf(file = './outliers/outliers_v0.02.pdf', width = 14, height = 7, compress = FALSE)
-  for (f in get_loggers(partner = 'inbo', pattern = '.*\\.csv')) {
+  for (f in Logger::enumerate(partner = 'inbo')) {
     print(basename(f))
     df_raw <- Logger(f)$df
 
