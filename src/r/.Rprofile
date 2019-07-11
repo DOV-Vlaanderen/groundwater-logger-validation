@@ -13,5 +13,8 @@ knitr::opts_chunk$set(fig.pos = 'H', fig.path='figures/', warning=FALSE,
 # memory in MB
 cat(paste('Memory limit:', utils::memory.limit(size = 50000), 'Mb.\n'))
 
+# Load convenience objects
+source('./Logger.R')
+
 cat(".Rprofile file loaded for project.\n")
 cat("#########################################################\n")
