@@ -1,5 +1,3 @@
-source('Logger.R')
-
 get_loggers <- function(partner = c('inbo'), full_names = FALSE, pattern = ".*\\.csv") {
   partner <- match.arg(partner)
   root <- sprintf("./../../data/raw/%s/", partner)
