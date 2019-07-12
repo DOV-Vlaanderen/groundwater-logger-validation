@@ -14,6 +14,11 @@ Encoding: UTF-8
 LazyData: true
 RoxygenNote: 6.1.1
 Roxygen: list(markdown = TRUE)
+Imports:
+    stats,
+    methods,
+    ggplot2,
+    gridExtra
 Suggests: 
     knitr,
     rmarkdown

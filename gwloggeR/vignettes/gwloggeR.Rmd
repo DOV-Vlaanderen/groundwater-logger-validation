@@ -10,6 +10,8 @@ output:
     number_sections: false
     df_print: paged # default, kable, tibble
     fig_caption: true
+  pdf_document:
+    toc: true
 bibliography: bibliography.bib
 vignette: >
   %\VignetteIndexEntry{User documentation}

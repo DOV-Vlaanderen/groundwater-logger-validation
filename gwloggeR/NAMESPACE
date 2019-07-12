@@ -3,3 +3,5 @@
 export(apriori)
 export(detect_duplicates)
 export(detect_outliers)
+import(methods)
+import(stats)

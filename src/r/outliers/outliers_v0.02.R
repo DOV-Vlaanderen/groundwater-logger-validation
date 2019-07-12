@@ -2,7 +2,6 @@ library(ggplot2)
 library(gwloggeR)
 
 source("outliers/outliers.plot.R")
-source("./data.R")
 
 # load all data for M and MAD computation
 df <- data.table::rbindlist(
@@ -33,9 +32,8 @@ mad(df$DRME_DRU)^2
 apriori("air pressure", "cmH2O")
 
 local({
-  folder <- "./../../data/raw/inbo/"
   pdf(file = './outliers/outliers_v0.02.pdf', width = 14, height = 7, compress = FALSE)
-  for (f in get_loggers(partner = 'inbo', pattern = '.*\\.csv')) {
+  for (f in Logger::enumerate(partner = 'inbo')) {
     print(basename(f))
     df_raw <- Logger(f)$df
 
@@ -46,11 +44,28 @@ local({
       "S" = apriori("hydrostatic pressure", "cmH2O")
     )
 
-    print(with(df_raw, plot.outliers(x = DRME_OCR_UTC_DTE,
-                                     y = DRME_DRU,
-                                     outliers = detect_outliers(DRME_DRU, apriori = ap),
+    print(with(df_raw, plot.outliers(x = TIMESTAMP_UTC,
+                                     y = PRESSURE_VALUE,
+                                     outliers = detect_outliers(PRESSURE_VALUE, apriori = ap),
                                      title = basename(f))))
   }
   dev.off()
 })
 
+local({
+  pdf(file = './outliers/outliers_v0.02_diag.pdf', width = 14, height = 7, compress = FALSE)
+  for (f in Logger::enumerate(partner = 'inbo')) {
+    print(basename(f))
+    df <- Logger(f)$df
+
+    point_sample_type <- substr(basename(f), 4L, 4L)
+    ap <- switch (point_sample_type,
+                  "L" = apriori("air pressure", "cmH2O"),
+                  "P" = apriori("hydrostatic pressure", "cmH2O"),
+                  "S" = apriori("hydrostatic pressure", "cmH2O")
+    )
+
+    detect_outliers(df$PRESSURE_VALUE, apriori = ap, plot = TRUE, title = basename(f))
+  }
+  dev.off()
+})

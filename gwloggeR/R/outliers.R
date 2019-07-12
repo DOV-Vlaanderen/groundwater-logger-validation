@@ -24,6 +24,7 @@ Outliers <- function(x.rejects, x.mean, x.sd,
 #' @param ... optional parameters, depending on signature:
 #' @param plot prints comprehensive plots
 #' @param verbose prints comprehensive information
+#' @param title adds title to the plot
 #' @return Logical vector with same length as x, specifying TRUE for an outlier.
 #' @examples
 #' # In case of a vector:
@@ -33,9 +34,11 @@ Outliers <- function(x.rejects, x.mean, x.sd,
 #' # In case of a dataframe, select the column:
 #' detect_outliers(cars$dist)
 #'
+#' \dontrun{
 #' # Or use the tidyverse approach:
 #' library(magrittr)
 #' cars %>% dplyr::mutate("outlier" = detect_outliers(dist))
+#' }
 #'
 #' @export
 #' @rdname detect_outliers
@@ -43,7 +46,8 @@ Outliers <- function(x.rejects, x.mean, x.sd,
 setGeneric("detect_outliers",
            signature = c("x", "apriori"),
            valueClass = "logical",
-           function(x, apriori, ...) standardGeneric('detect_outliers')
+           function(x, apriori, ..., plot = FALSE, verbose = FALSE, title = NULL)
+             standardGeneric('detect_outliers')
 )
 
 #' @describeIn detect_outliers
@@ -55,13 +59,13 @@ setGeneric("detect_outliers",
 setMethod(
   'detect_outliers',
   signature = c(x = "numeric", apriori = "missing"),
-  function(x, plot = FALSE, verbose = FALSE) {
+  function(x, plot, verbose, title) {
 
     x.mean <- median(x, na.rm = TRUE)
     x.sd <- mad(x, na.rm = TRUE)
     outliers <- detect_outliers_norm(x, x.mean = x.mean, x.sd = x.sd)
 
-    if (plot) outliers_plot(x = x, outliers = outliers)
+    if (plot) outliers_plot(x = x, outliers = outliers, title = title)
 
     if (verbose) outliers else as.vector(outliers)
 })
@@ -72,11 +76,11 @@ setMethod(
 setMethod(
   'detect_outliers',
   signature = c(x = "numeric", apriori = "apriori"),
-  function(x, apriori, plot = FALSE, verbose = FALSE) {
+  function(x, apriori, plot, verbose, title) {
 
     if (apriori$data_type == "air pressure") return ({
       outliers <- detect_outliers_norm(x, x.mean = apriori$mean, x.sd = sqrt(apriori$var))
-      if (plot) outliers_plot(x = x, outliers = outliers, show.qqplot = FALSE)
+      if (plot) outliers_plot(x = x, outliers = outliers, show.qqplot = FALSE, title = title)
       if (verbose) outliers else as.vector(outliers)
     })
 
@@ -100,7 +104,7 @@ setMethod(
       outliers <- Outliers(l | r, x.mean = NULL, x.sd = NULL, alpha = NULL, sigma.reject = NULL,
                            type = "two.sided", fun.density = fun.density, cutpoints = cutpoints)
 
-      if (plot) outliers_plot(x, outliers = outliers, show.qqplot = FALSE)
+      if (plot) outliers_plot(x, outliers = outliers, show.qqplot = FALSE, title = title)
 
       if (verbose) outliers else as.vector(outliers)
     })

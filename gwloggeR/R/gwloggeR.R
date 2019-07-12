@@ -4,6 +4,8 @@
 #' @details
 #' TODO: package details.
 #' @keywords internal
+#' @import stats methods
+#' @docType package
 #' @references \href{https://github.com/DOV-Vlaanderen/groundwater-logger-validation/tree/master/gwloggeR}{GitHub}
 "_PACKAGE"
 #> [1] "_PACKAGE"

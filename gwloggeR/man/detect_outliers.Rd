@@ -7,13 +7,13 @@
 \alias{detect_outliers,numeric,apriori-method}
 \title{Detect outliers}
 \usage{
-detect_outliers(x, apriori, ...)
+detect_outliers(x, apriori, ..., plot = FALSE, verbose = FALSE,
+  title = NULL)
 
-\S4method{detect_outliers}{numeric,missing}(x, plot = FALSE,
-  verbose = FALSE)
+\S4method{detect_outliers}{numeric,missing}(x, plot, verbose, title)
 
-\S4method{detect_outliers}{numeric,apriori}(x, apriori, plot = FALSE,
-  verbose = FALSE)
+\S4method{detect_outliers}{numeric,apriori}(x, apriori, plot, verbose,
+  title)
 }
 \arguments{
 \item{x}{numeric vector of values}
@@ -25,6 +25,8 @@ detect_outliers(x, apriori, ...)
 \item{plot}{prints comprehensive plots}
 
 \item{verbose}{prints comprehensive information}
+
+\item{title}{adds title to the plot}
 }
 \value{
 Logical vector with same length as x, specifying TRUE for an outlier.
@@ -49,9 +51,11 @@ detect_outliers(x)
 # In case of a dataframe, select the column:
 detect_outliers(cars$dist)
 
+\dontrun{
 # Or use the tidyverse approach:
 library(magrittr)
 cars \%>\% dplyr::mutate("outlier" = detect_outliers(dist))
+}
 
 }
 \references{

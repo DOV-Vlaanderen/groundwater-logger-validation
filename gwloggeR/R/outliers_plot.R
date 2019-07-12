@@ -7,7 +7,7 @@ histogram <- function(x, outliers) {
   n <- length(x)
   binwidth <- multiplier * IQR(x) / n ^ (1/3)
   fun.density <- attr(outliers, "fun.density")
-  ggplot2::ggplot(data = data.frame(x), mapping = ggplot2::aes(x = x)) +
+  ggplot2::ggplot(data = data.frame(x), mapping = ggplot2::aes_string(x = 'x')) +
     ggplot2::geom_histogram(binwidth = binwidth, fill = 'black') +
     ggplot2::stat_function(fun =  function(x) fun.density(x) * n * binwidth,
                   color = "green", geom = 'density', fill = 'green', alpha = 0.2) +
@@ -22,7 +22,7 @@ qqplot <- function(x, outliers) {
   fit <- lm(quantile(x, probs, names = FALSE, na.rm = TRUE) ~ qnorm(probs))
   ggplot2::ggplot(data = data.frame('sample' = x, 'theoretical' = qqnorm(x, plot.it = FALSE)$x, outliers)) +
     ggplot2::geom_abline(intercept = coef(fit)[1], slope = coef(fit)[2]) + # inspired by qqline()
-    ggplot2::geom_point(mapping = ggplot2::aes(x = theoretical, y = sample, color = outliers), show.legend = FALSE) +
+    ggplot2::geom_point(mapping = ggplot2::aes_string(x = "theoretical", y = "sample", color = "outliers"), show.legend = FALSE) +
     ggplot2::scale_color_manual(name = "OUTLIER", values = c("FALSE" = "black", "TRUE" = "red")) +
     ggplot2::geom_hline(yintercept = attr(outliers, 'cutpoints'), color = 'red') +
     ggplot2::ylab('x') + ggplot2::xlab('theoretical quantiles') +
@@ -32,9 +32,9 @@ qqplot <- function(x, outliers) {
 #' @keywords internal
 scatterplot <- function(x, outliers) {
   n <- length(x)
-  ggplot2::ggplot(data = data.frame(x = 1:n, y = x, outliers), mapping = ggplot2::aes(x = x, y = y)) +
+  ggplot2::ggplot(data = data.frame(x = 1:n, y = x, outliers), mapping = ggplot2::aes_string(x = "x", y = "y")) +
     ggplot2::geom_line() +
-    ggplot2::geom_point(mapping = ggplot2::aes(color = outliers), show.legend = FALSE) +
+    ggplot2::geom_point(mapping = ggplot2::aes_string(color = "outliers"), show.legend = FALSE) +
     ggplot2::scale_color_manual(name = "OUTLIER", values = c("FALSE" = "black", "TRUE" = "red")) +
     ggplot2::geom_hline(yintercept = attr(outliers, 'cutpoints'), color = 'red') +
     ggplot2::ylab('x') + ggplot2::xlab('sequence') +
@@ -42,13 +42,15 @@ scatterplot <- function(x, outliers) {
 }
 
 #' @keywords internal
-outliers_plot <- function(x, outliers, show.qqplot = TRUE) {
+outliers_plot <- function(x, outliers, show.qqplot = TRUE, title) {
   h <- histogram(x, outliers = outliers)
   q <- if (show.qqplot) qqplot(x, outliers) else grid::grob()
   s <- scatterplot(x, outliers = outliers)
   layout_matrix <- rbind(c(1,2),
                          c(3,3))
-  gridExtra::grid.arrange(h, q, s, layout_matrix = layout_matrix)
+  grob.title <- if (!is.null(title)) grid::textGrob(title, x = 0.05, hjust = 0)
+  gridExtra::grid.arrange(h, q, s, layout_matrix = layout_matrix,
+                          top = grob.title)
 }
 
 #set.seed(2019)
