@@ -67,8 +67,9 @@ Logger <- function(name) {
     if (grepl(pattern = 'raw/geotechniek', files)) return(readfile.geotech(filepath))
   }
 
-  files <- list.files('./../../data/', recursive = TRUE, full.names = TRUE,
-                      pattern = name, ignore.case = TRUE)
+  files <- list.files('./../../data/', recursive = TRUE, full.names = TRUE)
+  files <- grep(pattern = name, x = files, value = TRUE, ignore.case = TRUE)
+
   if (length(files) > 1L) stop(sprintf("Multiple matches found for %s", name))
   if (length(files) == 0L) stop(sprintf("No data found for logger %s", name))
 
