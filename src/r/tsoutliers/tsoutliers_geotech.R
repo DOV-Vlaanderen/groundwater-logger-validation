@@ -1,5 +1,9 @@
 local({
-  for (f in  Logger::enumerate(partner = 'geotech')) {
+  print(Sys.time())
+  cl <- parallel::makeCluster(7, outfile = './log/parallel.log')
+  on.exit(parallel::stopCluster(cl))
+
+  fn <- function(f) {
     print(Sys.time())
     print(basename(f))
     df <- Logger(f)$df
@@ -26,8 +30,10 @@ local({
       if (length(tso$outliers$ind) > 0L) plot(tso) else plot.new()
       mtext(paste0(basename(f), ' - ', forecast:::arima.string(tso$fit), ', N = ', length(y)), side = 3, line = -2, outer = TRUE)
     })
-
   }
+
+  parallel::clusterApplyLB(cl = cl, x = Logger::enumerate(partner = 'geotech')[-(1:11)], fun = fn)
+
   print(Sys.time())
 })
 
