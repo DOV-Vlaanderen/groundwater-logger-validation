@@ -8,12 +8,13 @@
 \title{Detect outliers}
 \usage{
 detect_outliers(x, apriori, ..., plot = FALSE, verbose = FALSE,
-  title = NULL)
+  title = NULL, timestamps = NULL)
 
-\S4method{detect_outliers}{numeric,missing}(x, plot, verbose, title)
+\S4method{detect_outliers}{numeric,missing}(x, plot, verbose, title,
+  timestamps)
 
 \S4method{detect_outliers}{numeric,apriori}(x, apriori, plot, verbose,
-  title)
+  title, timestamps)
 }
 \arguments{
 \item{x}{numeric vector of values}
@@ -27,6 +28,9 @@ detect_outliers(x, apriori, ..., plot = FALSE, verbose = FALSE,
 \item{verbose}{prints comprehensive information}
 
 \item{title}{adds title to the plot}
+
+\item{timestamps}{timestamp vector. Has no direct meaning, except aestehtical
+for the scatter plot if plot = TRUE.}
 }
 \value{
 Logical vector with same length as x, specifying TRUE for an outlier.
