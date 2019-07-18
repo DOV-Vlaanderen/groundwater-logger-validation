@@ -25,6 +25,8 @@ Outliers <- function(x.rejects, x.mean, x.sd,
 #' @param plot prints comprehensive plots
 #' @param verbose prints comprehensive information
 #' @param title adds title to the plot
+#' @param timestamps timestamp vector. Has no direct meaning, except aestehtical
+#' for the scatter plot if plot = TRUE.
 #' @return Logical vector with same length as x, specifying TRUE for an outlier.
 #' @examples
 #' # In case of a vector:
@@ -46,7 +48,7 @@ Outliers <- function(x.rejects, x.mean, x.sd,
 setGeneric("detect_outliers",
            signature = c("x", "apriori"),
            valueClass = "logical",
-           function(x, apriori, ..., plot = FALSE, verbose = FALSE, title = NULL)
+           function(x, apriori, ..., plot = FALSE, verbose = FALSE, title = NULL, timestamps = NULL)
              standardGeneric('detect_outliers')
 )
 
@@ -59,13 +61,13 @@ setGeneric("detect_outliers",
 setMethod(
   'detect_outliers',
   signature = c(x = "numeric", apriori = "missing"),
-  function(x, plot, verbose, title) {
+  function(x, plot, verbose, title, timestamps) {
 
     x.mean <- median(x, na.rm = TRUE)
     x.sd <- mad(x, na.rm = TRUE)
     outliers <- detect_outliers_norm(x, x.mean = x.mean, x.sd = x.sd)
 
-    if (plot) outliers_plot(x = x, outliers = outliers, title = title)
+    if (plot) outliers_plot(x = x, outliers = outliers, timestamps = timestamps, title = title)
 
     if (verbose) outliers else as.vector(outliers)
 })
@@ -76,7 +78,7 @@ setMethod(
 setMethod(
   'detect_outliers',
   signature = c(x = "numeric", apriori = "apriori"),
-  function(x, apriori, plot, verbose, title) {
+  function(x, apriori, plot, verbose, title, timestamps) {
 
     if (apriori$data_type == "air pressure") return ({
       outliers <- detect_outliers_norm(x, x.mean = apriori$mean, x.sd = sqrt(apriori$var))
@@ -104,7 +106,7 @@ setMethod(
       outliers <- Outliers(l | r, x.mean = NULL, x.sd = NULL, alpha = NULL, sigma.reject = NULL,
                            type = "two.sided", fun.density = fun.density, cutpoints = cutpoints)
 
-      if (plot) outliers_plot(x, outliers = outliers, show.qqplot = FALSE, title = title)
+      if (plot) outliers_plot(x, outliers = outliers, timestamps = timestamps, show.qqplot = FALSE, title = title)
 
       if (verbose) outliers else as.vector(outliers)
     })

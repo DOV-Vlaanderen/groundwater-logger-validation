@@ -30,22 +30,23 @@ qqplot <- function(x, outliers) {
 }
 
 #' @keywords internal
-scatterplot <- function(x, outliers) {
+scatterplot <- function(x, outliers, timestamps = NULL) {
   n <- length(x)
-  ggplot2::ggplot(data = data.frame(x = 1:n, y = x, outliers), mapping = ggplot2::aes_string(x = "x", y = "y")) +
+  ggplot2::ggplot(data = data.frame(x = if (is.null(timestamps)) 1:n else timestamps,
+                                    y = x, outliers), mapping = ggplot2::aes_string(x = "x", y = "y")) +
     ggplot2::geom_line() +
     ggplot2::geom_point(mapping = ggplot2::aes_string(color = "outliers"), show.legend = FALSE) +
     ggplot2::scale_color_manual(name = "OUTLIER", values = c("FALSE" = "black", "TRUE" = "red")) +
     ggplot2::geom_hline(yintercept = attr(outliers, 'cutpoints'), color = 'red') +
-    ggplot2::ylab('x') + ggplot2::xlab('sequence') +
+    ggplot2::ylab('x') + ggplot2::xlab(if (is.null(timestamps)) 'sequence' else 'timestamp') +
     ggplot2::theme_light()
 }
 
 #' @keywords internal
-outliers_plot <- function(x, outliers, show.qqplot = TRUE, title) {
+outliers_plot <- function(x, outliers, timestamps = NULL, show.qqplot = TRUE, title) {
   h <- histogram(x, outliers = outliers)
   q <- if (show.qqplot) qqplot(x, outliers) else grid::grob()
-  s <- scatterplot(x, outliers = outliers)
+  s <- scatterplot(x, outliers = outliers, timestamps = timestamps)
   layout_matrix <- rbind(c(1,2),
                          c(3,3))
   grob.title <- if (!is.null(title)) grid::textGrob(title, x = 0.05, hjust = 0)

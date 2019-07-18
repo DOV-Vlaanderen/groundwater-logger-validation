@@ -33,6 +33,7 @@ apriori("air pressure", "cmH2O")
 
 local({
   pdf(file = './outliers/outliers_v0.02.pdf', width = 14, height = 7, compress = FALSE)
+  on.exit(dev.off())
   for (f in Logger::enumerate(partner = 'inbo')) {
     print(basename(f))
     df_raw <- Logger(f)$df
@@ -49,11 +50,11 @@ local({
                                      outliers = detect_outliers(PRESSURE_VALUE, apriori = ap),
                                      title = basename(f))))
   }
-  dev.off()
 })
 
 local({
   pdf(file = './outliers/outliers_v0.02_diag.pdf', width = 14, height = 7, compress = FALSE)
+  on.exit(dev.off())
   for (f in Logger::enumerate(partner = 'inbo')) {
     print(basename(f))
     df <- Logger(f)$df
@@ -67,5 +68,4 @@ local({
 
     detect_outliers(df$PRESSURE_VALUE, apriori = ap, plot = TRUE, title = basename(f))
   }
-  dev.off()
 })

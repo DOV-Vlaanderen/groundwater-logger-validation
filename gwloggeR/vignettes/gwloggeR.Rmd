@@ -36,7 +36,7 @@ Outliers are single measurements that are considered very unlikely to occur.
 
 ## `detect_outliers(x)`
 
-This function take in a vector of datapoints and returns a boolean vector of outlier indicators:
+This function takes in a vector of datapoints and returns a boolean vector of outlier indicators:
 
 ```{r}
 x <- c(1000:1005, 975)
@@ -91,16 +91,58 @@ ggplot2::ggplot(data = data.frame(n = 5:10000), mapping = ggplot2::aes(x = n)) +
   ggplot2::theme_light() + ggplot2::ylab('c')
 ```
 
-Note that this function is implemented in `gwloggeR:::c.optimal(alpha, n)`. So as long as we set $c$ to the optimal value we make sure that we will make a wrong `detect_outliers(x)` run (i.e. detect falsely one or more ouliers) in $1/2000$ of time.
+Note that this function is implemented in `gwloggeR:::c.norm.optimal(alpha, n)`. So as long as we set $c$ to the optimal value we make sure that we will make a wrong `detect_outliers(x)` run (i.e. detect falsely one or more ouliers) in $1/2000$ of time.
 
 ```{r}
 # e.g. optimal c for 5000 points:
-gwloggeR:::c.optimal(alpha = 1/2000, n = 5000, type = "two.sided")
+gwloggeR:::c.norm.optimal(alpha = 1/2000, n = 5000, type = "two.sided")
 ```
 
 #### Simulation
 
-TODO....
+Here we simulate data from a normal distribution with random $\mu$ and $\sigma$. We set $\alpha = 1/100$ and by varying $n$, estimate the proportion of wrong `detect_outliers(x)` runs (i.e. runs in which we falsely identify one or more outliers).
+
+```{r, eval=FALSE, echo=FALSE}
+atleast.one.outlier.detected <- function(data.list, fun.mean, fun.sd) {
+  sapply(data.list, function(x) {
+    any(gwloggeR:::detect_outliers_norm(x, alpha = 1/100, x.mean = fun.mean(x), x.sd = fun.sd(x)))
+  })
+}
+
+mean.error.rate <- function(n, ...) {
+  T <- 100*200
+  print(n)
+  set.seed(n)
+  data.list <- lapply(1:T, function(...) rnorm(n, runif(1, -100, 100), runif(1, 0.1, 10)))
+  mean(atleast.one.outlier.detected(data.list, ...))
+}
+
+df <- data.frame(n = as.integer(seq(from = 10, to = 5000, length.out = 1000)))
+
+cl <- parallel::makeCluster(7)
+parallel::clusterExport(cl, varlist = c('mean.error.rate', 'atleast.one.outlier.detected'))
+df$tfr.sd <- unlist(parallel::clusterApplyLB(cl, x = df$n, fun = mean.error.rate, fun.mean = mean, fun.sd = sd))
+df$tfr.mad <- unlist(parallel::clusterApplyLB(cl, x = df$n, fun = mean.error.rate, fun.mean = median, fun.sd = mad))
+parallel::stopCluster(cl)
+
+saveRDS(df, 'simulation.rds')
+```
+
+Black horizontal line represents the expected $0.01$ failure rate. The blue curve is the failure rate estimate based on mean and standard deviation, which are most efficient estimators in case there are no outliers. The red curve is the failure rate based on median and MAD. In case $n < 500$, the MAD approach is very optimistic: it is $2$ to $3$ times more likely to detect falsely one or more outliers.
+
+```{r, echo=FALSE}
+df <- readRDS('simulation.rds')
+ggplot2::ggplot(data = df, mapping = ggplot2::aes(x = n)) +
+  ggplot2::geom_point(mapping = ggplot2::aes(y = tfr.sd), col = 'blue', alpha = 0.1) +
+  ggplot2::stat_smooth(mapping = ggplot2::aes(y = tfr.sd), col = 'blue', se = FALSE,
+                       method = "gam", formula = y ~ s(x, k = 100, bs = 'cs')) +
+  ggplot2::geom_point(mapping = ggplot2::aes(y = tfr.mad), col = 'red', alpha = 0.1) +
+  ggplot2::stat_smooth(mapping = ggplot2::aes(y = tfr.mad), col = 'red', se = FALSE,
+                       method = "gam", formula = y ~ s(x, k = 100, bs = 'cs')) +
+  ggplot2::geom_hline(yintercept = 0.01, col = 'black', size = 1) +
+  ggplot2::coord_cartesian(ylim = c(0, 0.03)) + ggplot2::ylab('detect_outliers(x) failure rate') +
+  ggplot2::theme_light()
+```
 
 ### Estimation of $\mu$ and $\sigma$
 

@@ -1,5 +1,5 @@
 #' @keywords internal
-c.optimal <- function(alpha, n, type = c("two.sided", "one.sided")) {
+c.norm.optimal <- function(alpha, n, type = c("two.sided", "one.sided")) {
   type <- match.arg(type)
 
   TS <- if (type == "two.sided") 2 else 1
@@ -29,8 +29,8 @@ detect_outliers_norm <- function(x, alpha = CONST.ALPHA, verbose = FALSE, x.mean
 
   # sigma.reject is the sigma after which we reject points. The 0.0005 means that
   # in 1 of 2000 calculations, we will reject a value we shouldn't have.
-  sigma.reject <- c.optimal(alpha = alpha, n = N,
-                            type = if (type == "two.sided") "two.sided" else "one.sided")
+  sigma.reject <- c.norm.optimal(alpha = alpha, n = N,
+                                 type = if (type == "two.sided") "two.sided" else "one.sided")
   x.norm <- (x - x.mean) / x.sd
   x.rejects <- switch (type,
     "two.sided" = abs(x.norm) > sigma.reject,

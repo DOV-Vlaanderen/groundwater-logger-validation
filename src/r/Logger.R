@@ -37,7 +37,10 @@ Logger <- function(name) {
     nlines <- as.integer(header[nrowskip + 1L])
     df <- data.table::fread(mov.file, dec = ".", skip = nrowskip + 1L, nrows = nlines, sep = " ")
     df[, MEASUREMENT_ID := 1:.N]
-    df[, TIMESTAMP_UTC := as.POSIXct(paste(V1, V2), format = "%Y/%m/%d %H:%M:%OS", tz = 'UTC')]
+    df[, TIMESTAMP_UTC := as.POSIXct(paste(V1, V2),
+                                     tryFormats = c("%Y/%m/%d %H:%M:%OS",
+                                                    "%Y-%m-%d %H:%M:%OS"),
+                                     tz = 'UTC')]
     df[, PRESSURE_VALUE := V3]
     df[, PRESSURE_UNIT := "cmH2O"]
     df[, c("V1","V2","V3","V4") := NULL]
@@ -67,8 +70,9 @@ Logger <- function(name) {
     if (grepl(pattern = 'raw/geotechniek', files)) return(readfile.geotech(filepath))
   }
 
-  files <- list.files('./../../data/', recursive = TRUE, full.names = TRUE,
-                      pattern = name, ignore.case = TRUE)
+  files <- list.files('./../../data/', recursive = TRUE, full.names = TRUE)
+  files <- grep(pattern = name, x = files, value = TRUE, ignore.case = TRUE)
+
   if (length(files) > 1L) stop(sprintf("Multiple matches found for %s", name))
   if (length(files) == 0L) stop(sprintf("No data found for logger %s", name))
 
