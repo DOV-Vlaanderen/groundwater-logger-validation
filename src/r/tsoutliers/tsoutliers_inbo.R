@@ -15,7 +15,7 @@ local({
     tso <- tsoutliers::tso(y = y
                            #, types = 'LS'
                            #, discard.method = 'bottom-up'
-                           , cval = gwloggeR:::c.optimal(alpha = 0.0005, n = N, type = 'two.sided')
+                           , cval = gwloggeR:::c.norm.optimal(alpha = 0.0005, n = N, type = 'two.sided')
                            #,tsmethod = 'arima'
                            #, args.tsmethod = list(order = c(0, 1, 0), seasonal = list(order = c(0, 0, 0)))
                            )

@@ -91,11 +91,11 @@ ggplot2::ggplot(data = data.frame(n = 5:10000), mapping = ggplot2::aes(x = n)) +
   ggplot2::theme_light() + ggplot2::ylab('c')
 ```
 
-Note that this function is implemented in `gwloggeR:::c.optimal(alpha, n)`. So as long as we set $c$ to the optimal value we make sure that we will make a wrong `detect_outliers(x)` run (i.e. detect falsely one or more ouliers) in $1/2000$ of time.
+Note that this function is implemented in `gwloggeR:::c.norm.optimal(alpha, n)`. So as long as we set $c$ to the optimal value we make sure that we will make a wrong `detect_outliers(x)` run (i.e. detect falsely one or more ouliers) in $1/2000$ of time.
 
 ```{r}
 # e.g. optimal c for 5000 points:
-gwloggeR:::c.optimal(alpha = 1/2000, n = 5000, type = "two.sided")
+gwloggeR:::c.norm.optimal(alpha = 1/2000, n = 5000, type = "two.sided")
 ```
 
 #### Simulation
@@ -143,7 +143,6 @@ ggplot2::ggplot(data = df, mapping = ggplot2::aes(x = n)) +
   ggplot2::coord_cartesian(ylim = c(0, 0.03)) + ggplot2::ylab('detect_outliers(x) failure rate') +
   ggplot2::theme_light()
 ```
-
 
 ### Estimation of $\mu$ and $\sigma$
 
