@@ -32,7 +32,7 @@ local({
     })
   }
 
-  parallel::clusterApplyLB(cl = cl, x = Logger::enumerate(partner = 'geotech')[-(1:11)], fun = fn)
+  parallel::clusterApplyLB(cl = cl, x = Logger::enumerate(partner = 'geotech'), fun = fn)
 
   print(Sys.time())
 })
