@@ -16,19 +16,23 @@ local({
     if (N == 0L) next()
 
     y <- ts(gwloggeR:::aggregate(x = df[,PRESSURE_VALUE], ts = df[, TIMESTAMP_UTC], by = 'hours'))
-    tso <- tsoutliers::tso(y = y
+    tso <- try(tsoutliers::tso(y = y
                            #, types = 'LS'
                            #, discard.method = 'bottom-up'
                            , cval = gwloggeR:::c.optimal(alpha = 0.0005, n = N, type = 'two.sided')
                            #,tsmethod = 'arima'
                            #, args.tsmethod = list(order = c(0, 1, 0), seasonal = list(order = c(0, 0, 0)))
-                           )
+                           ))
+    error <- inherits(tso, 'try-error')
 
     local({
       png(paste0('./tsoutliers/tsoutliers_geotech/', basename(f), '.png'), width = 1920, height = 1080)
       on.exit(dev.off())
-      if (length(tso$outliers$ind) > 0L) plot(tso) else plot.new()
-      mtext(paste0(basename(f), ' - ', forecast:::arima.string(tso$fit), ', N = ', length(y)), side = 3, line = -2, outer = TRUE)
+      if (!error && length(tso$outliers$ind) > 0L) plot(tso) else plot.new()
+      mtext(paste0(if (error) geterrmessage(),
+                   basename(f), ' - ',
+                   if (!error) forecast:::arima.string(tso$fit) else '/',
+                   ', N = ', length(y)), side = 3, line = -2, outer = TRUE)
     })
   }
 
