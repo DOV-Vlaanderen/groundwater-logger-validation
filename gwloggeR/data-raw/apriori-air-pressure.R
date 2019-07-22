@@ -6,13 +6,10 @@ df <- lapply(files,  function(csv.file) {
   cols.selected <- c('DRME_ID', 'DRME_OCR_UTC_DTE', 'DRME_DRU')
   df <- data.table::fread(csv.file, dec = ",", select = cols.selected)
 
-  # Meta data
-  df[, FILE := basename(csv.file)]
-  df[, N := .N]
-
   # Filter
   df <- df[DRME_DRU < 1100,]
   df <- df[DRME_DRU > 800,]
+  df <- df[!is.na(DRME_OCR_UTC_DTE)]
 
   # Standardized data columns
   df[, MEASUREMENT_ID := DRME_ID]
@@ -22,20 +19,32 @@ df <- lapply(files,  function(csv.file) {
   df[, PRESSURE_UNIT := "cmH2O"]
   df[, (cols.selected) := NULL]
 
-  data.table::setkey(df, MEASUREMENT_ID)
+  # Aggregate by day to set all points on same frequency (i.e. weight)
+  df <- df[, .(PRESSURE_VALUE = mean(PRESSURE_VALUE),
+               PRESSURE_UNIT = unique(PRESSURE_UNIT)),
+           by = .(TIMESTAMP_UTC = as.POSIXct(trunc(TIMESTAMP_UTC, units = 'days')))]
+
+  # Meta data
+  df[, FILE := basename(csv.file)]
+  df[, N := .N]
+
+  data.table::setkey(df, TIMESTAMP_UTC)
 
   df
 })
 
 df <- data.table::rbindlist(df, use.names = TRUE)
 
-hist(as.integer(diff(df$TIMESTAMP_UTC)), breaks = 100)
+with(df, {
+  hist(PRESSURE_VALUE, breaks = 1000, probability = TRUE, main = '')
+  curve(dnorm(x, mean = mean(PRESSURE_VALUE), sd = sqrt(var(PRESSURE_VALUE))), add = TRUE, col = 'red')
+  curve(dnorm(x, mean = median(PRESSURE_VALUE), sd = robustbase::Qn(PRESSURE_VALUE)), add = TRUE, col = 'green')
+})
 
-hist(df$PRESSURE_VALUE, breaks = 1000, probability = TRUE, main = '')
-curve(dnorm(x, mean = mean(df$PRESSURE_VALUE), sd = sqrt(var(df$PRESSURE_VALUE))), add = TRUE, col = 'red')
-
-qqnorm(df$PRESSURE_VALUE)
-qqline(df$PRESSURE_VALUE)
+with(df, {
+  qqnorm(PRESSURE_VALUE)
+  qqline(PRESSURE_VALUE)
+})
 
 ggplot2::ggplot(data = df, mapping = ggplot2::aes(y = PRESSURE_VALUE, x = paste(FILE, "-", N))) +
   ggplot2::geom_boxplot() +
