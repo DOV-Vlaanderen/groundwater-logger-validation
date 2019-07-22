@@ -53,4 +53,4 @@ ggplot2::ggplot(data = airpressure, mapping = ggplot2::aes(y = PRESSURE_VALUE, x
 median(airpressure$PRESSURE_VALUE)
 robustbase::Qn(airpressure$PRESSURE_VALUE)
 
-usethis::use_data(airpressure, overwrite = TRUE)
+usethis::use_data(airpressure, overwrite = TRUE, internal = TRUE)
