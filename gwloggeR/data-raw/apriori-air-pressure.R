@@ -2,7 +2,7 @@
 
 files <- list.files('./data-raw/apriori-air-pressure/', full.names = TRUE)
 
-df <- lapply(files,  function(csv.file) {
+airpressure <- lapply(files,  function(csv.file) {
   cols.selected <- c('DRME_ID', 'DRME_OCR_UTC_DTE', 'DRME_DRU')
   df <- data.table::fread(csv.file, dec = ",", select = cols.selected)
 
@@ -33,24 +33,24 @@ df <- lapply(files,  function(csv.file) {
   df
 })
 
-df <- data.table::rbindlist(df, use.names = TRUE)
+airpressure <- data.table::rbindlist(airpressure, use.names = TRUE)
 
-with(df, {
+with(airpressure, {
   hist(PRESSURE_VALUE, breaks = 1000, probability = TRUE, main = '')
   curve(dnorm(x, mean = mean(PRESSURE_VALUE), sd = sqrt(var(PRESSURE_VALUE))), add = TRUE, col = 'red')
   curve(dnorm(x, mean = median(PRESSURE_VALUE), sd = robustbase::Qn(PRESSURE_VALUE)), add = TRUE, col = 'green')
 })
 
-with(df, {
+with(airpressure, {
   qqnorm(PRESSURE_VALUE)
   qqline(PRESSURE_VALUE)
 })
 
-ggplot2::ggplot(data = df, mapping = ggplot2::aes(y = PRESSURE_VALUE, x = paste(FILE, "-", N))) +
+ggplot2::ggplot(data = airpressure, mapping = ggplot2::aes(y = PRESSURE_VALUE, x = paste(FILE, "-", N))) +
   ggplot2::geom_boxplot() +
   ggplot2::coord_flip()
 
-median(df$PRESSURE_VALUE)
-robustbase::Qn(df$PRESSURE_VALUE)
+median(airpressure$PRESSURE_VALUE)
+robustbase::Qn(airpressure$PRESSURE_VALUE)
 
-# usethis::use_data("apriori-air-pressure")
+usethis::use_data(airpressure, overwrite = TRUE)
