@@ -39,6 +39,7 @@ with(airpressure, {
   hist(PRESSURE_VALUE, breaks = 1000, probability = TRUE, main = '')
   curve(dnorm(x, mean = mean(PRESSURE_VALUE), sd = sqrt(var(PRESSURE_VALUE))), add = TRUE, col = 'red')
   curve(dnorm(x, mean = median(PRESSURE_VALUE), sd = robustbase::Qn(PRESSURE_VALUE)), add = TRUE, col = 'green')
+  curve(dnorm(x, mean = 1034.2, sd = sqrt(98.67283)), add = TRUE, col = 'gold')
 })
 
 with(airpressure, {
