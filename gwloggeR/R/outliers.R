@@ -96,7 +96,7 @@ setMethod(
 
     if (apriori$data_type == "air pressure") return ({
       outliers <- detect_outliers_norm(x, x.mean = apriori$mean, x.sd = sqrt(apriori$var))
-      if (plot) outliers_plot(x = x, outliers = outliers, show.qqplot = FALSE, title = title)
+      if (plot) outliers_plot(x = x, outliers = outliers, timestamps = timestamps, show.qqplot = FALSE, title = title)
       if (verbose) outliers else as.vector(outliers)
     })
 
