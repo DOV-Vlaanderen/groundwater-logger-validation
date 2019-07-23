@@ -18,7 +18,7 @@ local({
       on.exit(dev.off())
       detect_outliers(df$PRESSURE_VALUE, apriori = ap,
                       timestamps = if (!all(is.na(df$TIMESTAMP_UTC))) df$TIMESTAMP_UTC,
-                      plot = TRUE, title = paste0(basename(f), ' - v0.02'))
+                      plot = TRUE, title = paste0(basename(f), ' - v0.03'))
     })
   }
   print(Sys.time())
