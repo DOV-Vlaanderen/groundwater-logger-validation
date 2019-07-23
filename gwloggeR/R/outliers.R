@@ -26,7 +26,9 @@ Outliers <- function(x.rejects, x.mean, x.sd,
 #' @param verbose prints comprehensive information
 #' @param title adds title to the plot
 #' @param timestamps timestamp vector. Has no direct meaning, except aestehtical
-#' for the scatter plot if plot = TRUE.
+#' for the scatter plot if plot = TRUE. In case there are duplicates and NA
+#' values, only warnings will be raised which might suggest that something is
+#' wrong with x.
 #' @return Logical vector with same length as x, specifying TRUE for an outlier.
 #' @examples
 #' # In case of a vector:
@@ -67,6 +69,12 @@ setMethod(
     x.sd <- mad(x, na.rm = TRUE)
     outliers <- detect_outliers_norm(x, x.mean = x.mean, x.sd = x.sd)
 
+    if (!is.null(timestamps)) {
+      assert.timestamp(timestamps)
+      validate.timestamp(timestamps)
+      if (length(timestamps) != length(x)) stop('x and timestamps must have same length.')
+    }
+
     if (plot) outliers_plot(x = x, outliers = outliers, timestamps = timestamps, title = title)
 
     if (verbose) outliers else as.vector(outliers)
@@ -79,6 +87,12 @@ setMethod(
   'detect_outliers',
   signature = c(x = "numeric", apriori = "apriori"),
   function(x, apriori, plot, verbose, title, timestamps) {
+
+    if (!is.null(timestamps)) {
+      assert.timestamp(timestamps)
+      validate.timestamp(timestamps)
+      if (length(timestamps) != length(x)) stop('x and timestamps must have same length.')
+    }
 
     if (apriori$data_type == "air pressure") return ({
       outliers <- detect_outliers_norm(x, x.mean = apriori$mean, x.sd = sqrt(apriori$var))
