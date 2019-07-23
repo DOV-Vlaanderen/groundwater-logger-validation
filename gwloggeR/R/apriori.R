@@ -15,8 +15,8 @@ apriori <- function(data_type = c("air pressure", "hydrostatic pressure"), units
   units <- match.arg(units)
 
   structure(
-    list("mean" = 1034.2,
-         "var" = 98.67283,
+    list("mean" = 1033.317,
+         "var" = 9.586297^2,
          "data_type" = data_type,
          "units" = units),
     class = "apriori")
