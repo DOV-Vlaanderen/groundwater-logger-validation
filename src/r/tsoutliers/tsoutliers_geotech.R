@@ -23,6 +23,8 @@ local({
                            #,tsmethod = 'arima'
                            #, args.tsmethod = list(order = c(0, 1, 0), seasonal = list(order = c(0, 0, 0)))
                            ))
+
+    saveRDS(tso, paste0('./tsoutliers/tsoutliers_geotech/', basename(f), '.tsoutliers'), ascii = TRUE, compress = FALSE)
     error <- inherits(tso, 'try-error')
 
     local({
