@@ -78,6 +78,6 @@ Logger <- function(name) {
 
   df <- readfile(files)
 
-  list(name = name,
+  list(name = basename(files),
        df = data.table::copy(df))
 }
