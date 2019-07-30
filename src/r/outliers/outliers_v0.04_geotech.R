@@ -24,12 +24,14 @@ diffvec15 <- unlist(df15)
 
 
 
-hist(diffvec5[diffvec5 < 15], probability = TRUE)
-hist(diffvec15[diffvec15 < 30], probability = TRUE)
+hist(diffvec5[diffvec5 < 15], probability = TRUE, main = '5 minute interval data',
+     breaks = 100, xlab = 'min(diff-left, diff-right)')
+hist(diffvec15[diffvec15 < 30], probability = TRUE, main = '15 minute interval data',
+     breaks = 100, xlab = 'min(diff-left, diff-right)')
 fdens5 <- density(diffvec5[diffvec5 < 15])
 fdens15 <- density(diffvec15[diffvec15 < 30])
-plot(fdens5, col = 'red')
-plot(fdens15, col = 'red')
+plot(fdens5, col = 'red', main = '5 minute interval data')
+plot(fdens15, col = 'red', main = '15 minute interval data')
 
 lim5 <- 10
 lim15 <- 30
@@ -45,7 +47,7 @@ lim15 <- 30
 # plot(df5[[length(df5) - 2]], ylim = c(0,1))
 # table(df5[[length(df5) - 2]])
 #
-# dfl <- Logger('837_T4175')$df
+# dfl <- Logger('28_C4068')$df
 # plot(dfl$TIMESTAMP_UTC, dfl$PRESSURE_VALUE)
 
 local({
