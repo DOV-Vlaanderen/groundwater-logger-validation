@@ -10,4 +10,4 @@ Assumes a-priori knowledge of air pressure data. (cf. [#3](/../../issues/3))
 Improvement on v0.02 by using cleaned-up air pressure data. (cf. [#29](/../../issues/29))
 
 ### v0.04
-Uses differences between observations and a-priori information about differences. For example, for 5 min intervals the maximal change is 10 cmH2O.
+Uses differences between observations and a-priori information about differences. For example, for 5 min intervals the maximal change is 10 cmH2O. (cf. [#27](/../../issues/27)) 
