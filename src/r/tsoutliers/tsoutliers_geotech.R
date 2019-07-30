@@ -28,7 +28,7 @@ local({
     error <- inherits(tso, 'try-error')
 
     local({
-      png(paste0('./tsoutliers/tsoutliers_geotech/', basename(f), '.png'), width = 1920, height = 1080)
+      png(paste0('./tsoutliers/tsoutliers_geotech/', basename(f), '.png'), width = 1280, height = 720)
       on.exit(dev.off())
       if (!error && length(tso$outliers$ind) > 0L) plot(tso) else plot.new()
       mtext(paste0(if (error) geterrmessage(),
