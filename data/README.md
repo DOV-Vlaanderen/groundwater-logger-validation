@@ -67,3 +67,21 @@ De aangeleverde data omvat:
   * born_pb112o
 
 Voor elke diver zijn meerdere MON-files beschikbaar. Elke file bevat de metingen voor een andere periode (over het algemeen volgend deze periodes elkaar op)
+
+## VMM - Grondwater
+
+### Procedure
+txt-files are generated from Keller Levelogger 4 software
+
+### Filenames
+#### General structure 
+"SamplePointNumber_LocationName_Date_time_Start.txt" e.g. 3-0057_ROLLEGEM_06082009_13210800.txt
+
+#### Structure of SamplePoint
+* Date/Time	: e.g. 6/08/2009 13:21:08
+* P1-P2: compensated water presuure, certain loggers measure air and water presure with two sensors
+* P1: raw watercolumn + air presuure	e.g. 3,192
+* P2: air presure, if mesured
+* T: some sensors measure temperature as T
+* TOB1: water temperature, removed in proposed test files for most files
+* TOB2: air temperature, if measured
