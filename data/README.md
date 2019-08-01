@@ -133,8 +133,8 @@ and the data under a header:
 * TEMPERATURE: in °C e.g. 26.222  
 
 **Ellitrack**  
-One empty row
-header:  
+One empty row and then the header with beneath the data  
+Header:   
 * Datum: date&time e.g. 2018-06-26 07:15:00
 * Waterstand: water level beneath reference level, negatif values are down, higher values are lower water levels	in cm e.g. -194.76
 * Temperatuur water: water temperature in °C e.g. 13.26 	
