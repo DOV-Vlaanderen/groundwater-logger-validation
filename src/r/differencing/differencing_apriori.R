@@ -1,102 +1,39 @@
-df.list <- sapply(Logger::enumerate('geotech'), function(name) Logger(name)$df, simplify = FALSE, USE.NAMES = TRUE)
+source('./differencing/functions.R')
 
-differentiate <- function(df, interval.sec, get_possible_intervals = FALSE, diag_plots = FALSE) {
-  df <- data.table::copy(df)
-  if (any(is.na(df$TIMESTAMP_UTC))) stop('ERROR: all timestamps must be non-NA.')
-  data.table::setkey(df, TIMESTAMP_UTC)
+logger_selection <- c('born_pb 112o_151202090851_T4179',
+                      'born_pb94d_170124133301_T4175',
+                      'born_pb94d_171009123814_T4175',
+                      'born_pb94d_171213132622_T4175',
+                      'born_pb94d_180213134811_T4175',
+                      'born_pb94d_180315155306_T4175',
+                      'born_pb94o_170403160106_T4184',
+                      'born_pb94o_170623135603_T4184',
+                      'born_pb94o_170727122028_T4184',
+                      'born_pb94o_171009123814_T4184',
+                      'born_pb94o_171213132623_T4184',
+                      'born_pb94o_180111133149_T4184',
+                      'born_pb94o_180315155143_T4184',
+                      'born_pb112d_171009123816_T4180',
+                      'born_pb112d_180111134538_T4180',
+                      'born_pb112d_180213134811_T4180',
+                      'born_pb112d_180315160037_T4180',
+                      'born_pb112o_170623134158_T4179',
+                      'born_pb112o_170727122029_T4179',
+                      'born_pb112o_170829130424_T4179',
+                      'born_pb112o_171009123815_T4179',
+                      'born_pb112o_171213132623_T4179',
+                      'born_pb112o_180213134812_T4179',
+                      'ff_b29d_090429160100_C4080',
+                      'ff_b51d_090305163025_C4089',
+                      'pp01-1_101104155528_F5468',
+                      'pp09-1_101104150356_F5474',
+                      'pp09-2_101104150902_F8511')
 
-  possibilities.sec <- as.integer(difftime(df$TIMESTAMP_UTC, min(df$TIMESTAMP_UTC), units = 'secs'))
-  possibility.sec.min <- min(possibilities.sec)
+df.list <- sapply(logger_selection, function(name) Logger(name)$df, simplify = FALSE, USE.NAMES = TRUE)
 
-  # select records with the required time interval
-  sel <- possibilities.sec %% interval.sec == 0
-  df2 <- df[sel, ]
-
-  diffs <- diff(df2$PRESSURE_VALUE)
-
-  # take differences
-  if (diag_plots) {
-    hist(diffs, xlim = quantile(diffs, probs = c(0.001, 0.999)), breaks = 10000)
-    hist(abs(diffs), xlim = quantile(abs(diffs), probs = c(0.001, 0.999)), breaks = 10000)
-  }
-
-  diffs
-}
+saveRDS(df.list, './differencing/apriori_hydrostatic_pressure_data_selection.rds')
 
 differentiate(Logger(Logger::enumerate('geotech')[1])$df, interval.sec = 1800, diag_plots = TRUE)
-
-df <- Logger(Logger::enumerate('geotech')[1])$df
-
-
-# return difference without timestamp if it is possible to make
-# one based on interval
-# it returns either a value or NA
-diffx <- function(values, timestamps, interval.sec) {
-  n <- length(timestamps)
-  if (n <= 1L) return(as.numeric(NA))
-
-  ordered.indexes <- order(timestamps)
-  values <- values[ordered.indexes]; timestamps <- timestamps[ordered.indexes]
-
-  max.diff <- as.integer(difftime(timestamps[n], timestamps[1], units = 'secs'))
-  if (interval.sec > max.diff) return(as.numeric(NA))
-
-  # if possible to form a diff, then find one
-  for (start in 1L:(n-1L)) {
-    tdiffs <- as.integer(difftime(timestamps[-(1L:start)], timestamps[start], units = 'secs'))
-    hit.index <- which(tdiffs == interval.sec) + start
-    if (length(hit.index) > 1L) stop('ERROR: more than 1 hit, maybee ')
-    return(values[hit.index] - values[start])
-  }
-
-  return(as.numeric(NA))
-}
-
-diffx(df[1:3, PRESSURE_VALUE], df[1:3, TIMESTAMP_UTC], interval.sec = 1800)
-
-diffx2 <- function(values, timestamps, interval.sec) {
-  maxts.index <- which.max(timestamps)
-  tdiffs <- as.integer(difftime(timestamps[maxts.index], timestamps, units = 'secs'))
-  hit.index <- which(tdiffs == interval.sec)
-  if (length(hit.index) > 1L) stop('ERROR: more than 1 hit, maybee ')
-  if (length(hit.index) == 0L) return(as.numeric(NA))
-  values[maxts.index] - values[hit.index]
-}
-
-differentiate2 = function(df, interval.sec) {
-  df <- data.table::copy(df)
-  if (any(is.na(df$TIMESTAMP_UTC))) stop('ERROR: all timestamps must be non-NA.')
-  data.table::setkey(df, TIMESTAMP_UTC)
-
-  values <- df$PRESSURE_VALUE
-  timestamps <- df$TIMESTAMP_UTC
-  tdiffs <- as.integer(difftime(df[, TIMESTAMP_UTC], df[1L, TIMESTAMP_UTC], units = 'secs'))
-
-  i <- sample(which(tdiffs < interval.sec), 1L) # Or simply 1L
-  N <- length(values)
-  diffs <- NULL
-
-  while (i <= N) {
-    e <- i + 1L
-    while (e <= N) {
-      d <- diffx2(values[i:e], timestamps[i:e], interval.sec = interval.sec)
-      if (!is.na(d)) {
-        diffs[length(diffs) + 1L] <- d
-        break
-      } else {
-        e <- e + 1L
-      }
-    }
-    i <- e
-  }
-
-  diffs
-}
-
-plot.hist <- function(diffs) {
-  hist(abs(diffs), xlim = quantile(abs(diffs), probs = c(0.001, 0.999)), breaks = 10000)
-  invisible()
-}
 
 tmp <- differentiate(Logger(Logger::enumerate('geotech')[1])$df, interval.sec = 2700)
 tmp2 <- differentiate2(Logger(Logger::enumerate('geotech')[1])$df, interval.sec = 2700)
@@ -111,7 +48,7 @@ df.diffs[[as.character(30*60)]] <- sapply(df.list, FUN = differentiate2, interva
 df.diffs[[as.character(5*60)]] <- sapply(df.list, FUN = differentiate2, interval.sec = 5*60, simplify = FALSE, USE.NAMES = TRUE)
 df.diffs[[as.character(1440*60)]] <- sapply(df.list, FUN = differentiate2, interval.sec = 1440*60, simplify = FALSE, USE.NAMES = TRUE)
 
-sapply(df.diffs[['300']], function(diffs) if (!is.null(diffs)) plot.hist(diffs))
+#sapply(df.diffs[['300']], function(diffs) if (!is.null(diffs)) plot.hist(diffs))
 
 tmp3 <- unlist(unname(df.diffs[['86400']]))
 plot.hist(tmp3)
