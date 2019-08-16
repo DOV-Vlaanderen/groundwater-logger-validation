@@ -46,7 +46,7 @@ logL <- function(alpha, ls_index_vec, ao_index_vec, x) {
     stop('ERROR: alphas in logL do not match indices')
 
   alpha_ls <- if (length(ls_index_vec) > 0L) alpha[1:length(ls_index_vec)] else NULL
-  alpha_ao <- if (length(ao_index_vec) > 0L) alpha[(1:length(ls_index_vec)) + length(ls_index_vec)] else NULL
+  alpha_ao <- if (length(ao_index_vec) > 0L) alpha[(1:length(ao_index_vec)) + length(ls_index_vec)] else NULL
 
   x[ls_index_vec] <- x[ls_index_vec] - alpha_ls
   x[ao_index_vec] <- x[ao_index_vec] - alpha_ao
@@ -93,3 +93,41 @@ seeker <- function(x){
 
 seeker(c(3, -8, 100, 12, 5))
 seeker(c(3, -8, 100, -112, 5))
+
+sweep <- function(x, given = NULL) {
+  ls_indexes <- setdiff(1:length(x), attr(given, 'ls_index_vec'))
+  ao_indexes <- setdiff(1:(length(x)-1L), attr(given, 'ao_index_vec'))
+
+  res <- c(lapply(ls_indexes, function(i) opt(x = x,
+                                              ls_index_vec = c(i, attr(given, 'ls_index_vec')),
+                                              ao_index_vec = attr(given, 'ao_index_vec'))),
+           lapply(ao_indexes, function(i) opt(x = x,
+                                              ls_index_vec =  attr(given, 'ls_index_vec'),
+                                              ao_index_vec = c(i, attr(given, 'ao_index_vec')))))
+
+  res[[which.max(res)]]
+}
+
+
+ctest <- function() {
+
+}
+
+seeker2 <- function(x){
+  logLres <- list()
+  logLres[[1]] <- opt(x)
+  logLres[[2]] <- sweep(x)
+
+  repeat({
+    last <- logLres[[length(logLres)]]
+    res <- sweep(x = x, given = last)
+    if (do.call(lrtest, list(last, res, 'df.diff' = 1L)) > 1E-8) break()
+    logLres[[length(logLres) + 1L]] <- res
+  })
+
+  logLres
+}
+
+seeker2(c(3, -8, 100, 12, 5))
+seeker2(c(3, -8, 100, -112, 5))
+seeker2(c(3, -8, -100, -300, 5))
