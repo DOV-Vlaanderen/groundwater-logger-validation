@@ -3,7 +3,7 @@ scatterplot.levelshifts <- function(x, levelshifts = rep(FALSE, length(x)), time
   n <- length(x)
   timestamps.invalid <- is.null(timestamps) | all(is.na(timestamps))
   x.axis <- if (timestamps.invalid) 1:n else timestamps
-  data <- data.frame(x = x.axis, y = x, levelshifts)[order(x.axis)]
+  data <- data.frame(x = x.axis, y = x, levelshifts)[order(x.axis),]
 
   start.idx <- unique(c(1L, which(data$levelshifts)))
   end.idx <- unique(c(start.idx[-1L], length(x)))
