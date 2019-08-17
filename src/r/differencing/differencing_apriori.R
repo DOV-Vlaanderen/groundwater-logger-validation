@@ -40,6 +40,7 @@ tmp2 <- differentiate2(Logger(Logger::enumerate('geotech')[1])$df, interval.sec 
 identical(tmp, tmp2)
 
 tdiffs.sec <- c(5, 10, 15, 30, 45, 60, 120, 240, 360, 720, 1080, 1440, 2880)*60 # sec
+tdiffs.sec <- seq(5, 2880, by = 5)*60
 #set.seed(2019)
 #tdiffs.sec <- sample(seq(5, 2880, by = 5), 200)*60
 
