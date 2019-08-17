@@ -1,3 +1,4 @@
+#' @title Type I error rate constant
 #' @keywords internal
 CONST.ALPHA <- 1/2000
 
