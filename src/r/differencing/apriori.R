@@ -1,4 +1,5 @@
 source('./differencing/functions.R')
+source('./plot_zoomer.R')
 
 apriori.diff.density <- function(interval.sec, start.time = NULL) {
   apriori.data <- readRDS('./differencing/apriori_hydrostatic_pressure_data_selection.rds')
@@ -180,3 +181,9 @@ det <- detect(x = df$PRESSURE_VALUE, timestamps = df$TIMESTAMP_UTC)
 plot(x = 18000:19000, y = df[18000:19000, PRESSURE_VALUE])
 points(x = 18671, y = df[18671, PRESSURE_VALUE], col = 'red')
 points(x = 18731, y = df[18731, PRESSURE_VALUE], col = 'red')
+
+df[, levelshifts := FALSE]
+df[det[type == 'LS', index], levelshifts := TRUE]
+plot_zoomer(gwloggeR:::scatterplot.levelshifts(x = df$PRESSURE_VALUE,
+                                               levelshifts = df$levelshifts,
+                                               timestamps = df$TIMESTAMP_UTC))
