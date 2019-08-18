@@ -1,0 +1,12 @@
+Package: gwloggeR.data
+Type: Package
+Title: Small extension of gwloggeR for loading logger data.
+Version: 0.1.0
+Authors@R: c(person("Davor", "Josipovic", email = "davor.josipovic@inbo.be", role = c("cre", "aut")))
+Description: Small extension of gwloggeR for loading logger data.
+License: MIT + file LICENSE
+Encoding: UTF-8
+Imports:
+    data.table
+Suggests:
+RoxygenNote: 6.1.1
