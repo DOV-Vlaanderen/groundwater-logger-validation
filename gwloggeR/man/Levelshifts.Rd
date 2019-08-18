@@ -4,7 +4,7 @@
 \alias{Levelshifts}
 \title{Levelshifts object}
 \usage{
-Levelshifts()
+Levelshifts(vec)
 }
 \description{
 Levelshifts object holds all the necessary information about detected levelshifts.
