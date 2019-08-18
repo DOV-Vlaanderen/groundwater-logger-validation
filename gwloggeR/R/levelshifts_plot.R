@@ -31,7 +31,7 @@ differenceplot <- function(x, timestamps = NULL) {
     ggplot2::geom_line(na.rm = TRUE) +
     ggplot2::geom_point(mapping = ggplot2::aes_string(color = "outliers"), show.legend = FALSE, na.rm = TRUE) +
     ggplot2::scale_color_manual(name = "OUTLIER", values = c("FALSE" = "black", "TRUE" = "red")) +
-    ggplot2::ylab('x') + ggplot2::xlab(if (timestamps.invalid) 'sequence' else 'timestamp') +
+    ggplot2::ylab('difference(x)') + ggplot2::xlab(if (timestamps.invalid) 'sequence' else 'timestamp') +
     ggplot2::theme_light()
 }
 
