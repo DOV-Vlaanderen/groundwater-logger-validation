@@ -20,7 +20,8 @@ Imports:
     stats,
     methods,
     ggplot2,
-    gridExtra
+    gridExtra,
+    data.table
 Suggests: 
     knitr,
     rmarkdown
