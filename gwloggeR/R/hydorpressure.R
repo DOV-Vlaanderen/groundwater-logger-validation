@@ -93,7 +93,6 @@ seeker2 <- function(x, mu, sigma2){
 }
 
 detect <- function(x, timestamps) {
-  browser()
   tsdiff <- as.numeric(diff(timestamps), units = 'secs')
   vdiff <- diff(x)
   ftab <- table(tsdiff)
