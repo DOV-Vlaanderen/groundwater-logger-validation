@@ -38,7 +38,7 @@ scatterplot <- function(x, outliers, timestamps = NULL) {
     ggplot2::geom_line() +
     ggplot2::geom_point(mapping = ggplot2::aes_string(color = "outliers"), show.legend = FALSE) +
     ggplot2::scale_color_manual(name = "OUTLIER", values = c("FALSE" = "black", "TRUE" = "red")) +
-    ggplot2::geom_hline(yintercept = attr(outliers, 'cutpoints'), color = 'red') +
+    (if (!is.null(attr(outliers, 'cutpoints'))) ggplot2::geom_hline(yintercept = attr(outliers, 'cutpoints'), color = 'red') else ggplot2::geom_blank()) +
     ggplot2::ylab('x') + ggplot2::xlab(if (timestamps.invalid) 'sequence' else 'timestamp') +
     ggplot2::theme_light()
 }
