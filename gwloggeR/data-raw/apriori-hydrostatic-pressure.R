@@ -31,10 +31,18 @@ logger_selection <- c('born_pb 112o_151202090851_T4179',
                       'ff_b51d_090305163025_C4089',
                       'pp01-1_101104155528_F5468',
                       'pp09-1_101104150356_F5474',
-                      'pp09-2_101104150902_F8511')
+                      'pp09-2_101104150902_F8511',
+                      'DYLP023A_S3804' # small piece of 1 min data
+                      )
 
 hydropressure <- lapply(logger_selection, function(file.name) {
   df <- gwloggeR.data::read(file.name)$df
+
+  data.table::setkey(df, TIMESTAMP_UTC)
+
+  # 1 min data
+  if (file.name == 'DYLP023A_S3804')
+    df <- df[TIMESTAMP_UTC >= '2018-03-16 06:59:00' & TIMESTAMP_UTC <= '2018-03-17 11:59:00',]
 
   # No NA timestamps allowed
   if (any(is.na(df[, TIMESTAMP_UTC])))
