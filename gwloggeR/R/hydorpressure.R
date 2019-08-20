@@ -10,7 +10,7 @@ apriori.hydropressure.difference.samples <- function(interval.sec) {
     stop('ERROR: hydropressure time differences not unique per file.')
 
   # You can not use e.g. 15 min frequency data to simulate 20 min data.
-  # You can not use e.g. 15 min frequency data to simulate 5 min data.
+  # You can not use e.g. 15 min frequency data to simulate 5 min data (i.e. higher freq).
   df.map <- df.map[interval.sec %% DIFF.SEC == 0,]
   if (nrow(df.map) == 0L)
     stop(sprintf('ERROR: chosen interval (%s) not a multiple of any DIFF.SEC.', interval.sec))
@@ -93,6 +93,10 @@ seeker2 <- function(x, mu, sigma2){
 }
 
 detect <- function(x, timestamps) {
+  idx <- order(timestamps)
+  x <- x[idx]
+  timestamps <- timestamps[idx]
+
   tsdiff <- as.numeric(diff(timestamps), units = 'secs')
   vdiff <- diff(x)
   ftab <- table(tsdiff)
@@ -108,7 +112,7 @@ detect <- function(x, timestamps) {
   map <- data.table::rbindlist(map)
   dif <- data.table::data.table('tsdiff' = tsdiff, 'vdiff' = vdiff)
   dif <- merge(dif, map, all.x = TRUE)
-  dif[, 'outlier' := vdiff < lower.bound*1.5 | vdiff > upper.bound*1.5]
+  dif[, 'outlier' := abs(vdiff) > pmax(abs(lower.bound), abs(upper.bound))*1.2]
 
   drle <- data.table::as.data.table(unclass(rle(dif$outlier)))
   drle[, 'cumsum' := cumsum(lengths)]
@@ -116,15 +120,17 @@ detect <- function(x, timestamps) {
   drle[(values), 'end' := cumsum + 1L]
   drle[(values)]
 
+  empty.df <- data.table::data.table('type' = character(), 'index' = integer())
+
   res <- mapply(start = drle[(values), start], end = drle[(values), end], FUN = function(start, end) {
     res <- seeker2(x = dif[start:end, vdiff], mu = dif[start:end, mu], sigma2 = dif[start:end, sigma2])
     res <- res[[length(res)]]
 
-    dLS <- if (is.null(attr(res, 'ls_index_vec'))) data.frame() else data.frame(type = 'LS', 'index' = attr(res, 'ls_index_vec') + start)
-    dAO <- if (is.null(attr(res, 'ao_index_vec'))) data.frame() else data.frame(type = 'AO', 'index' = attr(res, 'ao_index_vec') + start)
+    dLS <- if (is.null(attr(res, 'ls_index_vec'))) empty.df else data.frame(type = 'LS', 'index' = attr(res, 'ls_index_vec') + start)
+    dAO <- if (is.null(attr(res, 'ao_index_vec'))) empty.df else data.frame(type = 'AO', 'index' = attr(res, 'ao_index_vec') + start)
     data.table::rbindlist(list(dLS, dAO))
   }, SIMPLIFY = FALSE)
 
-  data.table::rbindlist(res)
+  if (length(res) == 0L) empty.df else data.table::rbindlist(res)
 }
 
