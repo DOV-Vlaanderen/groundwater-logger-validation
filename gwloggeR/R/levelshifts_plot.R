@@ -4,17 +4,18 @@ scatterplot.levelshifts <- function(x, levelshifts = rep(FALSE, length(x)), time
   timestamps.invalid <- is.null(timestamps) | all(is.na(timestamps))
   x.axis <- if (timestamps.invalid) 1:n else timestamps
   data <- data.frame(x = x.axis, y = x, levelshifts)[order(x.axis),]
+  data <- data[!is.na(data$x),]
 
   start.idx <- unique(c(1L, which(data$levelshifts)))
-  end.idx <- unique(c(start.idx[-1L], length(x)))
+  end.idx <- unique(c(start.idx[-1L], nrow(data)))
   col <- c('green', ifelse(data$y[start.idx[-1L] -1L] < data$y[start.idx[-1L]], 'red', 'blue'))
 
   ggplot2::ggplot(data = data, mapping = ggplot2::aes_string(x = "x", y = "y")) +
     ggplot2::geom_line() +
     ggplot2::geom_point(data = data[c(start.idx[-1L], start.idx[-1L]-1L),]) +
-    ggplot2::annotate("rect", xmin = data$x[start.idx], xmax = data$x[end.idx],
+    ggplot2::annotate("rect", xmin = data[start.idx, 'x'], xmax = data[end.idx, 'x'],
                       ymin = -Inf, ymax = Inf, alpha = 0.1, fill = col) +
-    ggplot2::geom_vline(xintercept = x.axis[start.idx[-1L]], linetype = 'dashed') +
+    ggplot2::geom_vline(xintercept = data[start.idx[-1L], 'x'], linetype = 'dashed') +
     ggplot2::scale_color_manual(name = "OUTLIER", values = c("FALSE" = "black", "TRUE" = "red")) +
     ggplot2::ylab('x') + ggplot2::xlab(if (timestamps.invalid) 'sequence' else 'timestamp') +
     ggplot2::theme_light()
@@ -26,6 +27,7 @@ differenceplot <- function(x, timestamps = NULL) {
   timestamps.invalid <- is.null(timestamps) | all(is.na(timestamps))
   x.axis <- if (timestamps.invalid) 1:n else timestamps
   data <- data.frame(x = x.axis, y = xdiff, outliers = FALSE)[order(x.axis),]
+  data <- data[!is.na(data$x),]
 
   ggplot2::ggplot(data = data, mapping = ggplot2::aes_string(x = "x", y = "y")) +
     ggplot2::geom_line(na.rm = TRUE) +
