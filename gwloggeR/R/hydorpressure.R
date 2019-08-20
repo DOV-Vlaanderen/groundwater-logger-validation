@@ -1,6 +1,10 @@
 #' @importFrom data.table :=
 #' @keywords internal
 apriori.hydropressure.difference.samples <- function(interval.sec) {
+  # interval.sec adjustment: if > 1h, then adjust so it is divisible by 5min
+  if (interval.sec > 1*60*60)
+    interval.sec <- round(interval.sec/300)*300
+
   # Unique time differences (DIFF.SEC) per FILE.
   df.map <- hydropressure[, .(DIFF.SEC = unique(as.numeric(diff(TIMESTAMP_UTC), units = 'secs'))),
                           by = FILE]
@@ -107,17 +111,18 @@ detect <- function(x, timestamps) {
                   list('tsdiff' = interval.sec,
                        'lower.bound' = tr[1], 'upper.bound' = tr[2],
                        'mu' = mean(dens), 'sigma2' = var(dens),
+                       'n.dens' = length(dens),
                        'c' = c.norm.optimal(alpha = 1/2000, n = n, type = 'two.sided'))
   }, SIMPLIFY = FALSE)
   map <- data.table::rbindlist(map)
   dif <- data.table::data.table('tsdiff' = tsdiff, 'vdiff' = vdiff)
-  dif <- merge(dif, map, all.x = TRUE)
+  dif <- merge(dif, map, all.x = TRUE, sort = FALSE)
   dif[, 'outlier' := abs(vdiff) > pmax(abs(lower.bound), abs(upper.bound))*1.2]
 
   drle <- data.table::as.data.table(unclass(rle(dif$outlier)))
   drle[, 'cumsum' := cumsum(lengths)]
   drle[(values), 'start' := cumsum - lengths]
-  drle[(values), 'end' := cumsum + 1L]
+  drle[(values), 'end' := pmin(cumsum + 1L, nrow(dif))]
   drle[(values)]
 
   empty.df <- data.table::data.table('type' = character(), 'index' = integer())
@@ -131,6 +136,8 @@ detect <- function(x, timestamps) {
     data.table::rbindlist(list(dLS, dAO))
   }, SIMPLIFY = FALSE)
 
-  if (length(res) == 0L) empty.df else data.table::rbindlist(res)
+  res <- data.table::rbindlist(res)
+
+  if (nrow(res) == 0L) empty.df else res[, index := idx[index]] # back to original idx
 }
 
