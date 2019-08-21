@@ -71,13 +71,37 @@ Voor elke diver zijn meerdere MON-files beschikbaar. Elke file bevat de metingen
 ## VMM - Grondwater
 
 ### Procedure
-txt-files are generated from Keller Levelogger 4 software
+3 kinds of files:  
+- txt-files are generated from **Keller** Levelogger 4 software - raw measured pressures in mbar, no compensation for air pressure or conversion to water column/depth beneath reference level
+- csv-files from **Solinst** software - converted but not compensated water column in meters above sensor and temperature data in °C. The files are stored in *groundwater-logger-validation/data/raw/vmm/Slugtest/
+These data can be compared to small pumping tests, water head changes are nearly instantaneous at the start of every test, about 60 cm, followed by a slower recovery, rising or falling.
+- **Ellitrack** files: The pressure sensors are mechanically and instantaneously compensated for air pressure. The sensor is fitted with a vented cable that so the atmospheric pressure "pushes" the water pressure membrane down. We haven't currently got access to the raw measured pressures (but these could be recalculated from the data, making use of their conversion formula's). The files contain depth of water below reference level. From their user manual we find the conversion formula that is used:
+   
+   pressure of 1 m watercolumn = density of non saline water (rhosT, kg/m<sup>3</sup>) * gravity (g, m/s<sup>2</sup>)  
+   rhosT = 1000*(1 - (T+288.9414)/(508929.2*(T+68.12963))\*(T-3.9863)<sup>2</sup>)  
+   g = standard value in Ellitrack, can be changed, is 9.812 m/s<sup>2</sup) for all files  
+
+   Example for *Meetpunt '2193-Abeek/Lossing' - 'G2.4' (18032111)*:
+   water level on 2019-08-01 at 07:00:00	= -210.13	cm  
+   temperature = 13.8 °C  
+   cable length = 382.65 cm  (fixed during whole period)
+   water column = 382.65 - 210.13 = 172.52 cm = 1.7252 m
+   rhosT = 1000*(1 - (13.8+288.9414)/(508929.2*(13.8+68.12963))\*(13.8-3.9863)<sup>2</sup>) =  999.301 kg/m<sup>3</sup>  
+   pressure 1 m water = 999.3007395 * 9.812 = 9805.139 Pa/m = 0.09805139 bar/m  
+   original pressure mesured = 1.7252 * 0.09805139 = **0.16916 bar**
+   
 
 ### Filenames
 #### General structure 
-"SamplePointNumber_LocationName_Date_time_Start.txt" e.g. 3-0057_ROLLEGEM_06082009_13210800.txt
+- Keller : "SamplePointNumber_LocationName_Date_time_Start.txt" e.g. 3-0057_ROLLEGEM_06082009_13210800.txt
+- Solinst : "loggerID_LocationName(with underscores)\_date.csv" e.g. 22006280_2_0105_F2_2013_06_06.csv
+- Ellitrack : "export-LoggerID-FromeDate_ToDate_LoggerName.txt" e.g. export-18032111-2018-06-26_0715-2019-08-01_0700-G2.4.txt  
+
 
 #### Structure of SamplePoint
+**Keller**  
+a file with header and data:  
+
 * Date/Time	: e.g. 6/08/2009 13:21:08
 * P1-P2: compensated water presuure, certain loggers measure air and water presure with two sensors
 * P1: raw watercolumn + air presuure	e.g. 3,192
@@ -85,3 +109,33 @@ txt-files are generated from Keller Levelogger 4 software
 * T: some sensors measure temperature as T
 * TOB1: water temperature, removed in proposed test files for most files
 * TOB2: air temperature, if measured
+
+**Solinst**  
+composed of a first section with metadata e.g.: 
+
+Serial_number:  
+2006280  
+Project ID:  
+Slugtest  
+Location:  
+2-0105 F2  
+LEVEL  
+UNIT: m  
+Offset: 0.000000 m  
+TEMPERATURE  
+UNIT: °C  
+
+and the data under a header:
+* Date: YYYY/MM/DD e.g. 2013/06/06
+* Time: hh:mm:ss e.g. 12:57:35
+* ms: milliseconds possible values are 0, 125, 250, 500, 750, 875
+* LEVEL: water level in meter above sensor, not compensated for atmospheric pressure e.g. 10.3675
+* TEMPERATURE: in °C e.g. 26.222  
+
+**Ellitrack**  
+One empty row and then the header with beneath the data  
+Header:   
+* Datum: date&time e.g. 2018-06-26 07:15:00
+* Waterstand: water level beneath reference level, negatif values are down, higher values are lower water levels	in cm e.g. -194.76
+* Temperatuur water: water temperature in °C e.g. 13.26 	
+* Temperatuur intern: logger temperature in °C, used as instrument control e.g. 10.49
