@@ -8,7 +8,7 @@ validate.logger.root.path <- function() {
 }
 
 #' @title Enumerate logger files
-
+#' @export
 enumerate <- function(partner = c('all', 'inbo', 'geotech'), full.path = FALSE) {
   partner <- match.arg(partner)
   validate.logger.root.path()
