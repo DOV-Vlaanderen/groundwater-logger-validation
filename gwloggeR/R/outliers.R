@@ -102,26 +102,22 @@ setMethod(
     })
 
     if (apriori$data_type == "hydrostatic pressure") return ({
-      # It is very unlikely that hydrostatic pressure is lower than a-priori air pressure.
-      # We lover the alpha to adjust for the area-increase on left side due to type = "less".
-      l <- detect_outliers_norm(x, x.mean = apriori$mean, alpha = CONST.ALPHA/2,
-                                x.sd = sqrt(apriori$var), type = "less")
-      # We use the detect_outliers(x) method on remaining data points.
-      r <- detect_outliers_norm(x, x.mean = median(x[!l], na.rm = TRUE), alpha = CONST.ALPHA/2,
-                                x.sd = mad(x[!l], na.rm = TRUE), type = "greater")
+      det <- detect(x = x, timestamps = timestamps)
+      rejects.x <- rep(FALSE, length(x))
+      rejects.x[det[type == 'AO', index]] <- TRUE
 
-      fun.density <- function(x) {
-        d1 <- dnorm(x, attr(l, 'x.mean'), attr(l, 'x.sd'))
-        d2 <- dnorm(x, attr(r, 'x.mean'), attr(r, 'x.sd'))
-        (d1 + d2)/2
+      outliers <- Outliers(rejects.x, x.mean = NULL, x.sd = NULL, alpha = NULL, sigma.reject = NULL,
+                           type = "two.sided", fun.density = NULL, cutpoints = NULL)
+
+      if (plot) {
+        d <- differenceplot(x, timestamps = timestamps)
+        s <- scatterplot(x, outliers = outliers, timestamps = timestamps)
+        layout_matrix <- rbind(c(1,1),
+                               c(2,2))
+        grob.title <- if (!is.null(title)) grid::textGrob(title, x = 0.05, hjust = 0)
+        gridExtra::grid.arrange(s, d, layout_matrix = layout_matrix,
+                                top = grob.title)
       }
-
-      cutpoints <- c(attr(l, "cutpoints")[1], attr(r, "cutpoints")[2])
-
-      outliers <- Outliers(l | r, x.mean = NULL, x.sd = NULL, alpha = NULL, sigma.reject = NULL,
-                           type = "two.sided", fun.density = fun.density, cutpoints = cutpoints)
-
-      if (plot) outliers_plot(x, outliers = outliers, timestamps = timestamps, show.qqplot = FALSE, title = title)
 
       if (verbose) outliers else as.vector(outliers)
     })
