@@ -16,5 +16,10 @@ cat(paste('Memory limit:', utils::memory.limit(size = 50000), 'Mb.\n'))
 # Load convenience objects
 source('./Logger.R')
 
+# Load gwloggeR.data package
+options(logger.root.data.path = './../../data/raw')
+devtools::load_all('./../../gwloggeR.data', export_all = FALSE)
+detach('package:gwloggeR.data')
+
 cat(".Rprofile file loaded for project.\n")
 cat("#########################################################\n")
