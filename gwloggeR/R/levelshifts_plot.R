@@ -16,7 +16,6 @@ scatterplot.levelshifts <- function(x, levelshifts = rep(FALSE, length(x)), time
     ggplot2::annotate("rect", xmin = data[start.idx, 'x'], xmax = data[end.idx, 'x'],
                       ymin = -Inf, ymax = Inf, alpha = 0.1, fill = col) +
     ggplot2::geom_vline(xintercept = data[start.idx[-1L], 'x'], linetype = 'dashed') +
-    ggplot2::scale_color_manual(name = "OUTLIER", values = c("FALSE" = "black", "TRUE" = "red")) +
     ggplot2::ylab('x') + ggplot2::xlab(if (timestamps.invalid) 'sequence' else 'timestamp') +
     ggplot2::theme_light()
 }
