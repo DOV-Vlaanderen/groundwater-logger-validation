@@ -1,8 +1,12 @@
 local({
-  for (f in  Logger::enumerate(partner = 'inbo')) {
+  print(Sys.time())
+  cl <- parallel::makeCluster(7, outfile = './log/parallel.log')
+  on.exit(parallel::stopCluster(cl))
+
+  fn <- function(f) {
     print(Sys.time())
     print(basename(f))
-    df <- Logger(f)$df
+    df <- gwloggeR.data::read(f)$df
 
     # remove no-timestamp
     df <- df[!is.na(TIMESTAMP_UTC),]
@@ -20,14 +24,19 @@ local({
                            #, args.tsmethod = list(order = c(0, 1, 0), seasonal = list(order = c(0, 0, 0)))
                            )
 
+    saveRDS(tso, paste0('./tsoutliers/tsoutliers_inbo/', basename(f), '.tsoutliers'), ascii = TRUE, compress = FALSE)
+
     local({
-      png(paste0('./tsoutliers/tsoutliers_inbo/', basename(f), '.png'), width = 1920, height = 1080)
+      png(paste0('./tsoutliers/tsoutliers_inbo/', basename(f), '.png'), width = 1280, height = 720)
       on.exit(dev.off())
       if (length(tso$outliers$ind) > 0L) plot(tso) else plot.new()
       mtext(paste0(basename(f), ' - ', forecast:::arima.string(tso$fit), ', N = ', length(y)), side = 3, line = -2, outer = TRUE)
     })
 
   }
+
+  parallel::clusterApplyLB(cl = cl, x = gwloggeR.data::enumerate(partner = 'inbo'), fun = fn)
+
   print(Sys.time())
 })
 
