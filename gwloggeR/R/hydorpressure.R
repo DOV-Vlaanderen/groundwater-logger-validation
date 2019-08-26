@@ -1,9 +1,16 @@
 #' @importFrom data.table :=
 #' @keywords internal
 apriori.hydropressure.difference.samples <- function(interval.sec) {
-  # interval.sec adjustment: if > 1h, then adjust so it is divisible by 5min
-  if (interval.sec > 1*60*60)
-    interval.sec <- round(interval.sec/300)*300
+  # interval.sec adjustment: if > 24h, then adjust so it is divisible by 15min
+  if (interval.sec > 60*60*24)
+    interval.sec <- round(interval.sec/(60*15))*60*15
+  else if (interval.sec > 60*60*1) # if > 1h, then divisible by 5 min
+    interval.sec <- round(interval.sec/(60*5))*60*5
+  else # else divisible by 1min
+    interval.sec <- round(interval.sec/(60))*60
+
+  if (interval.sec > 60*60*24*30) # if larger than a month, then reduce to month
+    interval.sec <- 60*60*24*30
 
   # Unique time differences (DIFF.SEC) per FILE.
   df.map <- hydropressure[, .(DIFF.SEC = unique(as.numeric(diff(TIMESTAMP_UTC), units = 'secs'))),
