@@ -6,7 +6,7 @@ scatterplot.levelshifts <- function(x, levelshifts = rep(FALSE, length(x)), time
   data <- data.frame(x = x.axis, y = x, levelshifts)[order(x.axis),]
   data <- data[!is.na(data$x),]
 
-  start.idx <- c(1L, which(data$levelshifts))
+  start.idx <- unique(c(1L, which(data$levelshifts)))
   end.idx <- c(start.idx[-1L], nrow(data))
   col <- c('green', ifelse(data[start.idx[-1L] - 1L, 'y'] < data[start.idx[-1L], 'y'], 'red', 'blue'))
 
