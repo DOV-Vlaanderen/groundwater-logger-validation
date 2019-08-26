@@ -65,5 +65,19 @@ hydropressure <- lapply(logger_selection, function(file.name) {
 # intervals.sec table
 table(sapply(hydropressure, function(df) unique(as.numeric(diff(df$TIMESTAMP_UTC), units = 'secs'))))
 
+# plots for reference
+local({
+  pdf('./data-raw/apriori-hydrostatic-pressure.pdf', width = 14, height = 6)
+  on.exit(dev.off())
+
+  invisible(lapply(hydropressure, function(df) {
+    print(ggplot2::ggplot(data = df, mapping = ggplot2::aes_string(x = "TIMESTAMP_UTC", y = "PRESSURE_VALUE")) +
+            ggplot2::geom_line(alpha = .2) + ggplot2::geom_point(shape = 16, size = 0.01) +
+            ggplot2::ylab('x') + ggplot2::xlab('timestamp') +
+            ggplot2::ggtitle(paste(df$FILE[1L], ', DIFF.SEC = ', as.numeric(diff(df$TIMESTAMP_UTC), units = 'secs'))) +
+            ggplot2::theme_light())
+  }))
+})
+
 hydropressure <- data.table::rbindlist(hydropressure, use.names = TRUE)
 data.table::setkey(hydropressure, FILE, TIMESTAMP_UTC)
