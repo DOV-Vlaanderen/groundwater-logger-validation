@@ -16,6 +16,10 @@ cat(paste('Memory limit:', utils::memory.limit(size = 50000), 'Mb.\n'))
 # Load convenience objects
 source('./Logger.R')
 
+# Load gwloggeR package
+devtools::load_all('./../../gwloggeR', export_all = FALSE)
+detach('package:gwloggeR')
+
 # Load gwloggeR.data package
 options(logger.root.data.path = './../../data/raw')
 devtools::load_all('./../../gwloggeR.data', export_all = FALSE)
