@@ -109,23 +109,29 @@ fn2 <- function() {
 }
 
 Optimizer <- function(z, types, indexes, mu, sigma2) {
+  if (length(types) != length(indexes))
+    stop('ERROR: types and indexes must have equal length.')
+
   n <- length(z)
+  force(mu); force(sigma2)
 
   # M is the indicator matrix according to type
   # mapply costs 35 mus, while indicator 15 mus for n = 1000
-  M <- mapply(indicator, type = types, index = indexes, n = n)
+  M <- if (length(types) > 0L) mapply(indicator, type = types, index = indexes, n = n)
 
   type.par.nr <- ifelse(types == 'TC', 2L, 1L)
   par.idx.delta <- cumsum(type.par.nr)[which(type.par.nr == 2L)]
-  par.idx.alpha <- (1L:sum(type.par.nr))[-par.idx.delta]
+  par.idx.alpha <- setdiff(1L:sum(type.par.nr), par.idx.delta)
 
   par.init <- rep(0, sum(type.par.nr))
   par.init[par.idx.delta] <- 0.7
 
   type.idx.tc <- which(types == 'TC')
-  indexes.tc <- indexes[which(types == 'TC')]
+  indexes.tc <- indexes[type.idx.tc]
 
   logL <- function(par) {
+
+    if (length(types) == 0L) return(logL.base(w = z, mu = mu, sigma2 = sigma2))
 
     # matrix multiplication columnwise with a vector
     # https://stackoverflow.com/a/32364355/1548942
@@ -147,16 +153,21 @@ Optimizer <- function(z, types, indexes, mu, sigma2) {
     ul[par.idx.delta] <- 1
     ll[par.idx.delta] <- 0
 
-    opt <- optim(par = par.init, fn = logL, method = 'L-BFGS-B', lower = ll, upper = ul)
+    opt <- optim(par = par.init, fn = logL, method = 'L-BFGS-B',
+                 lower = ll, upper = ul,
+                 control = list('fnscale' = -1))
 
-    structure(round(opt$value, digits = 6), 'par' = opt$par)
+    structure(round(opt$value, digits = 6), 'par' = opt$par,
+              'types' = types, 'indexes' = indexes)
   }
 
   list('optimize' = optimize)
 }
 
-#Optimizer(z = rnorm(1000), types = c('AO', 'LS'), indexes = c(1, 3), mu = 0, sigma2 = 1)
-tmp <- Optimizer(z = rnorm(1000), types = c('AO', 'TC', 'LS'), indexes = c(1, 2, 3), mu = 0, sigma2 = 100)
+#tmp <- Optimizer(z = rnorm(1000), types = NULL, indexes = NULL, mu = 0, sigma2 = 1)
+#tmp <- Optimizer(z = rnorm(1000), types = c('AO'), indexes = 1, mu = 0, sigma2 = 1)
+#tmp <- Optimizer(z = rnorm(1000), types = c('AO', 'LS'), indexes = c(1, 3), mu = 0, sigma2 = 1)
+#tmp <- Optimizer(z = rnorm(1000), types = c('AO', 'TC', 'LS'), indexes = c(1, 2, 3), mu = 0, sigma2 = 100)
 #tmp$optimize()
 
 opt <- function(x, ls_index_vec = NULL, ao_index_vec = NULL, mu, sigma2) {
@@ -170,40 +181,43 @@ opt <- function(x, ls_index_vec = NULL, ao_index_vec = NULL, mu, sigma2) {
             'ls_index_vec' = ls_index_vec, 'ao_index_vec' = ao_index_vec)
 }
 
-sweep <- function(x, given = NULL, mu, sigma2) {
-  ls_indexes <- setdiff(1:length(x), attr(given, 'ls_index_vec'))
-  ao_indexes <- setdiff(1:(length(x)-1L), attr(given, 'ao_index_vec'))
+sweep <- function(x, last.result = NULL, mu, sigma2, outlier) {
+  indexes <- which(outlier)
+  last.types <- attr(last.result, 'types')
+  last.indexes <- attr(last.result, 'indexes')
 
-  res <- c(lapply(ls_indexes, function(i) opt(x = x,
-                                              ls_index_vec = c(i, attr(given, 'ls_index_vec')),
-                                              ao_index_vec = attr(given, 'ao_index_vec'),
-                                              mu = mu, sigma2 = sigma2)),
-           lapply(ao_indexes, function(i) opt(x = x,
-                                              ls_index_vec =  attr(given, 'ls_index_vec'),
-                                              ao_index_vec = c(i, attr(given, 'ao_index_vec')),
-                                              mu = mu, sigma2 = sigma2)))
+  fn <- function(type, index) {
+    if (any(last.types == type & last.indexes == index)) return(last.result)
+    O <- Optimizer(z = x, types = c(last.types, type), indexes = c(last.indexes, index),
+                   mu = mu, sigma2 = sigma2)
+    O$optimize()
+  }
 
-  sorted.index <- order(sapply(res, function(x) x),
-                        sapply(res, function(x) -sum(abs(attr(x, 'par')))),
-                        decreasing = TRUE)
+  res <- mapply(fn, index = indexes, type = 'AO', SIMPLIFY = FALSE)
+  res <- c(res, mapply(fn, index = indexes, type = 'LS', SIMPLIFY = FALSE))
 
-  res[[sorted.index[1L]]]
+  res.idx.sorted <- order(sapply(res, function(x) x),
+                          sapply(res, function(x) -sum(abs(attr(x, 'par')))),
+                          decreasing = TRUE)
+
+  res[[res.idx.sorted[1L]]]
 }
 
 lrtest <- function(logL0, logL, df.diff) {
   as.vector(1-pchisq(q = -2*(logL0 - logL), df = df.diff))
 }
 
-seeker2 <- function(x, mu, sigma2){
+seeker <- function(x, mu, sigma2, outlier){
   logLres <- list()
-  logLres[[1]] <- opt(x, mu = mu, sigma2 = sigma2)
-  logLres[[2]] <- sweep(x, mu = mu, sigma2 = sigma2)
+  logLres[[1]] <- Optimizer(z = x, types = NULL, indexes = NULL, mu = mu, sigma2 = sigma2)$optimize()
+  logLres[[2]] <- sweep(x, mu = mu, sigma2 = sigma2, outlier = outlier)
+
   repeat({
     last <- logLres[[length(logLres)]]
     # idealiter zouden alle permutaties moeten getest worden voor 2 parameters, en niet
     # met 1 fixed, want die 1 fixed is optimaal voor 1 parameter model, maar niet
     # noodzakelijk samengaand met een andere parameter.
-    res <- sweep(x = x, given = last, mu = mu, sigma2 = sigma2)
+    res <- sweep(x = x, last.result = last, mu = mu, sigma2 = sigma2, outlier = outlier)
     if (do.call(lrtest, list(last, res, 'df.diff' = 1L)) > 1E-8) break()
     logLres[[length(logLres) + 1L]] <- res
   })
@@ -215,7 +229,6 @@ detect <- function(x, timestamps, nr.tail = 25) {
   idx <- order(timestamps)
   x <- x[idx]
   timestamps <- timestamps[idx]
-  browser()
 
   tsdiff <- as.numeric(diff(timestamps), units = 'secs')
   vdiff <- diff(x)
@@ -249,12 +262,13 @@ detect <- function(x, timestamps, nr.tail = 25) {
   empty.df <- data.table::data.table('type' = character(), 'index' = integer())
 
   res <- mapply(start = drle[, start], end = drle[, end], FUN = function(start, end) {
-    res <- seeker2(x = dif[start:end, vdiff], mu = dif[start:end, mu], sigma2 = dif[start:end, sigma2])
+    df <- dif[start:end, ]
+
+    res <- seeker(x = df$vdiff, outlier = df$outlier, mu = df$mu, sigma2 = df$sigma2)
     res <- res[[length(res)]]
 
-    dLS <- if (is.null(attr(res, 'ls_index_vec'))) empty.df else data.frame(type = 'LS', 'index' = attr(res, 'ls_index_vec') + start)
-    dAO <- if (is.null(attr(res, 'ao_index_vec'))) empty.df else data.frame(type = 'AO', 'index' = attr(res, 'ao_index_vec') + start)
-    data.table::rbindlist(list(dLS, dAO))
+    data.frame('type' = attr(res, 'types'),
+               'index' = attr(res, 'indexes') + start)
   }, SIMPLIFY = FALSE)
 
   res <- data.table::rbindlist(res)
@@ -262,6 +276,7 @@ detect <- function(x, timestamps, nr.tail = 25) {
   if (nrow(res) == 0L) empty.df else res[, index := idx[index]] # back to original idx
 }
 
+# set.seed(2019)
 # detect(x = c(rnorm(20), 50, rnorm(19) + 50, -50, rnorm(50), 50, rnorm(5)),
 #        timestamps = seq(as.POSIXct('2000-01-01'), as.POSIXct('2000-01-02'), by = '15 min'))
 
