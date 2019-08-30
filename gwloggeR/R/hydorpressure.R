@@ -42,12 +42,14 @@ indicator <- function(type = c('AO', 'LS', 'TC'), index, n) {
   type <- match.arg(type)
 
   switch (type,
-    'AO' = rep(c(0, 1, -1, 0), c(index - 1L, 1L, 1L, n - index - 1L)),
+    'AO' = if (index == n) rep(0, n) # if last point, then all 0
+           else rep(c(0, 1, -1, 0), c(index - 1L, 1L, 1L, n - index - 1L)),
     'LS' = rep(c(0, 1, 0), c(index - 1L, 1L, n - index)),
     'TC' = rep(c(0, 1), c(index - 1L, n - index + 1L))
   )
 }
 
+# indicator('AO', 1, 1)
 # indicator('AO', 2, 5)
 # indicator('LS', 1, 5)
 # indicator('TC', 5, 5)
@@ -71,7 +73,8 @@ Optimizer <- function(z, types, indexes, mu, sigma2) {
 
   # M is the indicator matrix according to type
   # mapply costs 35 mus, while indicator 15 mus for n = 1000
-  M <- if (length(types) > 0L) mapply(indicator, type = types, index = indexes, n = n)
+  M <- if (length(types) > 0L)
+    do.call(cbind, mapply(indicator, type = types, index = indexes, n = n, SIMPLIFY = FALSE))
 
   type.par.nr <- ifelse(types == 'TC', 2L, 1L)
   par.idx.delta <- cumsum(type.par.nr)[which(type.par.nr == 2L)]
@@ -118,6 +121,7 @@ Optimizer <- function(z, types, indexes, mu, sigma2) {
   list('optimize' = optimize)
 }
 
+#tmp <- Optimizer(z = rnorm(1), types = c('AO'), indexes = 1, mu = 0, sigma2 = 1)
 #tmp <- Optimizer(z = rnorm(1000), types = NULL, indexes = NULL, mu = 0, sigma2 = 1)
 #tmp <- Optimizer(z = rnorm(1000), types = c('AO'), indexes = 1, mu = 0, sigma2 = 1)
 #tmp <- Optimizer(z = rnorm(1000), types = c('AO', 'LS'), indexes = c(1, 3), mu = 0, sigma2 = 1)
