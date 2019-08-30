@@ -57,55 +57,9 @@ decay <- function(index, decay, n) {
   c(rep(0, index - 1L), 1, -decay^(1:(n-index)))
 }
 
-multiplier <- function(type = c('AO', 'LS', 'TC'), index, n, alpha, decay = NA) {
-  if (type == 'TC' && is.na(decay)) stop('ERROR: decay must be specified in case of TC.')
-  type <- match.arg(type)
-
-  switch (type,
-          'AO' = alpha,
-          'LS' = alpha,
-          'TC' = alpha * c(rep(0, index - 1L), 1, -decay^(1:(n-index)))
-  )
-}
-
-# multiplier('TC', 3, 5, 1, 0.7)
-
 # Dit is z_t - z_t-1 - ... = w_t ~ epsilon distributed
 logL.base <- function(w, mu, sigma2) {
   -sum((w - mu)^2/(2*sigma2))
-}
-
-w <- function(z, types, indexes, alphas, decays) {
-  Reduce(x = 1:length(types), f = function(x, i){
-    x + indicator(type = types[i], index = indexes[i], n = length(z)) *
-      multiplier(type = types[i], index = indexes[i], n = length(z), alpha = alphas[i], decay = decays[i])
-  }, init = z)
-}
-
-# w(rep(0, 10), types = 'AO', indexes = 2, alphas = 1, decays = NA)
-# w(rep(0, 10), types = c('AO', 'TC'), indexes = c(2, 5), alphas = c(1, 1), decays = c(NA, 0.7))
-# logL.base(w(rep(0, 10), types = c('AO', 'TC'), indexes = c(2, 5), alphas = c(1, 1), decays = c(NA, 0.7)), 0, 1)
-
-logL <- function(alpha, ls_index_vec, ao_index_vec, x, mu, sigma2) {
-  if (length(alpha) != length(ls_index_vec) + length(ao_index_vec))
-    stop('ERROR: alphas in logL do not match indices')
-
-  alpha_ls <- if (length(ls_index_vec) > 0L) alpha[1:length(ls_index_vec)] else NULL
-  alpha_ao <- if (length(ao_index_vec) > 0L) alpha[(1:length(ao_index_vec)) + length(ls_index_vec)] else NULL
-
-  x[ls_index_vec] <- x[ls_index_vec] - alpha_ls
-  x[ao_index_vec] <- x[ao_index_vec] - alpha_ao
-  x[ao_index_vec+1] <- x[ao_index_vec+1] + alpha_ao
-
-  -sum((x - mu)^2/(2*sigma2))
-}
-
-fn <- function(){
-  1+1
-}
-
-fn2 <- function() {
-  fn()
 }
 
 Optimizer <- function(z, types, indexes, mu, sigma2) {
@@ -169,17 +123,6 @@ Optimizer <- function(z, types, indexes, mu, sigma2) {
 #tmp <- Optimizer(z = rnorm(1000), types = c('AO', 'LS'), indexes = c(1, 3), mu = 0, sigma2 = 1)
 #tmp <- Optimizer(z = rnorm(1000), types = c('AO', 'TC', 'LS'), indexes = c(1, 2, 3), mu = 0, sigma2 = 100)
 #tmp$optimize()
-
-opt <- function(x, ls_index_vec = NULL, ao_index_vec = NULL, mu, sigma2) {
-  obj <- optim(par = rep(0, length(ls_index_vec) + length(ao_index_vec)),
-               fn = logL, method = 'L-BFGS-B',
-               ls_index_vec = ls_index_vec, ao_index_vec = ao_index_vec,
-               x = x, control = list('fnscale' = -1),
-               mu = mu, sigma2 = sigma2)
-
-  structure(round(obj$value, digits = 6), 'par' = obj$par,
-            'ls_index_vec' = ls_index_vec, 'ao_index_vec' = ao_index_vec)
-}
 
 sweep <- function(x, last.result = NULL, mu, sigma2, outlier) {
   indexes <- which(outlier)
@@ -257,7 +200,6 @@ detect <- function(x, timestamps, nr.tail = 25) {
                .('start' = ends[1L] - lengths[1L] + 1L,
                  'end' = pmin(ends[length(ends)] + nr.tail, nrow(dif))),
                by = traverse.id]
-  drle
 
   empty.df <- data.table::data.table('type' = character(), 'index' = integer())
 
