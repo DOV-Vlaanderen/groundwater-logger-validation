@@ -37,6 +37,55 @@ apriori.hydropressure.difference.samples <- function(interval.sec) {
   df.hp[, .('DIFF.VALUE' = diff(PRESSURE_VALUE)), by = FILE][, DIFF.VALUE]
 }
 
+indicator <- function(type = c('AO', 'LS', 'TC'), index, n) {
+  if (index > n) stop('ERROR: index larger than n.')
+  type <- match.arg(type)
+
+  switch (type,
+    'AO' = rep(c(0, 1, -1, 0), c(index - 1L, 1L, 1L, n - index - 1L)),
+    'LS' = rep(c(0, 1, 0), c(index - 1L, 1L, n - index)),
+    'TC' = rep(c(0, 1), c(index - 1L, n - index + 1L))
+  )
+}
+
+# indicator('AO', 2, 5)
+# indicator('LS', 1, 5)
+# indicator('TC', 5, 5)
+# indicator('AA', 5, 5)
+
+decay <- function(index, decay, n) {
+  c(rep(0, index - 1L), 1, -decay^(1:(n-index)))
+}
+
+multiplier <- function(type = c('AO', 'LS', 'TC'), index, n, alpha, decay = NA) {
+  if (type == 'TC' && is.na(decay)) stop('ERROR: decay must be specified in case of TC.')
+  type <- match.arg(type)
+
+  switch (type,
+          'AO' = alpha,
+          'LS' = alpha,
+          'TC' = alpha * c(rep(0, index - 1L), 1, -decay^(1:(n-index)))
+  )
+}
+
+# multiplier('TC', 3, 5, 1, 0.7)
+
+# Dit is z_t - z_t-1 - ... = w_t ~ epsilon distributed
+logL.base <- function(w, mu, sigma2) {
+  -sum((w - mu)^2/(2*sigma2))
+}
+
+w <- function(z, types, indexes, alphas, decays) {
+  Reduce(x = 1:length(types), f = function(x, i){
+    x + indicator(type = types[i], index = indexes[i], n = length(z)) *
+      multiplier(type = types[i], index = indexes[i], n = length(z), alpha = alphas[i], decay = decays[i])
+  }, init = z)
+}
+
+# w(rep(0, 10), types = 'AO', indexes = 2, alphas = 1, decays = NA)
+# w(rep(0, 10), types = c('AO', 'TC'), indexes = c(2, 5), alphas = c(1, 1), decays = c(NA, 0.7))
+# logL.base(w(rep(0, 10), types = c('AO', 'TC'), indexes = c(2, 5), alphas = c(1, 1), decays = c(NA, 0.7)), 0, 1)
+
 logL <- function(alpha, ls_index_vec, ao_index_vec, x, mu, sigma2) {
   if (length(alpha) != length(ls_index_vec) + length(ao_index_vec))
     stop('ERROR: alphas in logL do not match indices')
@@ -50,6 +99,65 @@ logL <- function(alpha, ls_index_vec, ao_index_vec, x, mu, sigma2) {
 
   -sum((x - mu)^2/(2*sigma2))
 }
+
+fn <- function(){
+  1+1
+}
+
+fn2 <- function() {
+  fn()
+}
+
+Optimizer <- function(z, types, indexes, mu, sigma2) {
+  n <- length(z)
+
+  # M is the indicator matrix according to type
+  # mapply costs 35 mus, while indicator 15 mus for n = 1000
+  M <- mapply(indicator, type = types, index = indexes, n = n)
+
+  type.par.nr <- ifelse(types == 'TC', 2L, 1L)
+  par.idx.delta <- cumsum(type.par.nr)[which(type.par.nr == 2L)]
+  par.idx.alpha <- (1L:sum(type.par.nr))[-par.idx.delta]
+
+  par.init <- rep(0, sum(type.par.nr))
+  par.init[par.idx.delta] <- 0.7
+
+  type.idx.tc <- which(types == 'TC')
+  indexes.tc <- indexes[which(types == 'TC')]
+
+  logL <- function(par) {
+
+    # matrix multiplication columnwise with a vector
+    # https://stackoverflow.com/a/32364355/1548942
+    alpha <- par[par.idx.alpha]
+    M <- M * rep(alpha, rep(nrow(M), length(alpha)))
+
+    if (length(par.idx.delta) > 0L) {
+      decays <- mapply(decay, index = indexes.tc, decay = par[par.idx.delta], n = n)
+      M[, type.idx.tc] <- M[, type.idx.tc] * decays
+    }
+
+    logL.base(w = z - rowSums(M), mu = mu, sigma2 = sigma2)
+  }
+
+  optimize <- function() {
+    ul <- rep(Inf, length(par.init))
+    ll <- -ul
+
+    ul[par.idx.delta] <- 1
+    ll[par.idx.delta] <- 0
+
+    opt <- optim(par = par.init, fn = logL, method = 'L-BFGS-B', lower = ll, upper = ul)
+
+    structure(round(opt$value, digits = 6), 'par' = opt$par)
+  }
+
+  list('optimize' = optimize)
+}
+
+#Optimizer(z = rnorm(1000), types = c('AO', 'LS'), indexes = c(1, 3), mu = 0, sigma2 = 1)
+tmp <- Optimizer(z = rnorm(1000), types = c('AO', 'TC', 'LS'), indexes = c(1, 2, 3), mu = 0, sigma2 = 100)
+#tmp$optimize()
 
 opt <- function(x, ls_index_vec = NULL, ao_index_vec = NULL, mu, sigma2) {
   obj <- optim(par = rep(0, length(ls_index_vec) + length(ao_index_vec)),
@@ -103,10 +211,11 @@ seeker2 <- function(x, mu, sigma2){
   logLres
 }
 
-detect <- function(x, timestamps) {
+detect <- function(x, timestamps, nr.tail = 25) {
   idx <- order(timestamps)
   x <- x[idx]
   timestamps <- timestamps[idx]
+  browser()
 
   tsdiff <- as.numeric(diff(timestamps), units = 'secs')
   vdiff <- diff(x)
@@ -127,14 +236,19 @@ detect <- function(x, timestamps) {
   dif[, 'outlier' := abs(vdiff) > pmax(abs(lower.bound), abs(upper.bound))*1.2]
 
   drle <- data.table::as.data.table(unclass(rle(dif$outlier)))
-  drle[, 'cumsum' := cumsum(lengths)]
-  drle[(values), 'start' := cumsum - lengths]
-  drle[(values), 'end' := pmin(cumsum + 1L, nrow(dif))]
-  drle[(values)]
+  drle[, 'ends' := cumsum(lengths)]
+  drle[-1L, 'traverse' := lengths < nr.tail | values]
+  drle[c(1L, .N), 'traverse' := values]
+  drle[, 'traverse.id' := data.table::rleid(traverse)]
+  drle <- drle[(traverse),
+               .('start' = ends[1L] - lengths[1L] + 1L,
+                 'end' = pmin(ends[length(ends)] + nr.tail, nrow(dif))),
+               by = traverse.id]
+  drle
 
   empty.df <- data.table::data.table('type' = character(), 'index' = integer())
 
-  res <- mapply(start = drle[(values), start], end = drle[(values), end], FUN = function(start, end) {
+  res <- mapply(start = drle[, start], end = drle[, end], FUN = function(start, end) {
     res <- seeker2(x = dif[start:end, vdiff], mu = dif[start:end, mu], sigma2 = dif[start:end, sigma2])
     res <- res[[length(res)]]
 
@@ -147,4 +261,7 @@ detect <- function(x, timestamps) {
 
   if (nrow(res) == 0L) empty.df else res[, index := idx[index]] # back to original idx
 }
+
+# detect(x = c(rnorm(20), 50, rnorm(19) + 50, -50, rnorm(50), 50, rnorm(5)),
+#        timestamps = seq(as.POSIXct('2000-01-01'), as.POSIXct('2000-01-02'), by = '15 min'))
 
