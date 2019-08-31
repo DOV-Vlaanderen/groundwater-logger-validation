@@ -128,7 +128,7 @@ Optimizer <- function(z, types, indexes, mu, sigma2) {
 #tmp <- Optimizer(z = rnorm(1000), types = c('AO', 'TC', 'LS'), indexes = c(1, 2, 3), mu = 0, sigma2 = 100)
 #tmp$optimize()
 
-sweep <- function(x, last.result = NULL, mu, sigma2, outlier) {
+sweep <- function(x, last.result = NULL, mu, sigma2, types, outlier) {
   indexes <- which(outlier)
   last.types <- attr(last.result, 'types')
   last.indexes <- attr(last.result, 'indexes')
@@ -140,8 +140,9 @@ sweep <- function(x, last.result = NULL, mu, sigma2, outlier) {
     O$optimize()
   }
 
-  res <- mapply(fn, index = indexes, type = 'AO', SIMPLIFY = FALSE)
-  res <- c(res, mapply(fn, index = indexes, type = 'LS', SIMPLIFY = FALSE))
+  res <- mapply(fn, index = rep(indexes, times = length(types)),
+                type = rep(types, each = length(indexes)),
+                SIMPLIFY = FALSE)
 
   res.idx.sorted <- order(sapply(res, function(x) x),
                           sapply(res, function(x) -sum(abs(attr(x, 'par')))),
@@ -157,14 +158,15 @@ lrtest <- function(logL0, logL, df.diff) {
 seeker <- function(x, mu, sigma2, outlier){
   logLres <- list()
   logLres[[1]] <- Optimizer(z = x, types = NULL, indexes = NULL, mu = mu, sigma2 = sigma2)$optimize()
-  logLres[[2]] <- sweep(x, mu = mu, sigma2 = sigma2, outlier = outlier)
+  logLres[[2]] <- sweep(x, mu = mu, sigma2 = sigma2, types = c('AO', 'LS'), outlier = outlier)
 
   repeat({
     last <- logLres[[length(logLres)]]
     # idealiter zouden alle permutaties moeten getest worden voor 2 parameters, en niet
     # met 1 fixed, want die 1 fixed is optimaal voor 1 parameter model, maar niet
     # noodzakelijk samengaand met een andere parameter.
-    res <- sweep(x = x, last.result = last, mu = mu, sigma2 = sigma2, outlier = outlier)
+    res <- sweep(x = x, last.result = last, mu = mu, sigma2 = sigma2,
+                 types = c('AO', 'LS'), outlier = outlier)
     if (do.call(lrtest, list(last, res, 'df.diff' = 1L)) > 1E-8) break()
     logLres[[length(logLres) + 1L]] <- res
   })
@@ -223,6 +225,6 @@ detect <- function(x, timestamps, nr.tail = 25) {
 }
 
 # set.seed(2019)
-# detect(x = c(rnorm(20), 50, rnorm(19) + 50, -50, rnorm(50), 50, rnorm(5)),
-#        timestamps = seq(as.POSIXct('2000-01-01'), as.POSIXct('2000-01-02'), by = '15 min'))
+# print(detect(x = c(rnorm(20), 50, rnorm(19) + 50, -50, rnorm(50), 50, rnorm(5)),
+#              timestamps = seq(as.POSIXct('2000-01-01'), as.POSIXct('2000-01-02'), by = '15 min'))[])
 
