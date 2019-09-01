@@ -84,6 +84,7 @@ Optimizer <- function(z, types, indexes, mu, sigma2) {
   par.idx.alpha <- setdiff(1L:sum(type.par.nr), par.idx.delta)
 
   par.init <- rep(0, sum(type.par.nr))
+  par.init[par.idx.alpha] <- z[indexes]
   par.init[par.idx.delta] <- 0.7
 
   type.idx.tc <- which(types == 'TC')
@@ -143,7 +144,10 @@ ProgressTable <- function() {
     par <- attr(result, 'par')
     nr.par <- length(par)
     tbl.idx <- nr.par + 1L
-    if (tbl.idx > length(tbl) || result > tbl[[tbl.idx]]) {
+
+    if (tbl.idx > length(tbl) || result > tbl[[tbl.idx]] ||
+        (result == tbl[[tbl.idx]] &&
+         sum(abs(par)) < sum(abs(attr(tbl[[tbl.idx]], 'par'))))) {
       tbl[[tbl.idx]] <<- result
       # reduce current df.base.swept if parameters at the same level or below change
       if (df.base.swept >= nr.par)
@@ -166,46 +170,46 @@ ProgressTable <- function() {
        'set.df.base.swept' = set.df.base.swept)
 }
 
+types.signficant <- function(par, types) {
+  type.par.nr <- ifelse(types == 'TC', 2L, 1L)
+  par.idx.delta <- cumsum(type.par.nr)[which(type.par.nr == 2L)]
+  par.idx.alpha <- setdiff(1L:sum(type.par.nr), par.idx.delta)
+
+  abs(par[par.idx.alpha]) > 30 # CHANGE!
+}
+
 sweep <- function(x, base.types = NULL, base.indexes = NULL,
                   sweep.indexes, types, mu, sigma2) {
 
-  fn <- function(type, index) {
+  fn <- function(type, index, base.types, base.indexes) {
     O <- Optimizer(z = x, types = c(base.types, type), indexes = c(base.indexes, index),
                    mu = mu, sigma2 = sigma2)
-    O$optimize()
+
+    opt <- O$optimize()
+
+    # if last insignificant: OK, else remove and recurse
+    par <- attr(opt, 'par')
+    types.sig <- types.signficant(par = par, types = attr(opt, 'types'))
+    if (length(base.types) > 1L && any(!types.sig[-length(types.sig)])) {
+      fn(type, index,
+         base.types = base.types[types.sig[-length(types.sig)]],
+         base.indexes = base.indexes[types.sig[-length(types.sig)]])
+    } else {
+      opt
+    }
   }
 
   # zou moeten nagegeken worden of index/type combo niet reeds is gebruikt.
   mapply(fn, index = rep(sweep.indexes, times = length(types)),
-                type = rep(types, each = length(sweep.indexes)),
-                SIMPLIFY = FALSE)
-
-  # res.idx.sorted <- order(sapply(res, function(x) x),
-  #                         sapply(res, function(x) -sum(abs(attr(x, 'par')))),
-  #                         decreasing = TRUE)
-  #
-  # res[[res.idx.sorted[1L]]]
+         type = rep(types, each = length(sweep.indexes)),
+         base.types = list(base.types), base.indexes = list(base.indexes),
+         SIMPLIFY = FALSE)
 }
 
 lrtest <- function(logL0, logL, df.diff) {
   as.vector(1-pchisq(q = -2*(logL0 - logL), df = df.diff))
 }
 
-remove.unsignificant <- function(result) {
-  types <- attr(result, 'types')
-  par <- attr(result, 'par')
-
-  type.par.nr <- ifelse(types == 'TC', 2L, 1L)
-  par.idx.delta <- cumsum(type.par.nr)[which(type.par.nr == 2L)]
-  par.idx.alpha <- setdiff(1L:sum(type.par.nr), par.idx.delta)
-
-  sig.types <- abs(par[par.idx.alpha]) > 30 # CHANGE!
-
-  if (all(sig.types)) return(result)
-
-  structure(NA, 'types' = types[sig.types], indexes = attr(result, 'indexes')[sig.types],
-            'par' = attr(result, 'par')[rep(sig.types, ifelse(types == 'TC', 2L, 1L))])
-}
 
 seeker <- function(x, mu, sigma2, outlier){
   sweep.indexes <- which(outlier)
@@ -276,8 +280,16 @@ detect <- function(x, timestamps, nr.tail = 25) {
 
     res <- seeker(x = df$vdiff, outlier = df$outlier, mu = df$mu, sigma2 = df$sigma2)
 
+    type.par.nr <- ifelse(attr(res, 'types') == 'TC', 2L, 1L)
+    par.idx.delta <- cumsum(type.par.nr)[which(type.par.nr == 2L)]
+    par.idx.alpha <- setdiff(1L:sum(type.par.nr), par.idx.delta)
+    par.delta <- rep(NA, length(type.par.nr))
+    par.delta[attr(res, 'types') == 'TC'] <- attr(res, 'par')[par.idx.delta]
+
     data.frame('type' = attr(res, 'types'),
-               'index' = attr(res, 'indexes') + start)
+               'index' = attr(res, 'indexes') + start,
+               'alpha' = attr(res, 'par')[par.idx.alpha],
+               'delta' = par.delta)
   }, SIMPLIFY = FALSE)
 
   res <- data.table::rbindlist(res)
