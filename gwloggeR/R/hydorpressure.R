@@ -118,7 +118,8 @@ Optimizer <- function(z, types, indexes, mu, sigma2) {
                  lower = ll, upper = ul,
                  control = list('fnscale' = -1))
 
-    structure(round(opt$value, digits = 6), 'par' = opt$par,
+    structure(round(opt$value, digits = 6),
+              'par' = round(opt$par, digits = 6),
               'types' = types, 'indexes' = indexes)
   }
 
@@ -145,9 +146,10 @@ ProgressTable <- function() {
     nr.par <- length(par)
     tbl.idx <- nr.par + 1L
 
-    if (tbl.idx > length(tbl) || result > tbl[[tbl.idx]] ||
-        (result == tbl[[tbl.idx]] &&
-         sum(abs(par)) < sum(abs(attr(tbl[[tbl.idx]], 'par'))))) {
+    if (tbl.idx > length(tbl)
+        || result > tbl[[tbl.idx]]
+        || (result == tbl[[tbl.idx]]
+            && sum(abs(par)) < sum(abs(attr(tbl[[tbl.idx]], 'par'))))) {
       tbl[[tbl.idx]] <<- result
       # reduce current df.base.swept if parameters at the same level or below change
       if (df.base.swept >= nr.par)
@@ -170,18 +172,22 @@ ProgressTable <- function() {
        'set.df.base.swept' = set.df.base.swept)
 }
 
-types.signficant <- function(par, types) {
-  type.par.nr <- ifelse(types == 'TC', 2L, 1L)
-  par.idx.delta <- cumsum(type.par.nr)[which(type.par.nr == 2L)]
-  par.idx.alpha <- setdiff(1L:sum(type.par.nr), par.idx.delta)
-
-  abs(par[par.idx.alpha]) > 30 # CHANGE!
-}
-
 sweep <- function(x, base.types = NULL, base.indexes = NULL,
                   sweep.indexes, types, mu, sigma2) {
 
   fn <- function(type, index, base.types, base.indexes) {
+
+    types.signficant <- function(par, types) {
+      type.par.nr <- ifelse(types == 'TC', 2L, 1L)
+      par.idx.delta <- cumsum(type.par.nr)[which(type.par.nr == 2L)]
+      par.idx.alpha <- setdiff(1L:sum(type.par.nr), par.idx.delta)
+
+      par.alpha <- par[par.idx.alpha]
+      x.idx <- c(base.indexes, index)
+      p.val <- pnorm(par.alpha, mean = mu[x.idx], sd = sqrt(sigma2[x.idx]))
+      p.val < 1e-5 | p.val > 1-1e-5
+    }
+
     O <- Optimizer(z = x, types = c(base.types, type), indexes = c(base.indexes, index),
                    mu = mu, sigma2 = sigma2)
 
