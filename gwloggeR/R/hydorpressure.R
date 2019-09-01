@@ -56,8 +56,11 @@ indicator <- function(type = c('AO', 'LS', 'TC'), index, n) {
 # indicator('AA', 5, 5)
 
 decay <- function(index, decay, n) {
-  c(rep(0, index - 1L), 1, -decay^(1:(n-index)))
+  exp.decay <- c(rep(0, index - 1L), 1, decay^(1:(n-index)))
+  exp.decay - c(0, exp.decay[-n])
 }
+
+decay(2, 0.7, 5)
 
 # Dit is z_t - z_t-1 - ... = w_t ~ epsilon distributed
 logL.base <- function(w, mu, sigma2) {
@@ -126,55 +129,114 @@ Optimizer <- function(z, types, indexes, mu, sigma2) {
 #tmp <- Optimizer(z = rnorm(1000), types = c('AO'), indexes = 1, mu = 0, sigma2 = 1)
 #tmp <- Optimizer(z = rnorm(1000), types = c('AO', 'LS'), indexes = c(1, 3), mu = 0, sigma2 = 1)
 #tmp <- Optimizer(z = rnorm(1000), types = c('AO', 'TC', 'LS'), indexes = c(1, 2, 3), mu = 0, sigma2 = 100)
-#tmp$optimize()
+# tmp <- Optimizer(z = X, types = 'TC', indexes = 26L, mu = MU, sigma2 = SIGMA2)
+# tmp <- Optimizer(z = X, types = c('LS', 'TC'), indexes = c(26L, 26L), mu = MU, sigma2 = SIGMA2)
+# tmp$optimize()
 
-sweep <- function(x, last.result = NULL, mu, sigma2, types, outlier) {
-  indexes <- which(outlier)
-  last.types <- attr(last.result, 'types')
-  last.indexes <- attr(last.result, 'indexes')
+ProgressTable <- function() {
+
+  # index is df + 1L (since df can be 0)
+  tbl <- list()
+  df.base.swept <- 0L
+
+  update <- function(result) {
+    par <- attr(result, 'par')
+    nr.par <- length(par)
+    tbl.idx <- nr.par + 1L
+    if (tbl.idx > length(tbl) || result > tbl[[tbl.idx]]) {
+      tbl[[tbl.idx]] <<- result
+      # reduce current df.base.swept if parameters at the same level or below change
+      if (df.base.swept >= nr.par)
+        df.base.swept <<- max(0L, nr.par - 1L)
+    }
+  }
+
+  get <- function(df = NULL) { # df = nr.parameters
+    if (is.null(df)) tbl
+    else tbl[[df + 1L]]
+  }
+
+  get.df.base.swept <- function() df.base.swept
+
+  set.df.base.swept <- function(df) df.base.swept <<- df
+
+  list('update' = update,
+       'get' = get,
+       'get.df.base.swept' = get.df.base.swept,
+       'set.df.base.swept' = set.df.base.swept)
+}
+
+sweep <- function(x, base.types = NULL, base.indexes = NULL,
+                  sweep.indexes, types, mu, sigma2) {
 
   fn <- function(type, index) {
-    if (any(last.types == type & last.indexes == index)) return(last.result)
-    O <- Optimizer(z = x, types = c(last.types, type), indexes = c(last.indexes, index),
+    O <- Optimizer(z = x, types = c(base.types, type), indexes = c(base.indexes, index),
                    mu = mu, sigma2 = sigma2)
     O$optimize()
   }
 
-  res <- mapply(fn, index = rep(indexes, times = length(types)),
-                type = rep(types, each = length(indexes)),
+  # zou moeten nagegeken worden of index/type combo niet reeds is gebruikt.
+  mapply(fn, index = rep(sweep.indexes, times = length(types)),
+                type = rep(types, each = length(sweep.indexes)),
                 SIMPLIFY = FALSE)
 
-  res.idx.sorted <- order(sapply(res, function(x) x),
-                          sapply(res, function(x) -sum(abs(attr(x, 'par')))),
-                          decreasing = TRUE)
-
-  res[[res.idx.sorted[1L]]]
+  # res.idx.sorted <- order(sapply(res, function(x) x),
+  #                         sapply(res, function(x) -sum(abs(attr(x, 'par')))),
+  #                         decreasing = TRUE)
+  #
+  # res[[res.idx.sorted[1L]]]
 }
 
 lrtest <- function(logL0, logL, df.diff) {
   as.vector(1-pchisq(q = -2*(logL0 - logL), df = df.diff))
 }
 
+remove.unsignificant <- function(result) {
+  types <- attr(result, 'types')
+  par <- attr(result, 'par')
+
+  type.par.nr <- ifelse(types == 'TC', 2L, 1L)
+  par.idx.delta <- cumsum(type.par.nr)[which(type.par.nr == 2L)]
+  par.idx.alpha <- setdiff(1L:sum(type.par.nr), par.idx.delta)
+
+  sig.types <- abs(par[par.idx.alpha]) > 30 # CHANGE!
+
+  if (all(sig.types)) return(result)
+
+  structure(NA, 'types' = types[sig.types], indexes = attr(result, 'indexes')[sig.types],
+            'par' = attr(result, 'par')[rep(sig.types, ifelse(types == 'TC', 2L, 1L))])
+}
+
 seeker <- function(x, mu, sigma2, outlier){
-  logLres <- list()
-  logLres[[1]] <- Optimizer(z = x, types = NULL, indexes = NULL, mu = mu, sigma2 = sigma2)$optimize()
-  logLres[[2]] <- sweep(x, mu = mu, sigma2 = sigma2, types = c('AO', 'LS'), outlier = outlier)
+  sweep.indexes <- which(outlier)
+  pt <- ProgressTable()
+  pt$update(Optimizer(z = x, types = NULL, indexes = NULL, mu = mu, sigma2 = sigma2)$optimize())
+  lapply(sweep(x, mu = mu, sigma2 = sigma2, types = c('AO', 'LS', 'TC'), sweep.indexes = sweep.indexes), pt$update)
 
   repeat({
-    last <- logLres[[length(logLres)]]
     # idealiter zouden alle permutaties moeten getest worden voor 2 parameters, en niet
     # met 1 fixed, want die 1 fixed is optimaal voor 1 parameter model, maar niet
     # noodzakelijk samengaand met een andere parameter.
-    res <- sweep(x = x, last.result = last, mu = mu, sigma2 = sigma2,
-                 types = c('AO', 'LS'), outlier = outlier)
-    if (do.call(lrtest, list(last, res, 'df.diff' = 1L)) > 1E-8) break()
-    logLres[[length(logLres) + 1L]] <- res
+    base.df <- pt$get.df.base.swept() + 1L
+    base <- pt$get(base.df)
+    pt$set.df.base.swept(base.df)
+
+    lapply(sweep(x = x,
+                 base.types = attr(base, 'types'),
+                 base.indexes = attr(base, 'indexes'),
+                 mu = mu, sigma2 = sigma2,
+                 types = c('AO', 'LS', 'TC'),
+                 sweep.indexes = sweep.indexes), pt$update)
+
+    if (base.df != pt$get.df.base.swept()) next() # if df.base changed: retry
+    if (do.call(lrtest, list(base, pt$get(base.df + 1L), 'df.diff' = 1L)) > 1E-8) break()
   })
 
-  logLres
+  pt$get(pt$get.df.base.swept())
 }
 
 detect <- function(x, timestamps, nr.tail = 25) {
+  stopifnot(length(x) == length(timestamps))
   idx <- order(timestamps)
   x <- x[idx]
   timestamps <- timestamps[idx]
@@ -213,7 +275,6 @@ detect <- function(x, timestamps, nr.tail = 25) {
     df <- dif[start:end, ]
 
     res <- seeker(x = df$vdiff, outlier = df$outlier, mu = df$mu, sigma2 = df$sigma2)
-    res <- res[[length(res)]]
 
     data.frame('type' = attr(res, 'types'),
                'index' = attr(res, 'indexes') + start)
@@ -225,6 +286,6 @@ detect <- function(x, timestamps, nr.tail = 25) {
 }
 
 # set.seed(2019)
-# print(detect(x = c(rnorm(20), 50, rnorm(19) + 50, -50, rnorm(50), 50, rnorm(5)),
+# print(detect(x = c(rnorm(19), 50, rnorm(19) + 50, -50, rnorm(4), rnorm(45) + 100*0.8^(0:44), 50, rnorm(7)),
 #              timestamps = seq(as.POSIXct('2000-01-01'), as.POSIXct('2000-01-02'), by = '15 min'))[])
 
