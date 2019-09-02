@@ -50,17 +50,21 @@ indicator <- function(type = c('AO', 'LS', 'TC'), index, n) {
 }
 
 # indicator('AO', 1, 1)
+# indicator('TC', 1, 1)
 # indicator('AO', 2, 5)
 # indicator('LS', 1, 5)
 # indicator('TC', 5, 5)
 # indicator('AA', 5, 5)
 
 decay <- function(index, decay, n) {
-  exp.decay <- c(rep(0, index - 1L), 1, decay^(1:(n-index)))
+  if (index > n) stop('ERROR: index larger than n.')
+  exp.decay <- c(rep(0, index - 1L), decay^(0:(n-index)))
   exp.decay - c(0, exp.decay[-n])
 }
 
 decay(2, 0.7, 5)
+decay(1, 0.7, 2)
+decay(1, 0.7, 1)
 
 # Dit is z_t - z_t-1 - ... = w_t ~ epsilon distributed
 logL.base <- function(w, mu, sigma2) {
@@ -81,7 +85,7 @@ Optimizer <- function(z, types, indexes, mu, sigma2) {
 
   type.par.nr <- ifelse(types == 'TC', 2L, 1L)
   par.idx.delta <- cumsum(type.par.nr)[which(type.par.nr == 2L)]
-  par.idx.alpha <- setdiff(1L:sum(type.par.nr), par.idx.delta)
+  par.idx.alpha <- setdiff(seq.int(1L, length.out = sum(type.par.nr)), par.idx.delta)
 
   par.init <- rep(0, sum(type.par.nr))
   par.init[par.idx.alpha] <- z[indexes]
@@ -111,8 +115,8 @@ Optimizer <- function(z, types, indexes, mu, sigma2) {
     ul <- rep(Inf, length(par.init))
     ll <- -ul
 
-    ul[par.idx.delta] <- 1
-    ll[par.idx.delta] <- 0
+    ul[par.idx.delta] <- 0.90
+    ll[par.idx.delta] <- 0.10
 
     opt <- optim(par = par.init, fn = logL, method = 'L-BFGS-B',
                  lower = ll, upper = ul,
@@ -180,7 +184,7 @@ sweep <- function(x, base.types = NULL, base.indexes = NULL,
     types.signficant <- function(par, types) {
       type.par.nr <- ifelse(types == 'TC', 2L, 1L)
       par.idx.delta <- cumsum(type.par.nr)[which(type.par.nr == 2L)]
-      par.idx.alpha <- setdiff(1L:sum(type.par.nr), par.idx.delta)
+      par.idx.alpha <- setdiff(seq.int(1L, length.out = sum(type.par.nr)), par.idx.delta)
 
       par.alpha <- par[par.idx.alpha]
       x.idx <- c(base.indexes, index)
@@ -288,7 +292,7 @@ detect <- function(x, timestamps, nr.tail = 25) {
 
     type.par.nr <- ifelse(attr(res, 'types') == 'TC', 2L, 1L)
     par.idx.delta <- cumsum(type.par.nr)[which(type.par.nr == 2L)]
-    par.idx.alpha <- setdiff(1L:sum(type.par.nr), par.idx.delta)
+    par.idx.alpha <- setdiff(seq.int(1L, length.out = sum(type.par.nr)), par.idx.delta)
     par.delta <- rep(NA, length(type.par.nr))
     par.delta[attr(res, 'types') == 'TC'] <- attr(res, 'par')[par.idx.delta]
 
@@ -304,6 +308,6 @@ detect <- function(x, timestamps, nr.tail = 25) {
 }
 
 # set.seed(2019)
-# print(detect(x = c(rnorm(19), 50, rnorm(19) + 50, -50, rnorm(4), rnorm(45) + 100*0.8^(0:44), 50, rnorm(7)),
+# print(detect(x = c(-50, rnorm(18), 50, rnorm(19) + 50, -50, rnorm(4), rnorm(45) + 100*0.8^(0:44), 50, rnorm(7)),
 #              timestamps = seq(as.POSIXct('2000-01-01'), as.POSIXct('2000-01-02'), by = '15 min'))[])
 
