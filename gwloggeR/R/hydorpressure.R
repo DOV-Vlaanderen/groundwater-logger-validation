@@ -221,11 +221,11 @@ lrtest <- function(logL0, logL, df.diff) {
 }
 
 
-seeker <- function(x, mu, sigma2, outlier){
+seeker <- function(x, mu, sigma2, outlier, types){
   sweep.indexes <- which(outlier)
   pt <- ProgressTable()
   pt$update(Optimizer(z = x, types = NULL, indexes = NULL, mu = mu, sigma2 = sigma2)$optimize())
-  lapply(sweep(x, mu = mu, sigma2 = sigma2, types = c('AO', 'LS', 'TC'), sweep.indexes = sweep.indexes), pt$update)
+  lapply(sweep(x, mu = mu, sigma2 = sigma2, types = types, sweep.indexes = sweep.indexes), pt$update)
 
   repeat({
     # idealiter zouden alle permutaties moeten getest worden voor 2 parameters, en niet
@@ -239,7 +239,7 @@ seeker <- function(x, mu, sigma2, outlier){
                  base.types = attr(base, 'types'),
                  base.indexes = attr(base, 'indexes'),
                  mu = mu, sigma2 = sigma2,
-                 types = c('AO', 'LS', 'TC'),
+                 types = types,
                  sweep.indexes = sweep.indexes), pt$update)
 
     if (base.df != pt$get.df.base.swept()) next() # if df.base changed: retry
@@ -249,7 +249,7 @@ seeker <- function(x, mu, sigma2, outlier){
   pt$get(pt$get.df.base.swept())
 }
 
-detect <- function(x, timestamps, nr.tail = 25) {
+detect <- function(x, timestamps, types = c('AO', 'LS', 'TC'), nr.tail = 25) {
   stopifnot(length(x) == length(timestamps))
   idx <- order(timestamps)
   x <- x[idx]
@@ -289,7 +289,7 @@ detect <- function(x, timestamps, nr.tail = 25) {
   res <- mapply(start = drle[, start], end = drle[, end], FUN = function(start, end) {
     df <- dif[start:end, ]
 
-    res <- seeker(x = df$vdiff, outlier = df$outlier, mu = df$mu, sigma2 = df$sigma2)
+    res <- seeker(x = df$vdiff, outlier = df$outlier, types = types, mu = df$mu, sigma2 = df$sigma2)
 
     type.par.nr <- ifelse(attr(res, 'types') == 'TC', 2L, 1L)
     par.idx.delta <- cumsum(type.par.nr)[which(type.par.nr == 2L)]
