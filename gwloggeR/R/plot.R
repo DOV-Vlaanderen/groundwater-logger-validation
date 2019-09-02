@@ -35,6 +35,20 @@ plot.add.outliers <- function(plot) {
     ggplot2::scale_color_manual(name = "OUTLIER", values = c("FALSE" = "black", "TRUE" = "red"))
 }
 
+plot.add.tempchanges <- function(plot) {
+  data <- data.table::copy(plot$data)
+  idx <- which(data$tempchanges)
+  idx <- sort(unique(pmax(c(idx, idx - 1L), 1L)))
+
+  data[idx, group := TRUE]
+  data[, group := data.table::rleid(group)]
+
+  plot +
+    ggplot2::geom_point(data = data[idx,], color = 'blue') +
+    ggplot2::geom_line(data = data[idx,], mapping = ggplot2::aes(group = group),
+                       color = 'red', alpha = .6)
+}
+
 # plot.data <- function(x, timestamps = NULL, outliers = NULL, levelshifts = NULL) {
 #   n <- length(x)
 #   timestamps.invalid <- is.null(timestamps) | all(is.na(timestamps))
@@ -48,9 +62,13 @@ plot.data <- function(x, timestamps = NULL, df.types) {
   n <- length(x)
   timestamps.invalid <- is.null(timestamps) | all(is.na(timestamps))
   x.axis <- if (timestamps.invalid) 1:n else timestamps
-  data <- data.table::data.table(x = x.axis, y = x, outliers = FALSE, levelshifts = FALSE)
+  data <- data.table::data.table(x = x.axis, y = x, outliers = FALSE, levelshifts = FALSE,
+                                 tempchanges = FALSE)
   data[df.types[type == 'AO', index], outliers := TRUE]
   data[df.types[type == 'LS', index], levelshifts := TRUE]
+
+  df.decay <- df.types[type == 'TC', .('decay' = alpha*delta^(0:1000)), by = index][abs(decay) > 5, .(decay, .N), by = index]
+  if (nrow(df.decay) > 0L) data[df.decay[, .('idx' =index:(index + N - 1L)), by = .(index, N)][, idx], tempchanges := TRUE]
 
   data <- data[!is.na(x),]
   data.table::setkey(data, x)
