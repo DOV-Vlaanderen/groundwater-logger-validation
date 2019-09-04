@@ -120,7 +120,7 @@ Optimizer <- function(z, types, indexes, mu, sigma2) {
 
     opt <- optim(par = par.init, fn = logL, method = 'L-BFGS-B',
                  lower = ll, upper = ul,
-                 control = list('fnscale' = -1, 'lmm' = 7))
+                 control = list('fnscale' = -1, 'lmm' = 11))
 
     structure(round(opt$value, digits = 6),
               'par' = round(opt$par, digits = 6),
