@@ -163,8 +163,9 @@ ProgressTable <- function() {
   }
 
   get <- function(df = NULL) { # df = nr.parameters
-    if (is.null(df)) tbl
-    else tbl[[df + 1L]]
+    if (is.null(df)) return(tbl)
+    if (df + 1L > length(tbl)) return(NULL)
+    tbl[[df + 1L]]
   }
 
   get.df.base.swept <- function() df.base.swept
@@ -244,6 +245,7 @@ seeker <- function(x, mu, sigma2, outlier, types){
                  sweep.indexes = sweep.indexes), pt$update)
 
     if (base.df != pt$get.df.base.swept()) next() # if df.base changed: retry
+    if (is.null(pt$get(base.df + 1L))) break() # no more new options
     if (lrtest(logL0 = base, logL = pt$get(base.df + 1L), df.diff = 1L) > 1E-4) break()
   })
 
