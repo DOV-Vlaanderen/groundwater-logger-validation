@@ -244,7 +244,7 @@ seeker <- function(x, mu, sigma2, outlier, types){
                  sweep.indexes = sweep.indexes), pt$update)
 
     if (base.df != pt$get.df.base.swept()) next() # if df.base changed: retry
-    if (do.call(lrtest, list(base, pt$get(base.df + 1L), 'df.diff' = 1L)) > 1E-8) break()
+    if (lrtest(logL0 = base, logL = pt$get(base.df + 1L), df.diff = 1L) > 1E-4) break()
   })
 
   pt$get(pt$get.df.base.swept())
