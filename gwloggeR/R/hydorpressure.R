@@ -120,7 +120,7 @@ Optimizer <- function(z, types, indexes, mu, sigma2) {
 
     opt <- optim(par = par.init, fn = logL, method = 'L-BFGS-B',
                  lower = ll, upper = ul,
-                 control = list('fnscale' = -1))
+                 control = list('fnscale' = -1, 'lmm' = 7))
 
     structure(round(opt$value, digits = 6),
               'par' = round(opt$par, digits = 6),
@@ -137,7 +137,8 @@ Optimizer <- function(z, types, indexes, mu, sigma2) {
 #tmp <- Optimizer(z = rnorm(1000), types = c('AO', 'TC', 'LS'), indexes = c(1, 2, 3), mu = 0, sigma2 = 100)
 # tmp <- Optimizer(z = X, types = 'TC', indexes = 26L, mu = MU, sigma2 = SIGMA2)
 # tmp <- Optimizer(z = X, types = c('LS', 'TC'), indexes = c(26L, 26L), mu = MU, sigma2 = SIGMA2)
-# tmp$optimize()
+#tmp <- Optimizer(z = DF$vdiff, types = 'TC', indexes = 54L, mu = DF$mu, sigma2 = DF$sigma2)
+#tmp$optimize()
 
 ProgressTable <- function() {
 
