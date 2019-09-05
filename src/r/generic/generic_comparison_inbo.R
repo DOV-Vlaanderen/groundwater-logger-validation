@@ -2,7 +2,8 @@ local({
   print(Sys.time())
   folder <- c("./../r/tsoutliers/tsoutliers_inbo/",
               "./../r/generic/generic_tsoutliers_inbo/",
-              "./../r/generic/generic_v0.05_inbo/")
+              "./../r/generic/generic_v0.05_inbo/",
+              "./../r/generic/generic_v0.06_inbo/")
   pdf(file = './generic/generic_comparison_inbo.pdf', width = 16, height = 9, compress = TRUE)
   on.exit(dev.off())
 

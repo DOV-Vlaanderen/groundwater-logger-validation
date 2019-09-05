@@ -4,7 +4,8 @@ local({
               "./../r/outliers/outliers_v0.04_geotech/",
               "./../r/outliers/outliers_tsoutliers_geotech/",
               "./../r/generic/generic_tsoutliers_geotech/",
-              "./../r/generic/generic_v0.05_geotech/")
+              "./../r/generic/generic_v0.05_geotech/",
+              "./../r/generic/generic_v0.06_geotech/")
   pdf(file = './generic/generic_comparison_geotech.pdf', width = 16, height = 9, compress = TRUE)
   on.exit(dev.off())
 
