@@ -181,6 +181,8 @@ ProgressTable <- function() {
   df.base.swept <- 0L
 
   update <- function(result) {
+    if (class(result) != 'Optimizer.Result') return()
+
     par <- attr(result, 'par')
     nr.par <- length(par)
     tbl.idx <- nr.par + 1L
@@ -216,6 +218,10 @@ sweep <- function(x, base.types = NULL, base.indexes = NULL, base.par = NULL,
                   sweep.indexes, types, mu, sigma2) {
 
   sweeper <- function(type, index, base.types, base.indexes, base.par) {
+
+    # Don't check if new type/index is allready in base
+    if (any(type == base.types & index == base.indexes)) return(NULL)
+
     O <- Optimizer(z = x, mu = mu, sigma2 = sigma2,
                    types = c(base.types, type),
                    indexes = c(base.indexes, index))
