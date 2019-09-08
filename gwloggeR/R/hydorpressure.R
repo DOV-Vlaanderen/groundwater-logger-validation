@@ -81,11 +81,16 @@ Optimizer.Result <- function(logLval, par, types, types.significant, indexes) {
 }
 
 Optimizer <- function(z, types, indexes, mu, sigma2, par.init = NULL) {
+  n <- length(z)
+
   if (length(types) != length(indexes))
     stop('ERROR: types and indexes must have equal length.')
 
-  n <- length(z)
-  force(mu); force(sigma2)
+  if (!(n == length(mu) || length(mu) == 1L))
+    stop('ERROR: z and mu must have same length or length(mu) == 1.')
+
+  if (!(n == length(sigma2) || length(sigma2) == 1L))
+    stop('ERROR: z and sigma2 must have same length or length(sigma2) == 1.')
 
   # M is the indicator matrix according to type
   # mapply costs 35 mus, while indicator 15 mus for n = 1000
@@ -211,10 +216,9 @@ sweep <- function(x, base.types = NULL, base.indexes = NULL, base.par = NULL,
                   sweep.indexes, types, mu, sigma2) {
 
   sweeper <- function(type, index, base.types, base.indexes, base.par) {
-    O <- Optimizer(z = x,
+    O <- Optimizer(z = x, mu = mu, sigma2 = sigma2,
                    types = c(base.types, type),
-                   indexes = c(base.indexes, index),
-                   mu = mu, sigma2 = sigma2)
+                   indexes = c(base.indexes, index))
 
     O$set.par.init(c(base.par, if (type == 'TC') c(0, 0.7) else 0))
 
