@@ -71,10 +71,11 @@ logL.base <- function(w, mu, sigma2) {
   -sum((w - mu)^2/(2*sigma2))
 }
 
-Optimizer.Result <- function(logLval, par, types, indexes) {
+Optimizer.Result <- function(logLval, par, types, types.significant, indexes) {
   opt <- structure(round(logLval, digits = 4),
                    'par' = round(par, digits = 3),
-                   'types' = types, 'indexes' = indexes)
+                   'types' = types, 'types.significant' = types.significant,
+                   'indexes' = indexes)
   class(opt) <- 'Optimizer.Result'
   opt
 }
@@ -121,6 +122,12 @@ Optimizer <- function(z, types, indexes, mu, sigma2, par.init = NULL) {
     logL.base(w = z - rowSums(M), mu = mu, sigma2 = sigma2)
   }
 
+  types.significant <- function(par, p.val.trehold = 1e-5) {
+    par.alpha <- par[par.idx.alpha]
+    p.val <- pnorm(par.alpha, mean = mu[indexes], sd = sqrt(sigma2[indexes]))
+    p.val < p.val.trehold | p.val > 1-p.val.trehold
+  }
+
   optimize <- function() {
     ul <- rep(1e8, length(par.init))
     ll <- -ul
@@ -139,7 +146,8 @@ Optimizer <- function(z, types, indexes, mu, sigma2, par.init = NULL) {
 
     Optimizer.Result(logLval = round(opt$value, digits = 4),
                      par = round(opt$par, digits = 3),
-                     types = types, indexes = indexes)
+                     types = types, types.significant = types.significant(opt$par),
+                     indexes = indexes)
   }
 
   list('optimize' = optimize)
@@ -197,17 +205,6 @@ sweep <- function(x, base.types = NULL, base.indexes = NULL, base.par = NULL,
                   sweep.indexes, types, mu, sigma2) {
 
   fn <- function(type, index, base.types, base.indexes, base.par) {
-    types.signficant <- function(par, types) {
-      type.par.nr <- ifelse(types == 'TC', 2L, 1L)
-      par.idx.delta <- cumsum(type.par.nr)[which(type.par.nr == 2L)]
-      par.idx.alpha <- setdiff(seq.int(1L, length.out = sum(type.par.nr)), par.idx.delta)
-
-      par.alpha <- par[par.idx.alpha]
-      x.idx <- c(base.indexes, index)
-      p.val <- pnorm(par.alpha, mean = mu[x.idx], sd = sqrt(sigma2[x.idx]))
-      p.val < 1e-5 | p.val > 1-1e-5
-    }
-
     O <- Optimizer(z = x,
                    types = c(base.types, type),
                    indexes = c(base.indexes, index),
@@ -219,7 +216,7 @@ sweep <- function(x, base.types = NULL, base.indexes = NULL, base.par = NULL,
     # if last insignificant: OK, else remove and recurse
     par <- attr(opt, 'par')
     types <- attr(opt, 'types')
-    types.sig <- types.signficant(par = par, types = types)
+    types.sig <- attr(opt, 'types.significant')
     if (length(base.types) > 1L && any(!types.sig[-length(types.sig)])) {
       base.types.sig <- types.sig[-length(types.sig)]
       fn(type, index,
