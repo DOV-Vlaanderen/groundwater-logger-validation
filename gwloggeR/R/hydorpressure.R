@@ -42,10 +42,10 @@ indicator <- function(type = c('AO', 'LS', 'TC'), index, n) {
   type <- match.arg(type)
 
   switch (type,
-    'AO' = if (index == n) rep(0, n) # if last point, then all 0
-           else rep(c(0, 1, -1, 0), c(index - 1L, 1L, 1L, n - index - 1L)),
-    'LS' = rep(c(0, 1, 0), c(index - 1L, 1L, n - index)),
-    'TC' = rep(c(0, 1), c(index - 1L, n - index + 1L))
+          'AO' = if (index == n) rep(0, n) # if last point, then all 0
+          else rep(c(0, 1, -1, 0), c(index - 1L, 1L, 1L, n - index - 1L)),
+          'LS' = rep(c(0, 1, 0), c(index - 1L, 1L, n - index)),
+          'TC' = rep(c(0, 1), c(index - 1L, n - index + 1L))
   )
 }
 
@@ -71,7 +71,7 @@ logL.base <- function(w, mu, sigma2) {
   -sum((w - mu)^2/(2*sigma2))
 }
 
-Optimizer <- function(z, types, indexes, mu, sigma2) {
+Optimizer <- function(z, types, indexes, mu, sigma2, par.init = NULL) {
   if (length(types) != length(indexes))
     stop('ERROR: types and indexes must have equal length.')
 
@@ -87,9 +87,11 @@ Optimizer <- function(z, types, indexes, mu, sigma2) {
   par.idx.delta <- cumsum(type.par.nr)[which(type.par.nr == 2L)]
   par.idx.alpha <- setdiff(seq.int(1L, length.out = sum(type.par.nr)), par.idx.delta)
 
-  par.init <- rep(0, sum(type.par.nr))
-  par.init[par.idx.alpha] <- z[indexes]
-  par.init[par.idx.delta] <- 0.7
+  if (is.null(par.init)) {
+    par.init <- rep(0, sum(type.par.nr))
+    par.init[par.idx.alpha] <- z[indexes]
+    par.init[par.idx.delta] <- 0.7
+  }
 
   type.idx.tc <- which(types == 'TC')
   indexes.tc <- indexes[type.idx.tc]
@@ -112,18 +114,23 @@ Optimizer <- function(z, types, indexes, mu, sigma2) {
   }
 
   optimize <- function() {
-    ul <- rep(Inf, length(par.init))
+    ul <- rep(1e8, length(par.init))
     ll <- -ul
 
     ul[par.idx.delta] <- 0.90
     ll[par.idx.delta] <- 0.10
 
+    parscale <- abs(par.init)
+    parscale[par.idx.delta] <- 0.5 # doubles the range such that it is > 1
+    parscale[parscale == 0] <- 10
+
     opt <- optim(par = par.init, fn = logL, method = 'L-BFGS-B',
                  lower = ll, upper = ul,
-                 control = list('fnscale' = -1, 'lmm' = 11))
+                 control = list('fnscale' = -1,
+                                'parscale' = parscale))
 
-    structure(round(opt$value, digits = 6),
-              'par' = round(opt$par, digits = 6),
+    structure(round(opt$value, digits = 4),
+              'par' = round(opt$par, digits = 3),
               'types' = types, 'indexes' = indexes)
   }
 
@@ -137,8 +144,8 @@ Optimizer <- function(z, types, indexes, mu, sigma2) {
 #tmp <- Optimizer(z = rnorm(1000), types = c('AO', 'TC', 'LS'), indexes = c(1, 2, 3), mu = 0, sigma2 = 100)
 # tmp <- Optimizer(z = X, types = 'TC', indexes = 26L, mu = MU, sigma2 = SIGMA2)
 # tmp <- Optimizer(z = X, types = c('LS', 'TC'), indexes = c(26L, 26L), mu = MU, sigma2 = SIGMA2)
-#tmp <- Optimizer(z = DF$vdiff, types = 'TC', indexes = 54L, mu = DF$mu, sigma2 = DF$sigma2)
-#tmp$optimize()
+# tmp <- Optimizer(z = DF$vdiff, types = 'TC', indexes = 54L, mu = DF$mu, sigma2 = DF$sigma2)
+# tmp$optimize()
 
 ProgressTable <- function() {
 
@@ -178,11 +185,10 @@ ProgressTable <- function() {
        'set.df.base.swept' = set.df.base.swept)
 }
 
-sweep <- function(x, base.types = NULL, base.indexes = NULL,
+sweep <- function(x, base.types = NULL, base.indexes = NULL, base.par = NULL,
                   sweep.indexes, types, mu, sigma2) {
 
-  fn <- function(type, index, base.types, base.indexes) {
-
+  fn <- function(type, index, base.types, base.indexes, base.par) {
     types.signficant <- function(par, types) {
       type.par.nr <- ifelse(types == 'TC', 2L, 1L)
       par.idx.delta <- cumsum(type.par.nr)[which(type.par.nr == 2L)]
@@ -194,18 +200,24 @@ sweep <- function(x, base.types = NULL, base.indexes = NULL,
       p.val < 1e-5 | p.val > 1-1e-5
     }
 
-    O <- Optimizer(z = x, types = c(base.types, type), indexes = c(base.indexes, index),
+    O <- Optimizer(z = x,
+                   types = c(base.types, type),
+                   indexes = c(base.indexes, index),
+                   par.init = c(base.par, if (type == 'TC') c(0, 0.7) else 0),
                    mu = mu, sigma2 = sigma2)
 
     opt <- O$optimize()
 
     # if last insignificant: OK, else remove and recurse
     par <- attr(opt, 'par')
-    types.sig <- types.signficant(par = par, types = attr(opt, 'types'))
+    types <- attr(opt, 'types')
+    types.sig <- types.signficant(par = par, types = types)
     if (length(base.types) > 1L && any(!types.sig[-length(types.sig)])) {
+      base.types.sig <- types.sig[-length(types.sig)]
       fn(type, index,
-         base.types = base.types[types.sig[-length(types.sig)]],
-         base.indexes = base.indexes[types.sig[-length(types.sig)]])
+         base.types = base.types[base.types.sig],
+         base.indexes = base.indexes[base.types.sig],
+         base.par = par[1:length(base.par)][rep(base.types.sig, ifelse(base.types == 'TC', 2L, 1L))])
     } else {
       opt
     }
@@ -215,6 +227,7 @@ sweep <- function(x, base.types = NULL, base.indexes = NULL,
   mapply(fn, index = rep(sweep.indexes, times = length(types)),
          type = rep(types, each = length(sweep.indexes)),
          base.types = list(base.types), base.indexes = list(base.indexes),
+         base.par = list(base.par),
          SIMPLIFY = FALSE)
 }
 
@@ -240,6 +253,7 @@ seeker <- function(x, mu, sigma2, outlier, types){
     lapply(sweep(x = x,
                  base.types = attr(base, 'types'),
                  base.indexes = attr(base, 'indexes'),
+                 base.par = attr(base, 'par'),
                  mu = mu, sigma2 = sigma2,
                  types = types,
                  sweep.indexes = sweep.indexes), pt$update)
@@ -270,7 +284,7 @@ detect <- function(x, timestamps, types = c('AO', 'LS', 'TC'), nr.tail = 25) {
                        'mu' = mean(dens), 'sigma2' = var(dens),
                        'n.dens' = length(dens),
                        'c' = c.norm.optimal(alpha = 1/2000, n = n, type = 'two.sided'))
-  }, SIMPLIFY = FALSE)
+                }, SIMPLIFY = FALSE)
   map <- data.table::rbindlist(map)
   dif <- data.table::data.table('tsdiff' = tsdiff, 'vdiff' = vdiff)
   dif <- merge(dif, map, all.x = TRUE, sort = FALSE)
