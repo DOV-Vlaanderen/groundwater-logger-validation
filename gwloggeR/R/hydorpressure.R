@@ -136,6 +136,7 @@ Optimizer <- function(z, types, indexes, mu, sigma2, par.init = NULL) {
   }
 
   types.significant <- function(par, p.val.trehold = 1e-5) {
+    if (length(par) == 0L) return(NULL)
     par.alpha <- par[par.idx.alpha]
     p.val <- pnorm(par.alpha, mean = mu[indexes], sd = sqrt(sigma2[indexes]))
     p.val < p.val.trehold | p.val > 1-p.val.trehold
@@ -180,13 +181,30 @@ Optimizer <- function(z, types, indexes, mu, sigma2, par.init = NULL) {
 ProgressTable <- function() {
 
   # index is df + 1L (since df can be 0)
+  resultmap <- new.env(parent = environment())
   df.opt <- list()
   df.base.swept <- 0L
 
   interface <- new.env(parent = environment())
 
+  key <- function(types, indexes, raw = FALSE) {
+    if (length(types) == 0L) idx <- NULL
+    else idx <- order(types, indexes)
+    key <- list('types' = types[idx], 'indexes' = indexes[idx])
+    if (raw) serialize(key, connection = NULL, ascii = FALSE)
+    else key
+  }
+
+  hashkey <- function(types, indexes) {
+    hashkey <- digest::digest(key(types, indexes, raw = TRUE),
+                              serialize = FALSE, algo = 'md5')
+  }
+
   interface$update <- function(result) {
     if (class(result) != 'Optimizer.Result') return()
+
+    key <- hashkey(types = attr(result, 'types'), indexes = attr(result, 'indexes'))
+    resultmap[[key]] <- result
 
     par <- attr(result, 'par')
     nr.par <- length(par)
@@ -203,6 +221,10 @@ ProgressTable <- function() {
     }
   }
 
+  interface$exists <- function(types, indexes) {
+    exists(hashkey(types = types, indexes = indexes), resultmap)
+  }
+
   interface$get <- function(df = NULL) { # df = nr.parameters
     if (is.null(df)) return(df.opt)
     if (df + 1L > length(df.opt)) return(NULL)
@@ -217,16 +239,23 @@ ProgressTable <- function() {
 }
 
 sweep <- function(x, base.types = NULL, base.indexes = NULL, base.par = NULL,
-                  sweep.indexes, types, mu, sigma2) {
+                  sweep.indexes, types, mu, sigma2, pt) {
 
   sweeper <- function(type, index, base.types, base.indexes, base.par) {
+
+    types <- c(base.types, type)
+    indexes <- c(base.indexes, index)
 
     # Don't check if new type/index is allready in base
     if (any(type == base.types & index == base.indexes)) return(NULL)
 
+    # Don't check if allready exists in progress table
+    if (pt$exists(types = types, indexes = indexes)) return(NULL)
+
+    # Optimize
     O <- Optimizer(z = x, mu = mu, sigma2 = sigma2,
-                   types = c(base.types, type),
-                   indexes = c(base.indexes, index))
+                   types = types,
+                   indexes = indexes)
     O$set.par.init(c(base.par, if (type == 'TC') c(0, 0.7) else 0))
     opt <- O$optimize()
 
@@ -272,7 +301,8 @@ seeker <- function(x, mu, sigma2, outlier, types){
   pt <- ProgressTable()
   pt$update(Optimizer(z = x, types = NULL, indexes = NULL, mu = mu, sigma2 = sigma2)$optimize())
   invisible(rapply(object = sweep(x, mu = mu, sigma2 = sigma2,
-                                  types = types, sweep.indexes = sweep.indexes),
+                                  types = types, sweep.indexes = sweep.indexes,
+                                  pt = pt),
                    f = pt$update, classes = 'Optimizer.Result'))
 
   repeat({
@@ -289,7 +319,8 @@ seeker <- function(x, mu, sigma2, outlier, types){
                                     base.par = attr(base, 'par'),
                                     mu = mu, sigma2 = sigma2,
                                     types = types,
-                                    sweep.indexes = sweep.indexes),
+                                    sweep.indexes = sweep.indexes,
+                                    pt = pt),
                      f = pt$update, classes = 'Optimizer.Result'))
 
     if (base.df != pt$get.df.base.swept()) next() # if df.base changed: retry
