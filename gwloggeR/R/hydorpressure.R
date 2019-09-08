@@ -111,6 +111,9 @@ Optimizer <- function(z, types, indexes, mu, sigma2, par.init = NULL) {
   indexes.tc <- indexes[type.idx.tc]
 
   set.par.init <- function(par.init) {
+    if (length(par.init) != sum(type.par.nr))
+      stop(sprintf('ERROR: %s init parameters suplied, but one needs %s',
+                   length(par.init), sum(type.par.nr)))
     assign(x = 'par.init', value = par.init,
            envir = parent.env(env = environment()))
   }
@@ -225,24 +228,31 @@ sweep <- function(x, base.types = NULL, base.indexes = NULL, base.par = NULL,
     O <- Optimizer(z = x, mu = mu, sigma2 = sigma2,
                    types = c(base.types, type),
                    indexes = c(base.indexes, index))
-
     O$set.par.init(c(base.par, if (type == 'TC') c(0, 0.7) else 0))
-
     opt <- O$optimize()
 
     # if last insignificant: OK, else remove and recurse
-    par <- attr(opt, 'par')
-    types <- attr(opt, 'types')
     types.sig <- attr(opt, 'types.significant')
-    if (length(base.types) > 1L && any(!types.sig[-length(types.sig)])) {
+    opt.rec <- if (length(base.types) > 1L && any(!types.sig[-length(types.sig)])) {
+      par <- attr(opt, 'par')
       base.types.sig <- types.sig[-length(types.sig)]
       sweeper(type, index,
               base.types = base.types[base.types.sig],
               base.indexes = base.indexes[base.types.sig],
               base.par = par[1:length(base.par)][rep(base.types.sig, ifelse(base.types == 'TC', 2L, 1L))])
-    } else {
-      opt
     }
+
+    # if there is allready a type associated with the index, remove and retry
+    opt.short <- if (index %in% base.indexes) {
+      base.types.rm <- index == base.indexes
+      base.par.rm <- rep(base.types.rm, ifelse(base.types == 'TC', 2L, 1L))
+      sweeper(type = type, index = index,
+              base.types = base.types[!base.types.rm],
+              base.indexes = base.indexes[!base.types.rm],
+              base.par = base.par[!base.par.rm])
+    }
+
+    list(opt, opt.rec, opt.short)
   }
 
   # zou moeten nagegeken worden of index/type combo niet reeds is gebruikt.
@@ -262,7 +272,9 @@ seeker <- function(x, mu, sigma2, outlier, types){
   sweep.indexes <- which(outlier)
   pt <- ProgressTable()
   pt$update(Optimizer(z = x, types = NULL, indexes = NULL, mu = mu, sigma2 = sigma2)$optimize())
-  lapply(sweep(x, mu = mu, sigma2 = sigma2, types = types, sweep.indexes = sweep.indexes), pt$update)
+  invisible(rapply(object = sweep(x, mu = mu, sigma2 = sigma2,
+                                  types = types, sweep.indexes = sweep.indexes),
+                   f = pt$update, classes = 'Optimizer.Result'))
 
   repeat({
     # idealiter zouden alle permutaties moeten getest worden voor 2 parameters, en niet
@@ -272,13 +284,14 @@ seeker <- function(x, mu, sigma2, outlier, types){
     base <- pt$get(base.df)
     pt$set.df.base.swept(base.df)
 
-    lapply(sweep(x = x,
-                 base.types = attr(base, 'types'),
-                 base.indexes = attr(base, 'indexes'),
-                 base.par = attr(base, 'par'),
-                 mu = mu, sigma2 = sigma2,
-                 types = types,
-                 sweep.indexes = sweep.indexes), pt$update)
+    invisible(rapply(object = sweep(x = x,
+                                    base.types = attr(base, 'types'),
+                                    base.indexes = attr(base, 'indexes'),
+                                    base.par = attr(base, 'par'),
+                                    mu = mu, sigma2 = sigma2,
+                                    types = types,
+                                    sweep.indexes = sweep.indexes),
+                     f = pt$update, classes = 'Optimizer.Result'))
 
     if (base.df != pt$get.df.base.swept()) next() # if df.base changed: retry
     if (is.null(pt$get(base.df + 1L))) break() # no more new options
