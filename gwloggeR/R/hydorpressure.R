@@ -231,6 +231,10 @@ ProgressTable <- function() {
     df.opt[[df + 1L]]
   }
 
+  interface$get.result <- function(types, indexes) {
+    resultmap[[hashkey(types = types, indexes = indexes)]]
+  }
+
   interface$get.df.base.swept <- function() df.base.swept
 
   interface$set.df.base.swept <- function(df) df.base.swept <<- df
