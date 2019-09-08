@@ -225,7 +225,7 @@ ProgressTable <- function() {
     exists(hashkey(types = types, indexes = indexes), resultmap)
   }
 
-  interface$get <- function(df = NULL) { # df = nr.parameters
+  interface$get.best.result <- function(df = NULL) { # df = nr.parameters
     if (is.null(df)) return(df.opt)
     if (df + 1L > length(df.opt)) return(NULL)
     df.opt[[df + 1L]]
@@ -310,7 +310,7 @@ seeker <- function(x, mu, sigma2, outlier, types){
     # met 1 fixed, want die 1 fixed is optimaal voor 1 parameter model, maar niet
     # noodzakelijk samengaand met een andere parameter.
     base.df <- pt$get.df.base.swept() + 1L
-    base <- pt$get(base.df)
+    base <- pt$get.best.result(base.df)
     pt$set.df.base.swept(base.df)
 
     invisible(rapply(object = sweep(x = x,
@@ -324,11 +324,11 @@ seeker <- function(x, mu, sigma2, outlier, types){
                      f = pt$update, classes = 'Optimizer.Result'))
 
     if (base.df != pt$get.df.base.swept()) next() # if df.base changed: retry
-    if (is.null(pt$get(base.df + 1L))) break() # no more new options
-    if (lrtest(logL0 = base, logL = pt$get(base.df + 1L), df.diff = 1L) > 1E-4) break()
+    if (is.null(pt$get.best.result(base.df + 1L))) break() # no more new options
+    if (lrtest(logL0 = base, logL = pt$get.best.result(base.df + 1L), df.diff = 1L) > 1E-4) break()
   })
 
-  pt$get(pt$get.df.base.swept())
+  pt$get.best.result(pt$get.df.base.swept())
 }
 
 detect <- function(x, timestamps, types = c('AO', 'LS', 'TC'), nr.tail = 25) {
