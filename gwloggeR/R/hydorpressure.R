@@ -105,6 +105,11 @@ Optimizer <- function(z, types, indexes, mu, sigma2, par.init = NULL) {
   type.idx.tc <- which(types == 'TC')
   indexes.tc <- indexes[type.idx.tc]
 
+  set.par.init <- function(par.init) {
+    assign(x = 'par.init', value = par.init,
+           envir = parent.env(env = environment()))
+  }
+
   logL <- function(par) {
 
     if (length(types) == 0L) return(logL.base(w = z, mu = mu, sigma2 = sigma2))
@@ -150,7 +155,8 @@ Optimizer <- function(z, types, indexes, mu, sigma2, par.init = NULL) {
                      indexes = indexes)
   }
 
-  list('optimize' = optimize)
+  list('optimize' = optimize,
+       'set.par.init' = set.par.init)
 }
 
 #tmp <- Optimizer(z = rnorm(1), types = c('AO'), indexes = 1, mu = 0, sigma2 = 1)
@@ -208,8 +214,9 @@ sweep <- function(x, base.types = NULL, base.indexes = NULL, base.par = NULL,
     O <- Optimizer(z = x,
                    types = c(base.types, type),
                    indexes = c(base.indexes, index),
-                   par.init = c(base.par, if (type == 'TC') c(0, 0.7) else 0),
                    mu = mu, sigma2 = sigma2)
+
+    O$set.par.init(c(base.par, if (type == 'TC') c(0, 0.7) else 0))
 
     opt <- O$optimize()
 
