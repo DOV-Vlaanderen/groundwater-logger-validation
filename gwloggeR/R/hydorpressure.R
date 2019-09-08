@@ -183,7 +183,9 @@ ProgressTable <- function() {
   df.opt <- list()
   df.base.swept <- 0L
 
-  update <- function(result) {
+  interface <- new.env(parent = environment())
+
+  interface$update <- function(result) {
     if (class(result) != 'Optimizer.Result') return()
 
     par <- attr(result, 'par')
@@ -201,20 +203,17 @@ ProgressTable <- function() {
     }
   }
 
-  get <- function(df = NULL) { # df = nr.parameters
+  interface$get <- function(df = NULL) { # df = nr.parameters
     if (is.null(df)) return(df.opt)
     if (df + 1L > length(df.opt)) return(NULL)
     df.opt[[df + 1L]]
   }
 
-  get.df.base.swept <- function() df.base.swept
+  interface$get.df.base.swept <- function() df.base.swept
 
-  set.df.base.swept <- function(df) df.base.swept <<- df
+  interface$set.df.base.swept <- function(df) df.base.swept <<- df
 
-  list('update' = update,
-       'get' = get,
-       'get.df.base.swept' = get.df.base.swept,
-       'set.df.base.swept' = set.df.base.swept)
+  interface
 }
 
 sweep <- function(x, base.types = NULL, base.indexes = NULL, base.par = NULL,
