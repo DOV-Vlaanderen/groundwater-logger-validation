@@ -210,7 +210,7 @@ ProgressTable <- function() {
 sweep <- function(x, base.types = NULL, base.indexes = NULL, base.par = NULL,
                   sweep.indexes, types, mu, sigma2) {
 
-  fn <- function(type, index, base.types, base.indexes, base.par) {
+  sweeper <- function(type, index, base.types, base.indexes, base.par) {
     O <- Optimizer(z = x,
                    types = c(base.types, type),
                    indexes = c(base.indexes, index),
@@ -226,17 +226,17 @@ sweep <- function(x, base.types = NULL, base.indexes = NULL, base.par = NULL,
     types.sig <- attr(opt, 'types.significant')
     if (length(base.types) > 1L && any(!types.sig[-length(types.sig)])) {
       base.types.sig <- types.sig[-length(types.sig)]
-      fn(type, index,
-         base.types = base.types[base.types.sig],
-         base.indexes = base.indexes[base.types.sig],
-         base.par = par[1:length(base.par)][rep(base.types.sig, ifelse(base.types == 'TC', 2L, 1L))])
+      sweeper(type, index,
+              base.types = base.types[base.types.sig],
+              base.indexes = base.indexes[base.types.sig],
+              base.par = par[1:length(base.par)][rep(base.types.sig, ifelse(base.types == 'TC', 2L, 1L))])
     } else {
       opt
     }
   }
 
   # zou moeten nagegeken worden of index/type combo niet reeds is gebruikt.
-  mapply(fn, index = rep(sweep.indexes, times = length(types)),
+  mapply(sweeper, index = rep(sweep.indexes, times = length(types)),
          type = rep(types, each = length(sweep.indexes)),
          base.types = list(base.types), base.indexes = list(base.indexes),
          base.par = list(base.par),
