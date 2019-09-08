@@ -71,6 +71,14 @@ logL.base <- function(w, mu, sigma2) {
   -sum((w - mu)^2/(2*sigma2))
 }
 
+Optimizer.Result <- function(logLval, par, types, indexes) {
+  opt <- structure(round(logLval, digits = 4),
+                   'par' = round(par, digits = 3),
+                   'types' = types, 'indexes' = indexes)
+  class(opt) <- 'Optimizer.Result'
+  opt
+}
+
 Optimizer <- function(z, types, indexes, mu, sigma2, par.init = NULL) {
   if (length(types) != length(indexes))
     stop('ERROR: types and indexes must have equal length.')
@@ -129,9 +137,9 @@ Optimizer <- function(z, types, indexes, mu, sigma2, par.init = NULL) {
                  control = list('fnscale' = -1,
                                 'parscale' = parscale))
 
-    structure(round(opt$value, digits = 4),
-              'par' = round(opt$par, digits = 3),
-              'types' = types, 'indexes' = indexes)
+    Optimizer.Result(logLval = round(opt$value, digits = 4),
+                     par = round(opt$par, digits = 3),
+                     types = types, indexes = indexes)
   }
 
   list('optimize' = optimize)
