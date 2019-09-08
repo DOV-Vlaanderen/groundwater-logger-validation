@@ -2,9 +2,9 @@ library(gwloggeR)
 
 local({
   print(Sys.time())
-  for (f in Logger::enumerate('inbo')) {
+  for (f in gwloggeR.data::enumerate('inbo')) {
     print(basename(f))
-    df <- Logger(f)$df
+    df <- gwloggeR.data::read(f)$df
 
     local({
       png(paste0('./outliers/outliers_v0.01_inbo/', basename(f), '.png'), width = 1920, height = 1080)

@@ -9,7 +9,7 @@ local({
   pdf(file = './levelshifts/strucchange.pdf', width = 14, height = 7, compress = FALSE)
   for (f in get_loggers(partner = 'inbo')) {
     print(basename(f))
-    df <- Logger(f)$df
+    df <- gwloggeR.data::read(f)$df
 
     # remove no-timestamp
     df <- df[!is.na(DRME_OCR_UTC_DTE),]
@@ -40,7 +40,7 @@ local({
 # parallel::stopCluster(cl)
 
 
-df <- Logger('BAOL008X_72528')$df
+df <- gwloggeR.data::read('BAOL008X_72528')$df
 b <- strucchange::breakpoints(formula = DRME_DRU ~ 1, data = tmp)
 df[, FITTED := fitted(b)]
 df[, RESIDUALS := residuals(b)]

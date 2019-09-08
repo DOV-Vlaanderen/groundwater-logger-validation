@@ -9,7 +9,7 @@ local({
   pdf(file = './generic/generic_comparison_geotech.pdf', width = 16, height = 9, compress = TRUE)
   on.exit(dev.off())
 
-  for (f in Logger::enumerate('geotech')) {
+  for (f in gwloggeR.data::enumerate('geotech')) {
     print(basename(f))
     file.png <- list.files(folder, pattern = paste0(basename(f), '.*\\.png'), ignore.case = TRUE, recursive = TRUE, full.names = TRUE)
     png.list <- lapply(file.png, function(fn) grid::rasterGrob(png::readPNG(fn)))

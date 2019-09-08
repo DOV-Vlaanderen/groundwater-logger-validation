@@ -3,7 +3,7 @@ library(tsoutliers)
 
 local({
   print(Sys.time())
-  for (f in Logger::enumerate('geotech')) {
+  for (f in gwloggeR.data::enumerate('geotech')) {
     print(basename(f))
 
     tso.path <- paste0('./tsoutliers/tsoutliers_geotech/', basename(f), '.tsoutliers')

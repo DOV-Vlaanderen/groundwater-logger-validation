@@ -1,5 +1,5 @@
 get.diff <- function(f, timediff = 5) {
-  df <- Logger(f)$df
+  df <- gwloggeR.data::read(f)$df
   df <- df[!is.na(TIMESTAMP_UTC),]
   data.table::setkey(df, TIMESTAMP_UTC)
 
@@ -14,8 +14,8 @@ get.diff <- function(f, timediff = 5) {
   if (tdiff == timediff) return(structure(mindis, 'ts' = df$TIMESTAMP_UTC, 'x' = df$PRESSURE_VALUE))
   NULL
 }
-df5 <- sapply(Logger::enumerate('geotech'), FUN = get.diff, simplify = FALSE, USE.NAMES = TRUE, timediff = 5)
-df15 <- sapply(Logger::enumerate('geotech'), FUN = get.diff, simplify = FALSE, USE.NAMES = TRUE, timediff = 15)
+df5 <- sapply(gwloggeR.data::enumerate('geotech'), FUN = get.diff, simplify = FALSE, USE.NAMES = TRUE, timediff = 5)
+df15 <- sapply(gwloggeR.data::enumerate('geotech'), FUN = get.diff, simplify = FALSE, USE.NAMES = TRUE, timediff = 15)
 diffvec5 <- unlist(df5)
 diffvec15 <- unlist(df15)
 #tmp <- df[[1]]
@@ -47,7 +47,7 @@ lim15 <- 30
 # plot(df5[[length(df5) - 2]], ylim = c(0,1))
 # table(df5[[length(df5) - 2]])
 #
-# dfl <- Logger('28_C4068')$df
+# dfl <- gwloggeR.data::read('28_C4068')$df
 # plot(dfl$TIMESTAMP_UTC, dfl$PRESSURE_VALUE)
 
 local({

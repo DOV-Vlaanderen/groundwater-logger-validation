@@ -6,7 +6,7 @@ local({
   pdf(file = './outliers/outliers_comparison_inbo.pdf', width = 16, height = 9, compress = TRUE)
   on.exit(dev.off())
 
-  for (f in Logger::enumerate('inbo')) {
+  for (f in gwloggeR.data::enumerate('inbo')) {
     print(basename(f))
 
     file.png <- list.files(folder, pattern = basename(f), ignore.case = TRUE, recursive = TRUE, full.names = TRUE)

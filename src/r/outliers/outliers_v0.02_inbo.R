@@ -30,9 +30,9 @@ apriori("air pressure", "cmH2O")
 
 local({
   print(Sys.time())
-  for (f in Logger::enumerate(partner = 'inbo')) {
+  for (f in gwloggeR.data::enumerate(partner = 'inbo')) {
     print(basename(f))
-    df <- Logger(f)$df
+    df <- gwloggeR.data::read(f)$df
 
     point_sample_type <- substr(basename(f), 4L, 4L)
     ap <- switch (point_sample_type,
