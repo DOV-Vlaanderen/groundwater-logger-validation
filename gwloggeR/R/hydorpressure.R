@@ -180,7 +180,7 @@ Optimizer <- function(z, types, indexes, mu, sigma2, par.init = NULL) {
 ProgressTable <- function() {
 
   # index is df + 1L (since df can be 0)
-  tbl <- list()
+  df.opt <- list()
   df.base.swept <- 0L
 
   update <- function(result) {
@@ -188,13 +188,13 @@ ProgressTable <- function() {
 
     par <- attr(result, 'par')
     nr.par <- length(par)
-    tbl.idx <- nr.par + 1L
+    df.opt.idx <- nr.par + 1L
 
-    if (tbl.idx > length(tbl)
-        || result > tbl[[tbl.idx]]
-        || (result == tbl[[tbl.idx]]
-            && sum(abs(par)) < sum(abs(attr(tbl[[tbl.idx]], 'par'))))) {
-      tbl[[tbl.idx]] <<- result
+    if (df.opt.idx > length(df.opt)
+        || result > df.opt[[df.opt.idx]]
+        || (result == df.opt[[df.opt.idx]]
+            && sum(abs(par)) < sum(abs(attr(df.opt[[df.opt.idx]], 'par'))))) {
+      df.opt[[df.opt.idx]] <<- result
       # reduce current df.base.swept if parameters at the same level or below change
       if (df.base.swept >= nr.par)
         df.base.swept <<- max(0L, nr.par - 1L)
@@ -202,9 +202,9 @@ ProgressTable <- function() {
   }
 
   get <- function(df = NULL) { # df = nr.parameters
-    if (is.null(df)) return(tbl)
-    if (df + 1L > length(tbl)) return(NULL)
-    tbl[[df + 1L]]
+    if (is.null(df)) return(df.opt)
+    if (df + 1L > length(df.opt)) return(NULL)
+    df.opt[[df + 1L]]
   }
 
   get.df.base.swept <- function() df.base.swept
