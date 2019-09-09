@@ -50,7 +50,7 @@ setMethod(
       levelshifts <- Levelshifts(ls.x)
 
       if (plot) {
-        d <- differenceplot(x, timestamps = timestamps)
+        d <- differenceplot(x, timestamps = timestamps, outliers = levelshifts)
         s <- scatterplot.levelshifts(x, levelshifts = levelshifts, timestamps = timestamps)
         layout_matrix <- rbind(c(1,1),
                                c(2,2))

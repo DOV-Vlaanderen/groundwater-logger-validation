@@ -110,7 +110,7 @@ setMethod(
                            type = "two.sided", fun.density = NULL, cutpoints = NULL)
 
       if (plot) {
-        d <- differenceplot(x, timestamps = timestamps)
+        d <- differenceplot(x, timestamps = timestamps, outliers = rejects.x)
         s <- scatterplot(x, outliers = outliers, timestamps = timestamps)
         layout_matrix <- rbind(c(1,1),
                                c(2,2))

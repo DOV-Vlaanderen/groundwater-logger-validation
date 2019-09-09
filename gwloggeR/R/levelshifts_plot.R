@@ -20,11 +20,11 @@ scatterplot.levelshifts <- function(x, levelshifts = rep(FALSE, length(x)), time
     ggplot2::theme_light()
 }
 
-differenceplot <- function(x, timestamps = NULL) {
+differenceplot <- function(x, timestamps = NULL, outliers = FALSE) {
   n <- length(x)
   timestamps.invalid <- is.null(timestamps) | all(is.na(timestamps))
   x.axis <- if (timestamps.invalid) 1:n else timestamps
-  data <- data.frame(x = x.axis, y = x, outliers = FALSE)[order(x.axis),]
+  data <- data.frame(x = x.axis, y = x, outliers)[order(x.axis),]
   data <- data[!is.na(data[['x']]),]
   data[['y.diff']] <- c(NA, diff(data[['y']]))
 
