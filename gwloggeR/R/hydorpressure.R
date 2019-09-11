@@ -13,7 +13,7 @@ apriori.hydropressure.difference.samples <- function(interval.sec) {
     interval.sec <- 60*60*24*30
 
   # Unique time differences (DIFF.SEC) per FILE.
-  df.map <- hydropressure[, .(DIFF.SEC = unique(as.numeric(diff(TIMESTAMP_UTC), units = 'secs'))),
+  df.map <- hydropressure[, list(DIFF.SEC = unique(as.numeric(diff(TIMESTAMP_UTC), units = 'secs'))),
                           by = FILE]
 
   # Make sure that DIFF.SEC is unique per FILE.
@@ -25,7 +25,7 @@ apriori.hydropressure.difference.samples <- function(interval.sec) {
   df.map <- df.map[interval.sec %% DIFF.SEC == 0,]
   if (nrow(df.map) == 0L)
     stop(sprintf('ERROR: chosen interval (%s) not a multiple of any DIFF.SEC.', interval.sec))
-  df.hp <- hydropressure[J(df.map[, .(FILE)]),]
+  df.hp <- hydropressure[J(df.map[, list(FILE)]),]
 
   # Differences generation
   df.hp[, CUM.DIFF.SEC := as.numeric(difftime(TIMESTAMP_UTC, min(TIMESTAMP_UTC)), units = 'secs'),
@@ -34,7 +34,7 @@ apriori.hydropressure.difference.samples <- function(interval.sec) {
   # Point selection
   df.hp <- df.hp[CUM.DIFF.SEC %% interval.sec == 0, ]
 
-  df.hp[, .('DIFF.VALUE' = diff(PRESSURE_VALUE)), by = FILE][, DIFF.VALUE]
+  df.hp[, list('DIFF.VALUE' = diff(PRESSURE_VALUE)), by = FILE][, DIFF.VALUE]
 }
 
 indicator <- function(type = c('AO', 'LS', 'TC'), index, n) {
@@ -365,8 +365,8 @@ detect <- function(x, timestamps, types = c('AO', 'LS', 'TC'), nr.tail = 25) {
   drle[c(1L, .N), 'traverse' := values]
   drle[, 'traverse.id' := data.table::rleid(traverse)]
   drle <- drle[(traverse),
-               .('start' = ends[1L] - lengths[1L] + 1L,
-                 'end' = pmin(ends[length(ends)] + nr.tail, nrow(dif))),
+               list('start' = ends[1L] - lengths[1L] + 1L,
+                    'end' = pmin(ends[length(ends)] + nr.tail, nrow(dif))),
                by = traverse.id]
 
   empty.df <- data.table::data.table('type' = character(), 'index' = integer(),
