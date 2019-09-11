@@ -169,11 +169,14 @@ Top left is again the histogram of $\mathbf{x}$. But the green density this time
 
 ## `detect_outliers(x, apriori("hydrostatic pressure", units = "cmH2O"))`
 
+TO BE WRITTEN...
+
 Hydrostatic pressure incorporates _a-priori_ information about air pressure as the lower limit. The upper limit is determined with the `detect_outliers(x)` approach (i.e. without _a-priori_ information). The following example explains:
 
 ```{r}
-x <- c(985, 1070:1077, 1100)
-detect_outliers(x, apriori = apriori("hydrostatic pressure", "cmH2O"), plot = TRUE)
+x <- c(1070, 985, 1071:1077, 1100)
+ts <- seq(as.POSIXct('2010-01-01'), by = '5 min', length.out = 10L)
+detect_outliers(x, timestamps = ts, apriori = apriori("hydrostatic pressure", "cmH2O"), plot = TRUE)
 ```
 
 The top left density is now bimodal. The first mode is just the _a-priori_ air pressure, and the second is the robust estimate of the datapoints themselves, excluding the left outliers, using `detect_outliers(x)`. The reasoning is that hydrostatic pressure should never be higher than air pressure. Thus, since $985 \; cmH_2O$ is very unlikely given our _a-priori_ air pressure information, it is considered an outlier. Subsequently, robust estimates of $\mu$ and $\sigma$ are made based on remaining $\mathbf{x}$, from which $1100 \; cmH_2O$ also seems very unlikely on the right side.
