@@ -45,14 +45,16 @@ Outliers <- function(x.rejects, x.mean, x.sd,
 #' cars %>% dplyr::mutate("outlier" = detect_outliers(dist))
 #' }
 #'
+#' @importFrom methods setGeneric
 #' @export
 #' @rdname detect_outliers
-
-setGeneric("detect_outliers",
-           signature = c("x", "apriori"),
-           valueClass = "logical",
-           function(x, apriori, ..., plot = FALSE, verbose = FALSE, title = NULL, timestamps = NULL)
-             standardGeneric('detect_outliers')
+#'
+setGeneric(
+  "detect_outliers",
+  signature = c("x", "apriori"),
+  valueClass = "logical",
+  function(x, apriori, ..., plot = FALSE, verbose = FALSE, title = NULL, timestamps = NULL)
+    standardGeneric('detect_outliers')
 )
 
 #' @describeIn detect_outliers
@@ -60,7 +62,8 @@ setGeneric("detect_outliers",
 #' A normal distribution is assumed with mean and variance estimated using
 #' median and MAD as described in Leys, 2013.
 #' @references Leys, C. e.a., Detecting outliers, 2013.
-
+#' @importFrom methods setMethod
+#'
 setMethod(
   'detect_outliers',
   signature = c(x = "numeric", apriori = "missing"),
@@ -83,7 +86,8 @@ setMethod(
 
 #' @describeIn detect_outliers
 #' Takes _a-priori_ information about x into consideration.
-
+#' @importFrom methods setMethod
+#'
 setMethod(
   'detect_outliers',
   signature = c(x = "numeric", apriori = "apriori"),

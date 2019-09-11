@@ -17,18 +17,21 @@ Levelshifts <- function(vec) {
 #' @param verbose prints comprehensive information
 #' @param title adds title to the plot
 #' @return Logical vector with same length as x, specifying TRUE for an levelshift start.
+#' @importFrom methods setGeneric
 #' @export
 #' @rdname detect_levelshifts
-
-setGeneric("detect_levelshifts",
-           signature = c("x", "apriori"),
-           valueClass = "logical",
-           function(x, timestamps, apriori, ..., plot = FALSE, verbose = FALSE, title = NULL)
-             standardGeneric('detect_levelshifts')
+#'
+setGeneric(
+  "detect_levelshifts",
+  signature = c("x", "apriori"),
+  valueClass = "logical",
+  function(x, timestamps, apriori, ..., plot = FALSE, verbose = FALSE, title = NULL)
+    standardGeneric('detect_levelshifts')
 )
 
 
 #' Levelshift detection function
+#' @importFrom methods setMethod
 #' @describeIn detect_levelshifts
 #'
 setMethod(
