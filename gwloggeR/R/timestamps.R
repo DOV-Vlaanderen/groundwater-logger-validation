@@ -14,6 +14,10 @@ assert.timestamp <- function(timestamps) {
   if(!is.timestamp(timestamps)) stop('ERROR: timestamp must either be POSIXct or Date.')
 }
 
+assert.notna.timestamp <- function(timestamps) {
+  if (any(is.na(timestamps))) stop('ERROR: timestamps may not be NA.')
+}
+
 validate.timestamp <- function(timestamps) {
   nr.na <- sum(is.na(timestamps))
   if (nr.na > 0L)
