@@ -35,6 +35,9 @@ Outliers <- function(x.rejects, x.mean, x.sd,
 #' are NA.
 #' Note that in any case, timestamps do not have to be ordered.
 #' @return Logical vector with same length as x, specifying TRUE for an outlier.
+#' @references
+#' Chen, C. e.a., Joint Estimation of Model Parameters and Outlier Effects in Time Series, 1993.
+#' Leys, C. e.a., Detecting outliers, 2013.
 #' @examples
 #' # In case of a vector:
 #' x <- c(1:10, 100)
@@ -65,7 +68,6 @@ setGeneric(
 #' Only considers x, without any _a-priori_ information.
 #' A normal distribution is assumed with mean and variance estimated using
 #' median and MAD as described in Leys, 2013.
-#' @references Leys, C. e.a., Detecting outliers, 2013.
 #' @importFrom methods setMethod
 #'
 setMethod(
