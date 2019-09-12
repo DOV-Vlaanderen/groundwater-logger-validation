@@ -115,11 +115,7 @@ setMethod(
 
     if (apriori$data_type == "hydrostatic pressure") return ({
 
-      # timestamp checks
-      if (is.null(timestamps)) stop('ERROR: for hydrostatic pressure one needs to supply timestamps.')
-      if (length(timestamps) != length(x)) stop('ERROR: x and timestamps must have same length.')
-      assert.timestamp(timestamps)
-      assert.notna.timestamp(timestamps)
+      hydropressure.timestamp.validation(timestamps)
 
       det <- detect(x = x, timestamps = timestamps)
       rejects.x <- rep(FALSE, length(x))

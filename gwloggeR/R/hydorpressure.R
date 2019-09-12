@@ -1,3 +1,11 @@
+#' @keywords internal
+hydropressure.timestamp.validation <- function(timestamps) {
+  if (is.null(timestamps)) stop('ERROR: for hydrostatic pressure one needs to supply timestamps.')
+  if (length(timestamps) != length(x)) stop('ERROR: x and timestamps must have same length.')
+  assert.timestamp(timestamps)
+  assert.notna.timestamp(timestamps)
+}
+
 #' @importFrom data.table :=
 #' @keywords internal
 apriori.hydropressure.difference.samples <- function(interval.sec) {
