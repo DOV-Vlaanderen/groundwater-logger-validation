@@ -46,7 +46,7 @@ setMethod(
 
     if (apriori$data_type == "hydrostatic pressure") return ({
 
-      hydropressure.timestamp.validation(timestamps)
+      hydropressure.timestamp.validation(timestamps, x)
 
       det <- detect(x = x, timestamps = timestamps)
       ls.x <- rep(FALSE, length(x))
