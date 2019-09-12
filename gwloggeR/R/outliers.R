@@ -26,10 +26,14 @@ Outliers <- function(x.rejects, x.mean, x.sd,
 #' @param plot prints comprehensive plots
 #' @param verbose prints comprehensive information
 #' @param title adds title to the plot
-#' @param timestamps timestamp vector. Has no direct meaning, except aestehtical
-#' for the scatter plot if plot = TRUE. In case there are duplicates and NA
-#' values, only warnings will be raised which might suggest that something is
-#' wrong with x.
+#' @param timestamps timestamp vector. For airpressure, timestamps are of
+#' no importance, except aestehtical for the scatter plot if plot = TRUE.
+#' In case there are duplicates and NA values, only warnings will be raised
+#' which might suggest that something is wrong with x.
+#' For hydrostatic pressure, timestamps are important. Therefore an error
+#' is raised if timestamps are not supplied, or if any of the timestamps
+#' are NA.
+#' Note that in any case, timestamps do not have to be ordered.
 #' @return Logical vector with same length as x, specifying TRUE for an outlier.
 #' @examples
 #' # In case of a vector:
@@ -93,35 +97,34 @@ setMethod(
   signature = c(x = "numeric", apriori = "apriori"),
   function(x, apriori, plot, verbose, title, timestamps) {
 
-    if (!is.null(timestamps)) {
-      assert.timestamp(timestamps)
-      validate.timestamp(timestamps)
-      if (length(timestamps) != length(x)) stop('x and timestamps must have same length.')
-    }
-
     if (apriori$data_type == "air pressure") return ({
+
+      # timestamp checks
+      if (!is.null(timestamps)) {
+        assert.timestamp(timestamps)
+        validate.timestamp(timestamps)
+        if (length(timestamps) != length(x)) stop('ERROR: x and timestamps must have same length.')
+      }
+
       outliers <- detect_outliers_norm(x, x.mean = apriori$mean, x.sd = sqrt(apriori$var))
       if (plot) outliers_plot(x = x, outliers = outliers, timestamps = timestamps, show.qqplot = FALSE, title = title)
       if (verbose) outliers else as.vector(outliers)
     })
 
     if (apriori$data_type == "hydrostatic pressure") return ({
+
+      # timestamp checks
+      if (is.null(timestamps)) stop('ERROR: for hydrostatic pressure one needs to supply timestamps.')
+      if (length(timestamps) != length(x)) stop('ERROR: x and timestamps must have same length.')
+      assert.timestamp(timestamps)
+      assert.notna.timestamp(timestamps)
+
       det <- detect(x = x, timestamps = timestamps)
       rejects.x <- rep(FALSE, length(x))
       rejects.x[det[type == 'AO', index]] <- TRUE
 
       outliers <- Outliers(rejects.x, x.mean = NULL, x.sd = NULL, alpha = NULL, sigma.reject = NULL,
                            type = "two.sided", fun.density = NULL, cutpoints = NULL)
-
-      if (plot) {
-        d <- differenceplot(x, timestamps = timestamps, outliers = rejects.x)
-        s <- scatterplot(x, outliers = outliers, timestamps = timestamps)
-        layout_matrix <- rbind(c(1,1),
-                               c(2,2))
-        grob.title <- if (!is.null(title)) grid::textGrob(title, x = 0.05, hjust = 0)
-        gridExtra::grid.arrange(s, d, layout_matrix = layout_matrix,
-                                top = grob.title)
-      }
 
       if (verbose) outliers else as.vector(outliers)
     })

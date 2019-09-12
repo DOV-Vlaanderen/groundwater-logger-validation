@@ -29,10 +29,14 @@ detect_outliers(x, apriori, ..., plot = FALSE, verbose = FALSE,
 
 \item{title}{adds title to the plot}
 
-\item{timestamps}{timestamp vector. Has no direct meaning, except aestehtical
-for the scatter plot if plot = TRUE. In case there are duplicates and NA
-values, only warnings will be raised which might suggest that something is
-wrong with x.}
+\item{timestamps}{timestamp vector. For airpressure, timestamps are of
+no importance, except aestehtical for the scatter plot if plot = TRUE.
+In case there are duplicates and NA values, only warnings will be raised
+which might suggest that something is wrong with x.
+For hydrostatic pressure, timestamps are important. Therefore an error
+is raised if timestamps are not supplied, or if any of the timestamps
+are NA.
+Note that in any case, timestamps do not have to be ordered.}
 }
 \value{
 Logical vector with same length as x, specifying TRUE for an outlier.
