@@ -399,7 +399,11 @@ detect <- function(x, timestamps, types = c('AO', 'LS', 'TC'), nr.tail = 25) {
 
   res <- data.table::rbindlist(res)
 
-  if (nrow(res) == 0L) empty.df else res[, index := idx[index]] # back to original idx
+  res <- if (nrow(res) == 0L) empty.df else res[, index := idx[index]] # back to original idx
+
+  set.version(res, Version('0.06'))
+
+  res
 }
 
 # set.seed(2019)

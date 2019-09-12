@@ -3,7 +3,8 @@
 #' @keywords internal
 #'
 Levelshifts <- function(vec) {
-  structure(vec)
+  if (!is.logical(vec)) stop('ERROR: input vector must be a logical.')
+  structure(vec, 'class' = c('logical', 'Levelshifts'))
 }
 
 #' @title Detect levelshifts
@@ -53,6 +54,7 @@ setMethod(
       ls.x[det[type == 'LS', index]] <- TRUE
 
       levelshifts <- Levelshifts(ls.x)
+      set.version(levelshifts, attr(det, 'version'))
 
       if (verbose) levelshifts else as.vector(levelshifts)
     })

@@ -10,6 +10,7 @@ CONST.ALPHA <- 1/2000
 Outliers <- function(x.rejects, x.mean, x.sd,
                      sigma.reject, alpha, type,
                      fun.density, cutpoints) {
+  if (!is.logical(x.rejects)) stop('ERROR: input vector must be a logical.')
   structure(x.rejects, "class" = c("logical", "Outliers"),
             "x.mean" = x.mean, "x.sd" = x.sd,
             "sigma.reject" = sigma.reject, "alpha" = alpha, "type" = type,
@@ -78,6 +79,7 @@ setMethod(
     x.mean <- median(x, na.rm = TRUE)
     x.sd <- mad(x, na.rm = TRUE)
     outliers <- detect_outliers_norm(x, x.mean = x.mean, x.sd = x.sd)
+    set.version(outliers, Version('0.01'))
 
     if (!is.null(timestamps)) {
       assert.timestamp(timestamps)
@@ -109,6 +111,8 @@ setMethod(
       }
 
       outliers <- detect_outliers_norm(x, x.mean = apriori$mean, x.sd = sqrt(apriori$var))
+      set.version(outliers, Version('0.03'))
+
       if (plot) outliers_plot(x = x, outliers = outliers, timestamps = timestamps, show.qqplot = FALSE, title = title)
       if (verbose) outliers else as.vector(outliers)
     })
@@ -123,6 +127,7 @@ setMethod(
 
       outliers <- Outliers(rejects.x, x.mean = NULL, x.sd = NULL, alpha = NULL, sigma.reject = NULL,
                            type = "two.sided", fun.density = NULL, cutpoints = NULL)
+      set.version(outliers, attr(det, 'version'))
 
       if (verbose) outliers else as.vector(outliers)
     })
