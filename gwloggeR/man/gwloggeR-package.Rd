@@ -19,6 +19,14 @@ TODO: package details.
 \references{
 \href{https://github.com/DOV-Vlaanderen/groundwater-logger-validation/tree/master/gwloggeR}{GitHub}
 }
+\seealso{
+Useful links:
+\itemize{
+  \item \url{https://github.com/DOV-Vlaanderen/groundwater-logger-validation/}
+  \item Report bugs at \url{https://github.com/DOV-Vlaanderen/groundwater-logger-validation/issues}
+}
+
+}
 \author{
 \strong{Maintainer}: Davor Josipovic \email{davor.josipovic@inbo.be}
 
