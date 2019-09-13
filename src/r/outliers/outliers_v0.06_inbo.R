@@ -21,7 +21,7 @@ local({
 
     local({
       png.path <- paste0(ROOT.PATH, basename(f), '.png')
-      result.path <- paste0(ROOT.PATH, basename(f), '.outliers')
+      result.path <- paste0(ROOT.PATH, basename(f), '.output')
 
       png(png.path, width = 1280, height = 720)
       on.exit(dev.off())
