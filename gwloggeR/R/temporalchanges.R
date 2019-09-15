@@ -56,6 +56,8 @@ setMethod(
       temporalchanges <- Temporalchanges(ls.x)
       set.version(temporalchanges, attr(det, 'version'))
 
+      if (plot) plot.generic(x = x, timestamps = timestamps, df.types = det, title = title)
+
       if (verbose) temporalchanges else as.vector(temporalchanges)
     })
 
