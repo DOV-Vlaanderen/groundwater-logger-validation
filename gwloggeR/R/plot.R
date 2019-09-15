@@ -76,6 +76,22 @@ plot.data <- function(x, timestamps = NULL, df.types) {
   data
 }
 
+plot.generic <- function(x, timestamps, df.types, title) {
+  df.plot <- plot.data(x = x, timestamps = timestamps, df.types = df.types)
+  g <- plot.base(data = df.plot)
+  g <- plot.add.levelshifts(g)
+  g <- plot.add.tempchanges(g)
+  g <- plot.add.outliers(g)
+
+  layout_matrix <- rbind(c(1,1),
+                         c(1,1))
+  grob.title <- if (!is.null(title)) grid::textGrob(title, x = 0.05, hjust = 0)
+  gridExtra::grid.arrange(g, layout_matrix = layout_matrix,
+                          top = grob.title)
+}
+
+
+
 #' df <- plot.data('timestamps' = c(seq(Sys.time(), Sys.time() - 60*60*24*7, length.out = 99), NA), # wrong timestamp order + NA
 #'                 'x' = rnorm(100),
 #'                 'df.types' = data.table::data.table('type' = c('AO', 'LS', 'AO'), 'index' = c(10, 20, 71))

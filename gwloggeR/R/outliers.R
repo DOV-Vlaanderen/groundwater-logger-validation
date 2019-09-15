@@ -129,6 +129,8 @@ setMethod(
                            type = "two.sided", fun.density = NULL, cutpoints = NULL)
       set.version(outliers, attr(det, 'version'))
 
+      if (plot) plot.generic(x = x, timestamps = timestamps, df.types = det, title = title)
+
       if (verbose) outliers else as.vector(outliers)
     })
 
