@@ -83,10 +83,12 @@ plot.generic <- function(x, timestamps, df.types, title) {
   g <- plot.add.tempchanges(g)
   g <- plot.add.outliers(g)
 
-  layout_matrix <- rbind(c(1,1),
-                         c(1,1))
+  d <- differenceplot(x = x, timestamps = timestamps, outliers = df.plot[J(timestamps), outliers | levelshifts | tempchanges])
+
+  layout_matrix <- rbind(c(1),
+                         c(2))
   grob.title <- if (!is.null(title)) grid::textGrob(title, x = 0.05, hjust = 0)
-  gridExtra::grid.arrange(g, layout_matrix = layout_matrix,
+  gridExtra::grid.arrange(g, d, layout_matrix = layout_matrix,
                           top = grob.title)
 }
 
