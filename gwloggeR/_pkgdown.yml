@@ -1,1 +1,10 @@
 destination: docs
+reference:
+  - title: Apriori information
+    desc: Functions for defining apriori information.
+    contents:
+      - apriori
+  - title: Detection functions
+    desc: Functions for detecting annomalies in data.
+    contents:
+      - starts_with("detect_")
