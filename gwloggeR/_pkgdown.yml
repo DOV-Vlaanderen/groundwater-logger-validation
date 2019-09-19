@@ -2,6 +2,8 @@
 
 destination: docs
 
+# Note that since this URL is used internaly to make siteindex and such
+# the URL should point to /docs directory.
 url: https://dov-vlaanderen.github.io/groundwater-logger-validation/gwloggeR/docs
 
 reference:

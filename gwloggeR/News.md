@@ -1,6 +1,6 @@
 # Development version
 
-* ...
+* gwloggeR website: https://dov-vlaanderen.github.io/groundwater-logger-validation/gwloggeR
 
 # gwloggeR 0.1.4
 
