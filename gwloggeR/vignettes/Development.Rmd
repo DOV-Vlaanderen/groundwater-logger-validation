@@ -1,0 +1,40 @@
+---
+title: "Development"
+date: "`r Sys.Date()`"
+output: 
+  rmarkdown::html_vignette:
+    fig_width: 7
+    fig_height: 4
+    toc: true
+    toc_depth: 4
+    number_sections: false
+    df_print: paged # default, kable, tibble
+    fig_caption: true
+  pdf_document:
+    toc: true
+vignette: >
+  %\VignetteIndexEntry{Development}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+Here we describe some  general guidelines for maintenance and development of `gwloggeR`.
+
+## General
+
+`gwloggeR` is developed as part of a larger git-repository: https://github.com/DOV-Vlaanderen/groundwater-logger-validation.
+
+So first we need to ckeckout this repository somewhere localy.
+
+```{}
+git checkout https://github.com/DOV-Vlaanderen/groundwater-logger-validation.git
+```
+
+TODO...
