@@ -3,4 +3,7 @@ pkgdown: 1.4.1
 pkgdown_sha: ~
 articles:
   gwloggeR: ../../../../../../../../../Workspace/RoVaD/inbo/groundwater/gwloggeR/vignettes/gwloggeR.html
+urls:
+  reference: https://dov-vlaanderen.github.io/groundwater-logger-validation/gwloggeR/docs/reference
+  article: https://dov-vlaanderen.github.io/groundwater-logger-validation/gwloggeR/docs/articles
 

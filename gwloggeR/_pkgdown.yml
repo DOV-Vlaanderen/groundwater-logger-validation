@@ -1,4 +1,9 @@
+# Reference manual: https://pkgdown.r-lib.org/reference/build_site.html
+
 destination: docs
+
+url: https://dov-vlaanderen.github.io/groundwater-logger-validation/gwloggeR/docs
+
 reference:
   - title: Apriori information
     desc: Functions for defining apriori information.
@@ -8,3 +13,9 @@ reference:
     desc: Functions for detecting annomalies in data.
     contents:
       - starts_with("detect_")
+
+toc:
+  depth: 2
+
+development:
+  mode: auto
