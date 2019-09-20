@@ -2,6 +2,7 @@ pandoc: 1.19.2.1
 pkgdown: 1.4.1
 pkgdown_sha: ~
 articles:
+  Airpressure: ../../../../../../../../../Workspace/RoVaD/inbo/groundwater/gwloggeR/vignettes/Airpressure.html
   Development: ../../../../../../../../../Workspace/RoVaD/inbo/groundwater/gwloggeR/vignettes/Development.html
   gwloggeR: ../../../../../../../../../Workspace/RoVaD/inbo/groundwater/gwloggeR/vignettes/gwloggeR.html
 urls:

@@ -62,7 +62,10 @@
   </a>
   <ul class="dropdown-menu" role="menu">
 <li>
-      <a href="articles/Development.html">Development</a>
+      <a href="articles/Airpressure.html">Air pressure</a>
+    </li>
+    <li>
+      <a href="articles/Development.html">Development guide</a>
     </li>
   </ul>
 </li>
@@ -92,15 +95,25 @@
 <div id="gwlogger" class="section level1">
 <div class="page-header"><h1 class="hasAnchor">
 <a href="#gwlogger" class="anchor"></a>gwloggeR</h1></div>
-<p>R package to identify problematic observations from groundwater logger data</p>
+<p><code>gwloggeR</code> is made to to automatize flagging of outliers, levelshifts and temporal changes in raw airpressure and hydrostatic pressure data.</p>
+<p>Keep reading to learn how to start using <code>gwloggeR</code>.</p>
 <div id="installation" class="section level2">
 <h2 class="hasAnchor">
 <a href="#installation" class="anchor"></a>Installation</h2>
-<p>As the <code>gwloggeR</code> package is not available on CRAN, the easiest way of installing the package is using the <code>devtools</code> package and referring to the git repository holding the package code:</p>
-<pre><code><a href="https://rdrr.io/pkg/devtools/man/reexports.html">devtools::install_github("DOV-Vlaanderen/groundwater-logger-validation", subdir = "gwloggeR")</a></code></pre>
-<p>Note that the package is stored in a subfolder of the repository, which is specified by the <code>subdir</code> command.</p>
-<p>Once installed, the functionalities can be derived by loading the package:</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="st">"gwloggeR"</span>)</code></pre></div>
+<p><code>gwloggeR</code> package is not available on CRAN, only on GitHub. The easiest way of installing the package is using the <code>devtools</code> package and referring to the git repository holding the package code:</p>
+<pre><code><a href="https://rdrr.io/pkg/devtools/man/reexports.html">devtools::install_github("DOV-Vlaanderen/groundwater-logger-validation", subdir = "gwloggeR", ref = "x.x.x")</a></code></pre>
+<p>Note the <code>ref = "x.x.x"</code> option. Replace it with the version you want to install. Normally this will be the number of the latest stable release as displayed in the top left corner of this page. Alternatively, one can also install previous releases documented in the <a href="News.html">News</a> section. By omitting the <code>ref</code> option the devopment version will be installed.</p>
+</div>
+<div id="usage" class="section level2">
+<h2 class="hasAnchor">
+<a href="#usage" class="anchor"></a>Usage</h2>
+<p>For general use, consult the <a href="vignettes/gwloggeR.Rmd">Getting started</a> tutorial.</p>
+<p>For advanced understanding, consult the specific vignettes.</p>
+</div>
+<div id="development" class="section level2">
+<h2 class="hasAnchor">
+<a href="#development" class="anchor"></a>Development</h2>
+<p>Developers and maintainers of this package can find some general guidelines in the Development section.</p>
 </div>
 </div>
   </div>
