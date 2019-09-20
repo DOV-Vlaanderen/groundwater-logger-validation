@@ -1,5 +1,5 @@
 ---
-title: "User documentation"
+title: "Air pressure"
 date: "`r Sys.Date()`"
 output: 
   rmarkdown::html_vignette:

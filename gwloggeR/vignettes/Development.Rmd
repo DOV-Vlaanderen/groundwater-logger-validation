@@ -1,5 +1,5 @@
 ---
-title: "Development"
+title: "Development guide"
 date: "`r Sys.Date()`"
 output: 
   rmarkdown::html_vignette:
