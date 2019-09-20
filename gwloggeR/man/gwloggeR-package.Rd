@@ -22,7 +22,7 @@ TODO: package details.
 \seealso{
 Useful links:
 \itemize{
-  \item \url{https://github.com/DOV-Vlaanderen/groundwater-logger-validation/}
+  \item \url{https://github.com/DOV-Vlaanderen/groundwater-logger-validation/gwloggeR}
   \item Report bugs at \url{https://github.com/DOV-Vlaanderen/groundwater-logger-validation/issues}
 }
 

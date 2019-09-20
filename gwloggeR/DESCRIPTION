@@ -11,7 +11,7 @@ Description: Groundwater divers measure hydrostatic pressure, air pressure and
     controlled vocabulary of flags.
 License: MIT + file LICENSE
 Encoding: UTF-8
-URL: https://github.com/DOV-Vlaanderen/groundwater-logger-validation/
+URL: https://github.com/DOV-Vlaanderen/groundwater-logger-validation/gwloggeR
 BugReports: https://github.com/DOV-Vlaanderen/groundwater-logger-validation/issues
 LazyData: true
 NeedsCompilation: no
