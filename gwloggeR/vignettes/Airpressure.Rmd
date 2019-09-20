@@ -1,0 +1,188 @@
+---
+title: "User documentation"
+date: "`r Sys.Date()`"
+output: 
+  rmarkdown::html_vignette:
+    fig_width: 7
+    fig_height: 4
+    toc: true
+    toc_depth: 4
+    number_sections: false
+    df_print: paged # default, kable, tibble
+    fig_caption: true
+  pdf_document:
+    toc: true
+bibliography: bibliography.bib
+vignette: >
+  %\VignetteIndexEntry{User documentation}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+library(gwloggeR)
+```
+
+# Outliers
+
+Outliers are single measurements that are considered very unlikely to occur. 
+
+## `detect_outliers(x)`
+
+This function takes in a vector of datapoints and returns a boolean vector of outlier indicators:
+
+```{r}
+x <- c(1000:1005, 975)
+x
+detect_outliers(x)
+```
+
+So why is $975$ considered an outlier? We can understand the decision procedure better if we add some comprehensive plots and extra output:
+
+```{r}
+detect_outliers(x, plot = TRUE, verbose = TRUE)
+```
+
+The underlying assumption for outlier detection is normality of $x_i$. Top left plot shows the histogram of the data points. The green curve is the best-fit normal distribution, based on robust estimates of $\mu$ and $\sigma$. The cutoff points are signified by red vertical lines. The top right is the QQ-plot with cutoff points as horizontal lines. The bottom plot is the sequential data, with outliers in red.
+
+### Estimation of cutoff lines
+
+How do we determine where to place the red cutoff lines? Well, for start, we want to minimize false positives. Suppose that we take $100$ random points from a standard normal distribution. If we place the cutoff lines at $c = \pm 1.96$ then we expect to find $5$ outliers on average. But these are not real outliers! Remeber our assumption that all the points in this set are from the standard normal distribution. So we want to set the cutoff lines at the optimal place: not too small, so we don't flag points as outliers incorrectly, but also not too big either, because in that case we might miss real outliers.
+
+Let us formalize the above intuition. Assume that $\mathbf{x}$ consists of $n$ independent and identically distributed datapoints $(x_1, x_2, \dots, x_n)$ taken from a standard normal distribution with fixed $\mu = 0$ and $\sigma = 1$. Now we choose some $c$ as the cutoff line. We can then calculate the probability of at least one outlier detected in the `detect_outliers(x)` process:
+
+$$
+P(|x_1| > c \lor |x_2| > c \lor \; \dots \; \lor |x_n| > c) = \alpha
+$$
+
+That probability is $\alpha$. We want to set $c$ such that $\alpha$ is low. How low? Well, if we set it to $1/2000$ then it means that we will detect one or more outliers in $1$ out of $2000$ times we run `detect_outliers(x)`. Obviously, on average, this $1$ time we will be wrong, but in $1999$ of the other cases we will not. This seems a good value for a production setting.
+
+Ok, so now that we know our optimal $\alpha$, how do we compute $c$? We first massage a bit the above equation:
+
+$$
+P(|x_1| > c \lor |x_2| > c \lor \; \dots \; \lor |x_n| > c) = \alpha \\
+1 - P(|x_1| \le c \land |x_2| \le c \land \; \dots \; \land |x_n| \le c) = \alpha \\
+1 - \prod_i \Phi(|x_i| \le c) = \alpha \\
+1 - \left[ 1 - 2\Phi(x < -c) \right]^n = \alpha
+$$
+
+Now solving for $c$ is easy:
+
+$$
+c = -\Phi^{-1} \left( \frac{1-(1-\alpha)^\frac{1}{n}}{2} \right)
+$$
+
+where $\Phi^{-1}(\cdot)$ is the standard normal quantile function.
+
+#### Example
+
+This is how $c$ behaves in function of $n$ with fixed $\alpha = 1/2000$.
+
+```{r}
+ggplot2::ggplot(data = data.frame(n = 5:10000), mapping = ggplot2::aes(x = n)) + 
+  ggplot2::stat_function(fun = function(n) -qnorm((1-(1-1/2000)^(1/n))/2), col = 'black') + 
+  ggplot2::theme_light() + ggplot2::ylab('c')
+```
+
+Note that this function is implemented in `gwloggeR:::c.norm.optimal(alpha, n)`. So as long as we set $c$ to the optimal value we make sure that we will make a wrong `detect_outliers(x)` run (i.e. detect falsely one or more ouliers) in $1/2000$ of time.
+
+```{r}
+# e.g. optimal c for 5000 points:
+gwloggeR:::c.norm.optimal(alpha = 1/2000, n = 5000, type = "two.sided")
+```
+
+#### Simulation
+
+Here we simulate data from a normal distribution with random $\mu$ and $\sigma$. We set $\alpha = 1/100$ and by varying $n$, estimate the proportion of wrong `detect_outliers(x)` runs (i.e. runs in which we falsely identify one or more outliers).
+
+```{r, eval=FALSE, echo=FALSE}
+atleast.one.outlier.detected <- function(data.list, fun.mean, fun.sd) {
+  sapply(data.list, function(x) {
+    any(gwloggeR:::detect_outliers_norm(x, alpha = 1/100, x.mean = fun.mean(x), x.sd = fun.sd(x)))
+  })
+}
+
+mean.error.rate <- function(n, ...) {
+  T <- 100*200
+  print(n)
+  set.seed(n)
+  data.list <- lapply(1:T, function(...) rnorm(n, runif(1, -100, 100), runif(1, 0.1, 10)))
+  mean(atleast.one.outlier.detected(data.list, ...))
+}
+
+df <- data.frame(n = as.integer(seq(from = 10, to = 5000, length.out = 1000)))
+
+cl <- parallel::makeCluster(7)
+parallel::clusterExport(cl, varlist = c('mean.error.rate', 'atleast.one.outlier.detected'))
+df$tfr.sd <- unlist(parallel::clusterApplyLB(cl, x = df$n, fun = mean.error.rate, fun.mean = mean, fun.sd = sd))
+df$tfr.mad <- unlist(parallel::clusterApplyLB(cl, x = df$n, fun = mean.error.rate, fun.mean = median, fun.sd = mad))
+df$tfr.qn <- unlist(parallel::clusterApplyLB(cl, x = df$n, fun = mean.error.rate, fun.mean = median, fun.sd = robustbase::Qn))
+parallel::stopCluster(cl)
+
+saveRDS(df, 'simulation.rds')
+```
+
+Black horizontal line represents the expected $0.01$ failure rate. The blue curve is the failure rate estimate based on mean and standard deviation, which are most efficient estimators in case there are no outliers. The red curve is the failure rate based on median and MAD. In case $n < 500$, the MAD approach is very optimistic: it is $2$ to $3$ times more likely to detect falsely one or more outliers. The green curve is based on the the Qn scale estimator (TODO).
+
+```{r, echo=FALSE}
+df <- readRDS('simulation.rds')
+ggplot2::ggplot(data = df, mapping = ggplot2::aes(x = n)) +
+  ggplot2::geom_point(mapping = ggplot2::aes(y = tfr.sd), col = 'blue', alpha = 0.1) +
+  ggplot2::stat_smooth(mapping = ggplot2::aes(y = tfr.sd), col = 'blue', se = FALSE,
+                       method = "gam", formula = y ~ s(x, k = 100, bs = 'cs')) +
+  ggplot2::geom_point(mapping = ggplot2::aes(y = tfr.mad), col = 'red', alpha = 0.1) +
+  ggplot2::stat_smooth(mapping = ggplot2::aes(y = tfr.mad), col = 'red', se = FALSE,
+                       method = "gam", formula = y ~ s(x, k = 100, bs = 'cs')) +
+  ggplot2::geom_point(mapping = ggplot2::aes(y = tfr.qn), col = 'green', alpha = 0.1) +
+  ggplot2::stat_smooth(mapping = ggplot2::aes(y = tfr.qn), col = 'green', se = FALSE,
+                       method = "gam", formula = y ~ s(x, k = 100, bs = 'cs')) +
+  ggplot2::geom_hline(yintercept = 0.01, col = 'black', size = 1) +
+  ggplot2::coord_cartesian(ylim = c(0, 0.03)) + ggplot2::ylab('detect_outliers(x) failure rate') +
+  ggplot2::theme_light()
+```
+
+### Estimation of $\mu$ and $\sigma$
+
+In calculating $c$ we assumed $x_i$ being normal with $\mu = 0$ and $\sigma = 1$. To make the above also work for $y_i$ from any normal distribution, we need to estimate $\mu$ and $\sigma$. Once we have the estimates, then we can standardize $y_i$ using $(y_i - \mu)/\sigma = x_i$ and use the previous results on $x_i$. 
+
+Mean and square root of variance give the most efficient estimators for $\mu$ and $\sigma$ as long as $\forall i : y_i \sim \mathcal{N}(\mu, \sigma^2)$ and mutually independent. Under influence of real outliers, these estimators get easily biased. [cf. @Leys2013] So we need more robust estimators for $\mu$ and $\sigma$.
+
+In case of outliers, a way to measure robustness is the breakdown point. The maximum attainable breakdown point is $50 \%$, meaning that $50 \%$ of observations can be replaced by arbitrary large numbers, without breaking the estimator. For $\mu$, the obvious choice is the median. For $\sigma$ it is the median absolute deviation (MAD). They both have a $50 \%$ breakdown point. A problem with the latter is its efficiency (cf. simuation). There exist more efficient $\sigma$-estimators than the MAD. For example the Q-estimator [cf. @Rousseeuw1993]. Currently, MAD suffices because we usualy have lots of data ($n > 5000$) so efficiency suffers less.
+
+## `detect_outliers(x, apriori("air pressure", units = "cmH2O"))`
+
+We can improve the outlier detection by providing _a-priori_ information about $\mathbf{x}$. For example:
+
+```{r}
+x <- c(990:999)
+detect_outliers(x, apriori = apriori("air pressure", "cmH2O"), plot = TRUE)
+```
+
+Top left is again the histogram of $\mathbf{x}$. But the green density this time is not a robust normal estimate based on $\mathbf{x}$. Instead it is the hardcoded _a-priori_ density distribution of air pressure ($cmH_2O$) in Belgium. Given the $10$ points and assuming that we want to detect falsely one or more outliers in $1$ of $2000$ tests, we set the red cutoffs appropriately. This results in first $4$ points being identified as outliers.
+
+## `detect_outliers(x, apriori("hydrostatic pressure", units = "cmH2O"))`
+
+TO BE WRITTEN...
+
+Hydrostatic pressure incorporates _a-priori_ information about air pressure as the lower limit. The upper limit is determined with the `detect_outliers(x)` approach (i.e. without _a-priori_ information). The following example explains:
+
+```{r}
+x <- c(1070, 985, 1071:1077, 1100)
+ts <- seq(as.POSIXct('2010-01-01'), by = '5 min', length.out = 10L)
+detect_outliers(x, timestamps = ts, apriori = apriori("hydrostatic pressure", "cmH2O"), plot = TRUE)
+```
+
+The top left density is now bimodal. The first mode is just the _a-priori_ air pressure, and the second is the robust estimate of the datapoints themselves, excluding the left outliers, using `detect_outliers(x)`. The reasoning is that hydrostatic pressure should never be higher than air pressure. Thus, since $985 \; cmH_2O$ is very unlikely given our _a-priori_ air pressure information, it is considered an outlier. Subsequently, robust estimates of $\mu$ and $\sigma$ are made based on remaining $\mathbf{x}$, from which $1100 \; cmH_2O$ also seems very unlikely on the right side.
+
+# Levelshifts
+
+To be continued...
+
+# References
