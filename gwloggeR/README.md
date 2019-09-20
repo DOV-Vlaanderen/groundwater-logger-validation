@@ -1,20 +1,25 @@
-
 # gwloggeR
 
-R package to identify problematic observations from groundwater logger data
+`gwloggeR` is made to to automatize flagging of outliers, levelshifts and temporal changes in raw airpressure and hydrostatic pressure data.
+
+Keep reading to learn how to start using `gwloggeR`.
 
 ## Installation
 
-As the `gwloggeR` package is not available on CRAN, the easiest way of installing the package is using the `devtools` package and referring to the git repository holding the package code:
+`gwloggeR` package is not available on CRAN, only on GitHub. The easiest way of installing the package is using the `devtools` package and referring to the git repository holding the package code:
 
 ```
-devtools::install_github("DOV-Vlaanderen/groundwater-logger-validation", subdir = "gwloggeR")
+devtools::install_github("DOV-Vlaanderen/groundwater-logger-validation", subdir = "gwloggeR", ref = "x.x.x")
 ```
 
-Note that the package is stored in a subfolder of the repository, which is specified by the `subdir` command.
+Note the `ref = "x.x.x"` option. Replace it with the version you want to install. Normally this will be the number of the latest stable release as displayed in the top left corner of this page. Alternatively, one can also install previous releases documented in the [News](News.md) section. By omitting the `ref` option the devopment version will be installed.
 
-Once installed, the functionalities can be derived by loading the package:
+## Usage
 
-``` r
-library("gwloggeR")
-```
+For general use, consult the [Getting started](...) tutorial.
+
+For advanced understanding, consult the specific vignettes.
+
+## Development
+
+Developers and maintainers of this package can find some general guidelines in the Development section.
