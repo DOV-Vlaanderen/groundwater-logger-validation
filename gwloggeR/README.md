@@ -16,7 +16,7 @@ Note the `ref = "x.x.x"` option. Replace it with the version you want to install
 
 ## Usage
 
-For general use, consult the [Getting started](vignettes/gwloggeR.Rmd) tutorial.
+For general use, consult the [getting started](https://dov-vlaanderen.github.io/groundwater-logger-validation/gwloggeR/docs/articles/gwloggeR.html) tutorial.
 
 For advanced understanding, consult the specific vignettes.
 
