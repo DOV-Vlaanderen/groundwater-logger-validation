@@ -16,7 +16,7 @@ Note the `ref = "x.x.x"` option. Replace it with the version you want to install
 
 ## Usage
 
-For general use, consult the [Getting started](...) tutorial.
+For general use, consult the [Getting started](vignettes/gwloggeR.Rmd) tutorial.
 
 For advanced understanding, consult the specific vignettes.
 

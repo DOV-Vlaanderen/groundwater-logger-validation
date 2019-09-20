@@ -17,7 +17,7 @@ reference:
       - starts_with("detect_")
 
 toc:
-  depth: 2
+  depth: 4
 
 development:
   mode: auto
