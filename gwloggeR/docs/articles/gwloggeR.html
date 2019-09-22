@@ -62,6 +62,9 @@
     <li>
       <a href="../articles/Development.html">Development guide</a>
     </li>
+    <li>
+      <a href="../articles/Hydropressure.html">Hydrostatic pressure</a>
+    </li>
   </ul>
 </li>
 <li>
@@ -90,7 +93,7 @@
     <div class="page-header toc-ignore">
       <h1>Introduction to gwloggeR</h1>
             
-            <h4 class="date">2019-09-20</h4>
+            <h4 class="date">2019-09-22</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/DOV-Vlaanderen/groundwater-logger-validation/blob/master/vignettes/gwloggeR.Rmd"><code>vignettes/gwloggeR.Rmd</code></a></small>
       <div class="hidden name"><code>gwloggeR.Rmd</code></div>
@@ -138,7 +141,7 @@ x &lt;-<span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/stat
 <h4 class="hasAnchor">
 <a href="#without-apriori-information" class="anchor"></a>Without apriori information</h4>
 <p>Assuming we do not have any apriori information about <code>x</code>, we can execute:</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">gwloggeR<span class="op">::</span><span class="kw"><a href="https://rdrr.io/pkg/gwloggeR/man/detect_outliers.html">detect_outliers</a></span>(x, <span class="dt">plot =</span> <span class="ot">TRUE</span>)</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">gwloggeR<span class="op">::</span><span class="kw"><a href="https://dov-vlaanderen.github.io/groundwater-logger-validation/gwloggeR/docs/reference/detect_outliers.html">detect_outliers</a></span>(x, <span class="dt">plot =</span> <span class="ot">TRUE</span>)</code></pre></div>
 <p><img src="gwloggeR_files/figure-html/airpressure-ao-noapr-1.png" width="700"></p>
 <pre><code>#&gt;  [1] FALSE FALSE FALSE FALSE  TRUE FALSE FALSE FALSE FALSE FALSE
 #&gt;  [ reached getOption("max.print") -- omitted 90 entries ]</code></pre>
@@ -148,8 +151,8 @@ x &lt;-<span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/stat
 <h4 class="hasAnchor">
 <a href="#with-apriori-information" class="anchor"></a>With apriori information</h4>
 <p>We can improve detection methods by supplying <em>a-priori</em> information about <code>x</code>. For example, in this case we know that <code>x</code> represents air pressure measurements in Belgium. As such, we make an <code>apriori</code> object and supply this information to the detection function.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">apriori &lt;-<span class="st"> </span>gwloggeR<span class="op">::</span><span class="kw"><a href="https://rdrr.io/pkg/gwloggeR/man/apriori.html">apriori</a></span>(<span class="st">'air pressure'</span>, <span class="dt">units =</span> <span class="st">'cmH2O'</span>)
-gwloggeR<span class="op">::</span><span class="kw"><a href="https://rdrr.io/pkg/gwloggeR/man/detect_outliers.html">detect_outliers</a></span>(<span class="dt">x =</span> x, <span class="dt">apriori =</span> apriori, <span class="dt">plot =</span> <span class="ot">TRUE</span>)</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">apriori &lt;-<span class="st"> </span>gwloggeR<span class="op">::</span><span class="kw"><a href="https://dov-vlaanderen.github.io/groundwater-logger-validation/gwloggeR/docs/reference/apriori.html">apriori</a></span>(<span class="st">'air pressure'</span>, <span class="dt">units =</span> <span class="st">'cmH2O'</span>)
+gwloggeR<span class="op">::</span><span class="kw"><a href="https://dov-vlaanderen.github.io/groundwater-logger-validation/gwloggeR/docs/reference/detect_outliers.html">detect_outliers</a></span>(<span class="dt">x =</span> x, <span class="dt">apriori =</span> apriori, <span class="dt">plot =</span> <span class="ot">TRUE</span>)</code></pre></div>
 <p><img src="gwloggeR_files/figure-html/airpressure-ao-apr-1.png" width="700"></p>
 <pre><code>#&gt;  [1] FALSE FALSE FALSE FALSE  TRUE FALSE FALSE FALSE FALSE FALSE
 #&gt;  [ reached getOption("max.print") -- omitted 90 entries ]</code></pre>
@@ -175,9 +178,9 @@ timestamps &lt;-<span class="st"> </span><span class="kw"><a href="https://rdrr.
 <span class="kw"><a href="https://rdrr.io/r/graphics/plot.html">plot</a></span>(timestamps, x, <span class="dt">type =</span> <span class="st">'l'</span>)</code></pre></div>
 <p><img src="gwloggeR_files/figure-html/hydropressure-ao-sim-1.png" width="700"></p>
 <p>Our <code>x</code> is not normaly distributed. Remeber that <code><a href="../reference/detect_outliers.html">detect_outliers()</a></code> assumes normality of <code>x</code>? So if we do not provide any <em>a-priori</em> information about <code>x</code>, the outlier detection will be bad. To improve it, we state that <code>x</code> is hydrostatic pressure data.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">apriori &lt;-<span class="st"> </span>gwloggeR<span class="op">::</span><span class="kw"><a href="https://rdrr.io/pkg/gwloggeR/man/apriori.html">apriori</a></span>(<span class="st">'hydrostatic pressure'</span>, <span class="dt">units =</span> <span class="st">'cmH2O'</span>)</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">apriori &lt;-<span class="st"> </span>gwloggeR<span class="op">::</span><span class="kw"><a href="https://dov-vlaanderen.github.io/groundwater-logger-validation/gwloggeR/docs/reference/apriori.html">apriori</a></span>(<span class="st">'hydrostatic pressure'</span>, <span class="dt">units =</span> <span class="st">'cmH2O'</span>)</code></pre></div>
 <p>Note also, that in this case, we also need to supply <code>timestamps</code> to the detection function. This is because the underlying model also considers time-intervals between observations.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">gwloggeR<span class="op">::</span><span class="kw"><a href="https://rdrr.io/pkg/gwloggeR/man/detect_outliers.html">detect_outliers</a></span>(x, <span class="dt">apriori =</span> apriori, <span class="dt">timestamps =</span> timestamps, <span class="dt">plot =</span> <span class="ot">TRUE</span>)</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">gwloggeR<span class="op">::</span><span class="kw"><a href="https://dov-vlaanderen.github.io/groundwater-logger-validation/gwloggeR/docs/reference/detect_outliers.html">detect_outliers</a></span>(x, <span class="dt">apriori =</span> apriori, <span class="dt">timestamps =</span> timestamps, <span class="dt">plot =</span> <span class="ot">TRUE</span>)</code></pre></div>
 <p><img src="gwloggeR_files/figure-html/hydropressure-ao-1.png" width="700"></p>
 <pre><code>#&gt;  [1] FALSE FALSE FALSE FALSE  TRUE FALSE FALSE FALSE FALSE FALSE
 #&gt;  [ reached getOption("max.print") -- omitted 90 entries ]</code></pre>
@@ -191,7 +194,7 @@ timestamps &lt;-<span class="st"> </span><span class="kw"><a href="https://rdrr.
 <span class="kw"><a href="https://rdrr.io/r/graphics/plot.html">plot</a></span>(timestamps, x, <span class="dt">type =</span> <span class="st">'l'</span>)</code></pre></div>
 <p><img src="gwloggeR_files/figure-html/hydropressure-ls-sim-1.png" width="700"></p>
 <p>Now let us see how <code><a href="../reference/detect_levelshifts.html">detect_levelshifts()</a></code> handles this.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">gwloggeR<span class="op">::</span><span class="kw"><a href="https://rdrr.io/pkg/gwloggeR/man/detect_levelshifts.html">detect_levelshifts</a></span>(<span class="dt">x =</span> x, <span class="dt">timestamps =</span> timestamps, <span class="dt">apriori =</span> apriori, <span class="dt">plot =</span> <span class="ot">TRUE</span>)</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">gwloggeR<span class="op">::</span><span class="kw"><a href="https://dov-vlaanderen.github.io/groundwater-logger-validation/gwloggeR/docs/reference/detect_levelshifts.html">detect_levelshifts</a></span>(<span class="dt">x =</span> x, <span class="dt">timestamps =</span> timestamps, <span class="dt">apriori =</span> apriori, <span class="dt">plot =</span> <span class="ot">TRUE</span>)</code></pre></div>
 <p><img src="gwloggeR_files/figure-html/hydropressure-ls-1.png" width="700"></p>
 <pre><code>#&gt;  [1] FALSE FALSE FALSE FALSE  TRUE FALSE FALSE FALSE FALSE  TRUE
 #&gt;  [ reached getOption("max.print") -- omitted 90 entries ]</code></pre>
@@ -205,7 +208,7 @@ x[5L<span class="op">:</span>15L] &lt;-<span class="st"> </span>x[5L<span class=
 <span class="kw"><a href="https://rdrr.io/r/graphics/plot.html">plot</a></span>(timestamps, x, <span class="dt">type =</span> <span class="st">'l'</span>)</code></pre></div>
 <p><img src="gwloggeR_files/figure-html/hydropressure-tc-sim-1.png" width="700"></p>
 <p>Now lets see how <code><a href="../reference/detect_temporalchanges.html">detect_temporalchanges()</a></code> reacts:</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">gwloggeR<span class="op">::</span><span class="kw"><a href="https://rdrr.io/pkg/gwloggeR/man/detect_temporalchanges.html">detect_temporalchanges</a></span>(<span class="dt">x =</span> x, <span class="dt">timestamps =</span> timestamps, <span class="dt">apriori =</span> apriori, <span class="dt">plot =</span> <span class="ot">TRUE</span>)</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">gwloggeR<span class="op">::</span><span class="kw"><a href="https://dov-vlaanderen.github.io/groundwater-logger-validation/gwloggeR/docs/reference/detect_temporalchanges.html">detect_temporalchanges</a></span>(<span class="dt">x =</span> x, <span class="dt">timestamps =</span> timestamps, <span class="dt">apriori =</span> apriori, <span class="dt">plot =</span> <span class="ot">TRUE</span>)</code></pre></div>
 <p><img src="gwloggeR_files/figure-html/hydropressure-tc-1.png" width="700"></p>
 <pre><code>#&gt;  [1] FALSE FALSE FALSE FALSE  TRUE FALSE FALSE FALSE FALSE FALSE
 #&gt;  [ reached getOption("max.print") -- omitted 90 entries ]</code></pre>

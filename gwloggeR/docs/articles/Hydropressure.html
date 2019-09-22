@@ -5,12 +5,12 @@
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Development guide • gwloggeR</title>
+<title>Hydrostatic pressure • gwloggeR</title>
 <!-- jquery --><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script><!-- Bootstrap --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha256-916EbMg70RQy9LHiGkXzG8hSg9EdNy97GazNG/aiY1w=" crossorigin="anonymous">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha256-U5ZEeKfGNOja007MMD3YBI0A3OSZOQbeG6z2f2Y0hu8=" crossorigin="anonymous"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.7.1/css/all.min.css" integrity="sha256-nAmazAk6vS34Xqo0BSrTb+abbtFlgsFK7NKSi6o7Y78=" crossorigin="anonymous">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.7.1/css/v4-shims.min.css" integrity="sha256-6qHlizsOWFskGlwVOKuns+D1nB6ssZrHQrNj1wGplHc=" crossorigin="anonymous">
 <!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.4/clipboard.min.js" integrity="sha256-FiZwavyI2V6+EXO1U+xzLG3IKldpiTFf3153ea9zikQ=" crossorigin="anonymous"></script><!-- headroom.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.9.4/headroom.min.js" integrity="sha256-DJFC1kqIhelURkuza0AvYal5RxMtpzLjFhsnVIeuk+U=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.9.4/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script><!-- pkgdown --><link href="../pkgdown.css" rel="stylesheet">
-<script src="../pkgdown.js"></script><meta property="og:title" content="Development guide">
+<script src="../pkgdown.js"></script><meta property="og:title" content="Hydrostatic pressure">
 <meta property="og:description" content="">
 <meta name="twitter:card" content="summary">
 <!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js" integrity="sha256-nvJJv9wWKEm88qvoQl9ekL2J+k/RWIsaSScxxlsrv8k=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/config/TeX-AMS-MML_HTMLorMML.js" integrity="sha256-84DKXVJXs0/F8OTMzX4UR909+jtl4G7SPypPavF+GfA=" crossorigin="anonymous"></script><!--[if lt IE 9]>
@@ -91,44 +91,56 @@
       </header><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
-      <h1>Development guide</h1>
+      <h1>Hydrostatic pressure</h1>
             
             <h4 class="date">2019-09-22</h4>
       
-      <small class="dont-index">Source: <a href="https://github.com/DOV-Vlaanderen/groundwater-logger-validation/blob/master/vignettes/Development.Rmd"><code>vignettes/Development.Rmd</code></a></small>
-      <div class="hidden name"><code>Development.Rmd</code></div>
+      <small class="dont-index">Source: <a href="https://github.com/DOV-Vlaanderen/groundwater-logger-validation/blob/master/vignettes/Hydropressure.Rmd"><code>vignettes/Hydropressure.Rmd</code></a></small>
+      <div class="hidden name"><code>Hydropressure.Rmd</code></div>
 
     </div>
 
     
     
-<p>Here we describe some general guidelines for maintenance and development of <code>gwloggeR</code>.</p>
-<div id="general" class="section level2">
+<p>This is an advanced guide. It explains how the <code>detect_</code> functions work for hydrostatic pressure. Make sure you have first read the getting started material.</p>
+<div id="hydrostatic-pressure-model" class="section level2">
 <h2 class="hasAnchor">
-<a href="#general" class="anchor"></a>General</h2>
-<p><code>gwloggeR</code> is developed as part of a larger git-repository: <a href="https://github.com/DOV-Vlaanderen/groundwater-logger-validation" class="uri">https://github.com/DOV-Vlaanderen/groundwater-logger-validation</a>.</p>
-<p>So first we need to checkout this repository somewhere localy.</p>
-<pre><code>git checkout https://github.com/DOV-Vlaanderen/groundwater-logger-validation.git</code></pre>
+<a href="#hydrostatic-pressure-model" class="anchor"></a>Hydrostatic pressure model</h2>
+<p>We use the following model for hydrostatic pressure:</p>
+<p><span class="math display">\[
+z_t = z_{t-1} + \epsilon(\Delta t)
+\]</span></p>
+<div id="error-function" class="section level3">
+<h3 class="hasAnchor">
+<a href="#error-function" class="anchor"></a>Error function</h3>
+<p>The error <span class="math inline">\(\epsilon\)</span> is a function of time difference between <span class="math inline">\(t\)</span> and <span class="math inline">\(t-1\)</span>. The underlying idea is that the larger this timeinterval <span class="math inline">\(\Delta t\)</span>, the larger the variance of <span class="math inline">\(\epsilon\)</span>. Based on <span class="math inline">\(\epsilon\)</span> analysis of “correct” hysdrostatic pressure timeseries, the following density gradients are extracted in function of <span class="math inline">\(\Delta t\)</span>.</p>
+<p><img src="Hydropressure_files/figure-html/unnamed-chunk-3-1.png" width="700"></p>
 </div>
-<div id="documentation" class="section level2">
+<div id="distribution-of-errors" class="section level3">
+<h3 class="hasAnchor">
+<a href="#distribution-of-errors" class="anchor"></a>Distribution of errors</h3>
+<p>Based on the “correct” <em>a-priori</em> timeseries, the densities do not seem to be normal. For example, for <span class="math inline">\(\Delta t = 5 \text{min}\)</span> we have:</p>
+<p><img src="Hydropressure_files/figure-html/hydropressure-5min-hist-1.png" width="700"></p>
+<p>On the other hand, without tidal effect, the normality seems much more pronounced. For example, <span class="math inline">\(\Delta t = 12 \text{h} 25 \text{min}\)</span>:</p>
+<p><img src="Hydropressure_files/figure-html/hydropressure-12h-hist-1.png" width="700"></p>
+<p>This suggest that the model should be adjusted for tidal effects.</p>
+</div>
+</div>
+<div id="likelihood-optimization" class="section level2">
 <h2 class="hasAnchor">
-<a href="#documentation" class="anchor"></a>Documentation</h2>
-<p>The documentation is built using <code>roxygen2</code>. If you are using RStudio and <code>roxygen2</code> is installed, then pressing <code>Ctrl</code> + <code>Shift</code> + <code>B</code> will generate:</p>
+<a href="#likelihood-optimization" class="anchor"></a>Likelihood optimization</h2>
+<p>Distribution of errors, for likelihood optimization, is assumed normal. This is because normal PDF (mostly) results in a convex likelihood.</p>
+</div>
+<div id="future-work" class="section level2">
+<h2 class="hasAnchor">
+<a href="#future-work" class="anchor"></a>Future work</h2>
 <ul>
-<li>Update Rd files (i.e. R documentation files)</li>
-<li>Update NAMESPACE file</li>
-<li>Update vignettes</li>
+<li>Adjust model for tidal effects.</li>
 </ul>
-<p>This command will also install <code>gwloggeR</code> in the R <code>lib\</code> directory and restart R.</p>
-<p>On each update of <code>gwloggeR</code> source files, make sure to run this before commiting.</p>
 </div>
-<div id="website" class="section level2">
+<div id="references" class="section level2">
 <h2 class="hasAnchor">
-<a href="#website" class="anchor"></a>Website</h2>
-<p>For <code>gwloggeR</code> <a href="https://dov-vlaanderen.github.io/groundwater-logger-validation/gwloggeR">website</a> we use <code>pkggdown</code>.</p>
-<p>We do not use <a href="https://pkgdown.r-lib.org/reference/deploy_site_github.html"><code>travis</code></a> for automatic website deployment. Each time one updates files that have an impact on the website, one should manualy execute the following commands:</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">pkgdown<span class="op">::</span><span class="kw"><a href="https://pkgdown.r-lib.org/reference/clean_site.html">clean_site</a></span>()
-pkgdown<span class="op">::</span><span class="kw"><a href="https://pkgdown.r-lib.org/reference/build_site.html">build_site</a></span>()</code></pre></div>
+<a href="#references" class="anchor"></a>References</h2>
 </div>
   </div>
 
@@ -137,9 +149,15 @@ pkgdown<span class="op">::</span><span class="kw"><a href="https://pkgdown.r-lib
       <h2 class="hasAnchor">
 <a href="#tocnav" class="anchor"></a>Contents</h2>
       <ul class="nav nav-pills nav-stacked">
-<li><a href="#general">General</a></li>
-      <li><a href="#documentation">Documentation</a></li>
-      <li><a href="#website">Website</a></li>
+<li>
+<a href="#hydrostatic-pressure-model">Hydrostatic pressure model</a><ul class="nav nav-pills nav-stacked">
+<li><a href="#error-function">Error function</a></li>
+      <li><a href="#distribution-of-errors">Distribution of errors</a></li>
+      </ul>
+</li>
+      <li><a href="#likelihood-optimization">Likelihood optimization</a></li>
+      <li><a href="#future-work">Future work</a></li>
+      <li><a href="#references">References</a></li>
       </ul>
 </div>
       </div>

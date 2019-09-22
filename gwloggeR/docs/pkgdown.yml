@@ -5,6 +5,7 @@ articles:
   Airpressure: ../../../../../../../../../Workspace/RoVaD/inbo/groundwater/gwloggeR/vignettes/Airpressure.html
   Development: ../../../../../../../../../Workspace/RoVaD/inbo/groundwater/gwloggeR/vignettes/Development.html
   gwloggeR: ../../../../../../../../../Workspace/RoVaD/inbo/groundwater/gwloggeR/vignettes/gwloggeR.html
+  Hydropressure: ../../../../../../../../../Workspace/RoVaD/inbo/groundwater/gwloggeR/vignettes/Hydropressure.html
 urls:
   reference: https://dov-vlaanderen.github.io/groundwater-logger-validation/gwloggeR/docs/reference
   article: https://dov-vlaanderen.github.io/groundwater-logger-validation/gwloggeR/docs/articles
