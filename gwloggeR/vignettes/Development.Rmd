@@ -37,7 +37,19 @@ So first we need to checkout this repository somewhere localy.
 git checkout https://github.com/DOV-Vlaanderen/groundwater-logger-validation.git
 ```
 
-## Webite
+## Documentation
+
+The documentation is built using `roxygen2`. If you are using RStudio and `roxygen2` is installed, then pressing `Ctrl` + `Shift` + `B` will generate:
+
+* Update Rd files (i.e. R documentation files)
+* Update NAMESPACE file
+* Update vignettes
+
+This command will also install `gwloggeR` in the R `lib\` directory and restart R.
+
+On each update of `gwloggeR` source files, make sure to run this before commiting.
+
+## Website
 
 For `gwloggeR` [website](https://dov-vlaanderen.github.io/groundwater-logger-validation/gwloggeR) we use `pkggdown`. 
 

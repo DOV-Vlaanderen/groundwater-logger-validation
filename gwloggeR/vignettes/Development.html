@@ -99,7 +99,8 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 <div id="TOC">
 <ul>
 <li><a href="#general">General</a></li>
-<li><a href="#webite">Webite</a></li>
+<li><a href="#documentation">Documentation</a></li>
+<li><a href="#website">Website</a></li>
 </ul>
 </div>
 
@@ -110,8 +111,19 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 <p>So first we need to checkout this repository somewhere localy.</p>
 <pre><code>git checkout https://github.com/DOV-Vlaanderen/groundwater-logger-validation.git</code></pre>
 </div>
-<div id="webite" class="section level2">
-<h2>Webite</h2>
+<div id="documentation" class="section level2">
+<h2>Documentation</h2>
+<p>The documentation is built using <code>roxygen2</code>. If you are using RStudio and <code>roxygen2</code> is installed, then pressing <code>Ctrl</code> + <code>Shift</code> + <code>B</code> will generate:</p>
+<ul>
+<li>Update Rd files (i.e. R documentation files)</li>
+<li>Update NAMESPACE file</li>
+<li>Update vignettes</li>
+</ul>
+<p>This command will also install <code>gwloggeR</code> in the R <code>lib\</code> directory and restart R.</p>
+<p>On each update of <code>gwloggeR</code> source files, make sure to run this before commiting.</p>
+</div>
+<div id="website" class="section level2">
+<h2>Website</h2>
 <p>For <code>gwloggeR</code> <a href="https://dov-vlaanderen.github.io/groundwater-logger-validation/gwloggeR">website</a> we use <code>pkggdown</code>.</p>
 <p>We do not use <a href="https://pkgdown.r-lib.org/reference/deploy_site_github.html"><code>travis</code></a> for automatic website deployment. Each time one updates files that have an impact on the website, one should manualy execute the following commands:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">pkgdown<span class="op">::</span><span class="kw">clean_site</span>()
