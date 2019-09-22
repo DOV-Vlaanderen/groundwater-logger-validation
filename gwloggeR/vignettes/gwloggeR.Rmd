@@ -55,7 +55,7 @@ n <- 100L
 mu <- 1033
 sigma <- 9.5
 x <- rnorm(n, mean = mu, sd = sigma)
-plot(x, type = 'l')
+plot(x, type = 'l', ylim = c(1000, 1100))
 ```
 
 ### Detect outliers
@@ -64,7 +64,7 @@ Now lets add an outlier to `x`. An outlier we define as a single extreme value. 
 
 ```{r airpressure-ao-sim}
 x[5L] <- mu + 6*sigma
-plot(x, type = 'l')
+plot(x, type = 'l', ylim = c(1000, 1100))
 ```
 
 #### Without apriori information
