@@ -3,7 +3,7 @@
 gwloggeR
 ========
 
-`gwloggeR` is made to to automatize flagging of outliers, levelshifts and temporal changes in raw airpressure and hydrostatic pressure data. For example.
+`gwloggeR` is a R-package for automatic flagging of outliers, levelshifts and temporal changes in raw airpressure and hydrostatic pressure data. For example.
 
 ![](man/fig/example-1.png)
 
