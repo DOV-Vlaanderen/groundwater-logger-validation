@@ -49,6 +49,10 @@ This command will also install `gwloggeR` in the R `lib\` directory and restart 
 
 On each update of `gwloggeR` source files, make sure to run this before commiting.
 
+### README.Rmd
+
+This is a special case that must be knitted to `README.md` . In RStudio one can use `Ctrl` + `Shift` + `K`. Knitting must be done before the website is built.
+
 ## Website
 
 For `gwloggeR` [website](https://dov-vlaanderen.github.io/groundwater-logger-validation/gwloggeR) we use `pkggdown`. 

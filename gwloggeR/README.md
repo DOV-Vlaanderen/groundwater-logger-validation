@@ -30,4 +30,4 @@ For advanced understanding, consult the specific vignettes.
 Development
 -----------
 
-Developers and maintainers of this package can find some general guidelines in the Development section.
+Developers and maintainers of this package can find some general guidelines in the Development guide.
