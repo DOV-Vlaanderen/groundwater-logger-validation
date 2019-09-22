@@ -9,6 +9,7 @@
 ### Diagnostic plots
 * Margin of diagnostic plots y-axis should be the same.
 * Show tresholds on diagnostic plots for differences(x)
+* Hydrostatic pressure x-axis label 'sequence' instead of 'timestamps'.
 
 # gwloggeR 0.1.4
 
