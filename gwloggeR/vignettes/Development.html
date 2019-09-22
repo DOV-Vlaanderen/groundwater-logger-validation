@@ -11,12 +11,72 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
 
-<meta name="date" content="2019-09-20" />
+<meta name="date" content="2019-09-22" />
 
 <title>Development guide</title>
 
 
 
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css" data-origin="pandoc">
+div.sourceCode { overflow-x: auto; }
+table.sourceCode, tr.sourceCode, td.lineNumbers, td.sourceCode {
+  margin: 0; padding: 0; vertical-align: baseline; border: none; }
+table.sourceCode { width: 100%; line-height: 100%; }
+td.lineNumbers { text-align: right; padding-right: 4px; padding-left: 4px; color: #aaaaaa; border-right: 1px solid #aaaaaa; }
+td.sourceCode { padding-left: 5px; }
+code > span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code > span.dt { color: #902000; } /* DataType */
+code > span.dv { color: #40a070; } /* DecVal */
+code > span.bn { color: #40a070; } /* BaseN */
+code > span.fl { color: #40a070; } /* Float */
+code > span.ch { color: #4070a0; } /* Char */
+code > span.st { color: #4070a0; } /* String */
+code > span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code > span.ot { color: #007020; } /* Other */
+code > span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code > span.fu { color: #06287e; } /* Function */
+code > span.er { color: #ff0000; font-weight: bold; } /* Error */
+code > span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+code > span.cn { color: #880000; } /* Constant */
+code > span.sc { color: #4070a0; } /* SpecialChar */
+code > span.vs { color: #4070a0; } /* VerbatimString */
+code > span.ss { color: #bb6688; } /* SpecialString */
+code > span.im { } /* Import */
+code > span.va { color: #19177c; } /* Variable */
+code > span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code > span.op { color: #666666; } /* Operator */
+code > span.bu { } /* BuiltIn */
+code > span.ex { } /* Extension */
+code > span.pp { color: #bc7a00; } /* Preprocessor */
+code > span.at { color: #7d9029; } /* Attribute */
+code > span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code > span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code > span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+
+</style>
+<script>
+// apply pandoc div.sourceCode style to pre.sourceCode instead
+(function() {
+  var sheets = document.styleSheets;
+  for (var i = 0; i < sheets.length; i++) {
+    if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
+    try { var rules = sheets[i].cssRules; } catch (e) { continue; }
+    for (var j = 0; j < rules.length; j++) {
+      var rule = rules[j];
+      // check if there is a div.sourceCode rule
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") continue;
+      var style = rule.style.cssText;
+      // check if color or background-color is set
+      if (rule.style.color === '' || rule.style.backgroundColor === '') continue;
+      // replace div.sourceCode by a pre.sourceCode rule
+      sheets[i].deleteRule(j);
+      sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
+    }
+  }
+})();
+</script>
 
 
 
@@ -33,12 +93,13 @@
 
 
 <h1 class="title toc-ignore">Development guide</h1>
-<h4 class="date">2019-09-20</h4>
+<h4 class="date">2019-09-22</h4>
 
 
 <div id="TOC">
 <ul>
 <li><a href="#general">General</a></li>
+<li><a href="#webite">Webite</a></li>
 </ul>
 </div>
 
@@ -46,9 +107,15 @@
 <div id="general" class="section level2">
 <h2>General</h2>
 <p><code>gwloggeR</code> is developed as part of a larger git-repository: <a href="https://github.com/DOV-Vlaanderen/groundwater-logger-validation" class="uri">https://github.com/DOV-Vlaanderen/groundwater-logger-validation</a>.</p>
-<p>So first we need to ckeckout this repository somewhere localy.</p>
+<p>So first we need to checkout this repository somewhere localy.</p>
 <pre><code>git checkout https://github.com/DOV-Vlaanderen/groundwater-logger-validation.git</code></pre>
-<p>TODO…</p>
+</div>
+<div id="webite" class="section level2">
+<h2>Webite</h2>
+<p>For <code>gwloggeR</code> <a href="https://dov-vlaanderen.github.io/groundwater-logger-validation/gwloggeR">website</a> we use <code>pkggdown</code>.</p>
+<p>We do not use <a href="https://pkgdown.r-lib.org/reference/deploy_site_github.html"><code>travis</code></a> for automatic website deployment. Each time one updates files that have an impact on the website, one should manualy execute the following commands:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">pkgdown<span class="op">::</span><span class="kw">clean_site</span>()
+pkgdown<span class="op">::</span><span class="kw">build_site</span>()</code></pre></div>
 </div>
 
 

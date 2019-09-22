@@ -31,10 +31,20 @@ Here we describe some  general guidelines for maintenance and development of `gw
 
 `gwloggeR` is developed as part of a larger git-repository: https://github.com/DOV-Vlaanderen/groundwater-logger-validation.
 
-So first we need to ckeckout this repository somewhere localy.
+So first we need to checkout this repository somewhere localy.
 
 ```{}
 git checkout https://github.com/DOV-Vlaanderen/groundwater-logger-validation.git
 ```
 
-TODO...
+## Webite
+
+For `gwloggeR` [website](https://dov-vlaanderen.github.io/groundwater-logger-validation/gwloggeR) we use `pkggdown`. 
+
+We do not use [`travis`](https://pkgdown.r-lib.org/reference/deploy_site_github.html) for automatic website deployment. Each time one updates files that have an impact on the website, one should manualy execute the following commands:
+
+```{r eval=FALSE}
+pkgdown::clean_site()
+pkgdown::build_site()
+```
+

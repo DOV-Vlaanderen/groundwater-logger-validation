@@ -90,7 +90,7 @@
     <div class="page-header toc-ignore">
       <h1>Development guide</h1>
             
-            <h4 class="date">2019-09-20</h4>
+            <h4 class="date">2019-09-22</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/DOV-Vlaanderen/groundwater-logger-validation/blob/master/vignettes/Development.Rmd"><code>vignettes/Development.Rmd</code></a></small>
       <div class="hidden name"><code>Development.Rmd</code></div>
@@ -104,9 +104,16 @@
 <h2 class="hasAnchor">
 <a href="#general" class="anchor"></a>General</h2>
 <p><code>gwloggeR</code> is developed as part of a larger git-repository: <a href="https://github.com/DOV-Vlaanderen/groundwater-logger-validation" class="uri">https://github.com/DOV-Vlaanderen/groundwater-logger-validation</a>.</p>
-<p>So first we need to ckeckout this repository somewhere localy.</p>
+<p>So first we need to checkout this repository somewhere localy.</p>
 <pre><code>git checkout https://github.com/DOV-Vlaanderen/groundwater-logger-validation.git</code></pre>
-<p>TODO…</p>
+</div>
+<div id="webite" class="section level2">
+<h2 class="hasAnchor">
+<a href="#webite" class="anchor"></a>Webite</h2>
+<p>For <code>gwloggeR</code> <a href="https://dov-vlaanderen.github.io/groundwater-logger-validation/gwloggeR">website</a> we use <code>pkggdown</code>.</p>
+<p>We do not use <a href="https://pkgdown.r-lib.org/reference/deploy_site_github.html"><code>travis</code></a> for automatic website deployment. Each time one updates files that have an impact on the website, one should manualy execute the following commands:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">pkgdown<span class="op">::</span><span class="kw"><a href="https://pkgdown.r-lib.org/reference/clean_site.html">clean_site</a></span>()
+pkgdown<span class="op">::</span><span class="kw"><a href="https://pkgdown.r-lib.org/reference/build_site.html">build_site</a></span>()</code></pre></div>
 </div>
   </div>
 
@@ -116,6 +123,7 @@
 <a href="#tocnav" class="anchor"></a>Contents</h2>
       <ul class="nav nav-pills nav-stacked">
 <li><a href="#general">General</a></li>
+      <li><a href="#webite">Webite</a></li>
       </ul>
 </div>
       </div>
