@@ -15,7 +15,7 @@ set.seed(2018)
 
 # gwloggeR
 
-`gwloggeR` is a R-package for automatic flagging of outliers, levelshifts and temporal changes in raw airpressure and hydrostatic pressure data. For example.
+`gwloggeR` is a R-package for automatic flagging of outliers, levelshifts and temporal changes in raw air and hydrostatic pressure data. For example.
 
 ```{r example, echo=FALSE, fig.height=6, fig.width=14}
 n <- 1000L
