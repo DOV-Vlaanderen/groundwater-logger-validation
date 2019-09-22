@@ -1,33 +1,60 @@
+---
+output: github_document
+---
 
 <!-- README.md is generated from README.Rmd. -->
-gwloggeR
-========
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.path = "man/fig/"
+)
+set.seed(2018)
+```
+
+# gwloggeR
 
 `gwloggeR` is made to to automatize flagging of outliers, levelshifts and temporal changes in raw airpressure and hydrostatic pressure data. For example.
 
-![](man/fig/example-1.png)
+```{r example, echo=FALSE, fig.height=6, fig.width=14}
+n <- 1000L
+x <- cumsum(c(1200, rnorm(n - 1L, mean = 0, sd = 10/6)))
+timestamps <- seq(as.POSIXct('2000-01-01'), by = '5 min', length.out = n)
+#plot(x, type = 'l')
+x[100L] <- x[100L] - 190
+x[200L:300L] <- x[200L:300L] - 150*0.9^(0:100)
+x[600L:length(x)] <- x[600L:length(x)] - 100
+
+df.types <- gwloggeR:::detect(x = x, timestamps = timestamps, types = c('AO', 'LS', 'TC'))
+
+df.plot <- gwloggeR:::plot.data(x = x, timestamps = timestamps, df.types = df.types)
+plt <- gwloggeR:::plot.base(data = df.plot)
+plt <- gwloggeR:::plot.add.levelshifts(plt)
+plt <- gwloggeR:::plot.add.tempchanges(plt)
+plt <- gwloggeR:::plot.add.outliers(plt)
+plt
+```
 
 Keep reading to learn how to start using `gwloggeR`.
 
-Installation
-------------
+## Installation
 
 `gwloggeR` package is not available on CRAN, only on GitHub. The easiest way of installing the package is using the `devtools` package and referring to the git repository holding the package code:
 
-``` r
+```{r eval=FALSE}
 devtools::install_github("DOV-Vlaanderen/groundwater-logger-validation", subdir = "gwloggeR", ref = "x.x.x")
 ```
 
 Note the `ref = "x.x.x"` option. Replace it with the version you want to install. Normally this will be the number of the latest stable release as displayed in the top left corner of this page. Alternatively, one can also install previous releases documented in the [News](News.md) section. By omitting the `ref` option the devopment version will be installed.
 
-Usage
------
+## Usage
 
 For general use, consult the [getting started](https://dov-vlaanderen.github.io/groundwater-logger-validation/gwloggeR/docs/articles/gwloggeR.html) tutorial.
 
 For advanced understanding, consult the specific vignettes.
 
-Development
------------
+## Development
 
 Developers and maintainers of this package can find some general guidelines in the Development section.
+
