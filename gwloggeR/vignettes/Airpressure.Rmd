@@ -40,7 +40,7 @@ gwloggeR::detect_outliers(x)
 
 So why is $975$ considered an outlier? We can understand the decision procedure better if we add some comprehensive plots and extra output:
 
-```{r}
+```{r detect_outliers-plot}
 gwloggeR::detect_outliers(x, plot = TRUE, verbose = TRUE)
 ```
 
@@ -79,7 +79,7 @@ where $\Phi^{-1}(\cdot)$ is the standard normal quantile function.
 
 This is how $c$ behaves in function of $n$ with fixed $\alpha = 1/2000$.
 
-```{r}
+```{r c.norm.optimal-plot}
 ggplot2::ggplot(data = data.frame(n = 5:10000), mapping = ggplot2::aes(x = n)) + 
   ggplot2::stat_function(fun = function(n) -qnorm((1-(1-1/2000)^(1/n))/2), col = 'black') + 
   ggplot2::theme_light() + ggplot2::ylab('c')
@@ -125,7 +125,7 @@ saveRDS(df, 'airpressure/simulation.rds')
 
 Black horizontal line represents the expected $0.01$ failure rate. The blue curve is the failure rate estimate based on mean and standard deviation, which are most efficient estimators in case there are no outliers. The red curve is the failure rate based on median and MAD. In case $n < 500$, the MAD approach is very optimistic: it is $2$ to $3$ times more likely to detect falsely one or more outliers. The green curve is based on the the Qn scale estimator (TODO).
 
-```{r, echo=FALSE}
+```{r detect_outliers_norm_power, echo=FALSE}
 df <- readRDS('airpressure/simulation.rds')
 ggplot2::ggplot(data = df, mapping = ggplot2::aes(x = n)) +
   ggplot2::geom_point(mapping = ggplot2::aes(y = tfr.sd), col = 'blue', alpha = 0.1) +
@@ -154,7 +154,7 @@ In case of outliers, a way to measure robustness is the breakdown point. The max
 
 We can improve the outlier detection by providing _a-priori_ information about $\mathbf{x}$. For example:
 
-```{r}
+```{r detect_outliers-apriori-plot}
 x <- c(990:999)
 gwloggeR::detect_outliers(x, apriori = gwloggeR::apriori("air pressure", "cmH2O"), plot = TRUE)
 ```
