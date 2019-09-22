@@ -60,3 +60,4 @@ pkgdown::clean_site()
 pkgdown::build_site()
 ```
 
+On each update of `gwloggeR` source files, make sure to run these commands before commiting.
