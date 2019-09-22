@@ -1,0 +1,126 @@
+---
+title: "Hydrostatic pressure"
+date: "`r Sys.Date()`"
+output: 
+  rmarkdown::html_vignette:
+    fig_width: 7
+    fig_height: 4
+    toc: true
+    toc_depth: 4
+    number_sections: false
+    df_print: paged # default, kable, tibble
+    fig_caption: true
+  pdf_document:
+    toc: true
+bibliography: bibliography.bib
+vignette: >
+  %\VignetteIndexEntry{User documentation}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+loadNamespace("data.table")
+```
+
+This is an advanced guide. It explains how the `detect_` functions work for hydrostatic pressure. Make sure you have first read the getting started material.
+
+## Hydrostatic pressure model
+
+We use the following model for hydrostatic pressure:
+
+$$
+z_t = z_{t-1} + \epsilon(\Delta t)
+$$
+
+### Error function
+
+The error $\epsilon$ is a function of time difference between $t$ and $t-1$. The underlying idea is that the larger this timeinterval $\Delta t$, the larger the variance of $\epsilon$. Based on $\epsilon$ analysis of "correct" hysdrostatic pressure timeseries, the following density gradients are extracted in function of $\Delta t$.
+
+```{r eval=FALSE, echo=FALSE}
+samples <- sapply(as.character(seq(5, 1*60*24*4, by = 5)*60), function(interval.sec) {
+  gwloggeR:::apriori.hydropressure.difference.samples(as.numeric(interval.sec))
+}, simplify = FALSE, USE.NAMES = TRUE)
+
+df <- data.table::rbindlist(lapply(names(samples), function(interval.sec) {
+  data.table::data.table('TIMEDIFF' = as.numeric(interval.sec),
+                         'VALUE' = unlist(unname(samples[[interval.sec]])))
+}), use.names = TRUE, idcol = FALSE)
+
+data.table::setkey(df, TIMEDIFF)
+
+saveRDS(df, file = './hydropressure/df.rds')
+
+df.ecdf <- df[, .(ECDF = list(ecdf(VALUE))), by = TIMEDIFF]
+data.table::setkey(df.ecdf, TIMEDIFF)
+
+# x = TIMEDIFF, y = VALUE
+cumulative.density <- function(x, y) {
+  data.table::rbindlist(Vectorize(function(x, y) {
+    data.frame('CDF' = df.ecdf[TIMEDIFF == x, ECDF][[1]](y), x, y)
+  }, vectorize.args = 'x', SIMPLIFY = FALSE)(x, y))
+}
+
+df.grad <- cumulative.density(x = df.ecdf[, TIMEDIFF], y = seq(-150, 150, length.out = 1000))
+saveRDS(df.grad, file = './hydropressure/df_grad.rds')
+```
+
+```{r, echo=FALSE}
+df.grad <- readRDS('./hydropressure/df_grad.rds')
+df.quant <- readRDS('./hydropressure/df.rds')[
+    , .(Q.025 = quantile(VALUE, 0.025),
+        Q.975 = quantile(VALUE, 0.975)),
+    by = .(x = TIMEDIFF)]
+
+ggplot2::ggplot(data = df.grad, mapping = ggplot2::aes(x = x/60/60, y = y)) +
+  ggplot2::geom_raster(mapping = ggplot2::aes(fill = CDF), interpolate = TRUE, alpha = 0.8) +
+  ggplot2::scale_fill_gradient2(low = 'white', mid = 'red', high = 'white', midpoint = 0.5) +
+  ggplot2::xlab('TIMEDIFF (hour)') + ggplot2::ylab('VALUEDIFF (cmH2O)') +
+  ggplot2::ggtitle('Cumulative density gradient of aprior hydrostatic pressure data\nin function of time with 95 % confidence interval.') +
+  ggplot2::geom_line(data = df.quant, mapping = ggplot2::aes(y = Q.975), col = 'red') +
+  ggplot2::geom_line(data = df.quant, mapping = ggplot2::aes(y = Q.025), col = 'red') +
+  ggplot2::scale_x_continuous(breaks = seq(0, 200, by = 24.833/2)) + # lunar day: 24h50
+  ggplot2::theme_minimal()
+```
+
+### Distribution of errors
+
+Based on the "correct" _a-priori_ timeseries, the densities do not seem to be normal. For example, for $\Delta t = 5 \text{min}$ we have:
+
+```{r hydropressure-5min-hist, echo=FALSE}
+x <- gwloggeR:::apriori.hydropressure.difference.samples(5*60)
+ggplot2::ggplot(data = data.frame('x' = x), 
+                mapping = ggplot2::aes_string(x = 'x')) +
+  ggplot2::geom_histogram(mapping = ggplot2::aes(y = ..density..), fill = 'black', bins = 100) +
+  ggplot2::ylab('Density') +
+  ggplot2::theme_light()
+```
+
+On the other hand, without tidal effect, the normality seems much more pronounced. For example, $\Delta t = 12 \text{h} 25 \text{min}$:
+
+```{r hydropressure-12h-hist, echo=FALSE}
+x <- gwloggeR:::apriori.hydropressure.difference.samples(60*60*12 + 60*25)
+ggplot2::ggplot(data = data.frame('x' = x), 
+                mapping = ggplot2::aes_string(x = 'x')) +
+  ggplot2::geom_histogram(mapping = ggplot2::aes(y = ..density..), fill = 'black', bins = 100) +
+  ggplot2::ylab('Density') +
+  ggplot2::theme_light()
+```
+
+This suggest that the model should be adjusted for tidal effects.
+
+## Likelihood optimization
+
+Distribution of errors, for likelihood optimization, is assumed normal. This is because normal PDF (mostly) results in a convex likelihood.
+
+## Future work
+
+* Adjust model for tidal effects.
+
+## References
+
+
