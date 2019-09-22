@@ -21,7 +21,7 @@ De doelstellingen zijn:
 
 ## Package
 
-For the package related to this project, see subfolder [gwloggeR](https://github.com/DOV-Vlaanderen/groundwater-logger-validation/tree/master/gwloggeR).
+For the package related to this project, see subfolder [gwloggeR](https://github.com/DOV-Vlaanderen/groundwater-logger-validation/tree/master/gwloggeR) or the [website](https://dov-vlaanderen.github.io/groundwater-logger-validation/gwloggeR).
 
 ## Workflow
 
