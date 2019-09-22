@@ -4,7 +4,7 @@ cat(".Rprofile file is loading...\n");
 requireNamespace('pkgbuild')
 
 # Needed for rmarkdown which uses pdflatex.exe.
-Sys.setenv(PATH = paste(Sys.getenv("PATH"), "W:\\Tools\\miktex\\program\\miktex\\bin", sep=.Platform$path.sep));
+Sys.setenv(PATH = paste(Sys.getenv("PATH"), "W:/Tools/miktex/program/miktex/bin", sep=.Platform$path.sep));
 cat(paste("LaTeX installed:", pkgbuild::has_latex(), "\n"))
 
 # RTools
@@ -20,7 +20,7 @@ Sys.setenv(BINPREF = normalizePath("W:/Tools/rtools/program/mingw_64/bin/", wins
 cat(paste("RTools installed:", pkgbuild::has_build_tools(debug = TRUE), "\n"))
 
 # QPDF, used by CRAN to compress pdf's
-Sys.setenv(PATH = paste(Sys.getenv("PATH"), "W:\\Tools\\pdf\\qpdf\\program\\x64\\bin", sep=.Platform$path.sep))
+Sys.setenv(PATH = paste(Sys.getenv("PATH"), "W:/Tools/pdf/qpdf/program/x64/bin", sep=.Platform$path.sep))
 
 # Might be dangerous in some cases, but improves portability of code.
 # Sys.timezone(): default is usualy "Europe/Paris" or similar.
