@@ -120,13 +120,13 @@ df$tfr.mad <- unlist(parallel::clusterApplyLB(cl, x = df$n, fun = mean.error.rat
 df$tfr.qn <- unlist(parallel::clusterApplyLB(cl, x = df$n, fun = mean.error.rate, fun.mean = median, fun.sd = robustbase::Qn))
 parallel::stopCluster(cl)
 
-saveRDS(df, 'simulation.rds')
+saveRDS(df, 'airpressure/simulation.rds')
 ```
 
 Black horizontal line represents the expected $0.01$ failure rate. The blue curve is the failure rate estimate based on mean and standard deviation, which are most efficient estimators in case there are no outliers. The red curve is the failure rate based on median and MAD. In case $n < 500$, the MAD approach is very optimistic: it is $2$ to $3$ times more likely to detect falsely one or more outliers. The green curve is based on the the Qn scale estimator (TODO).
 
 ```{r, echo=FALSE}
-df <- readRDS('simulation.rds')
+df <- readRDS('airpressure/simulation.rds')
 ggplot2::ggplot(data = df, mapping = ggplot2::aes(x = n)) +
   ggplot2::geom_point(mapping = ggplot2::aes(y = tfr.sd), col = 'blue', alpha = 0.1) +
   ggplot2::stat_smooth(mapping = ggplot2::aes(y = tfr.sd), col = 'blue', se = FALSE,
