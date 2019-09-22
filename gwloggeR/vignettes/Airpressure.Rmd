@@ -26,28 +26,22 @@ knitr::opts_chunk$set(
 )
 ```
 
-```{r setup}
-library(gwloggeR)
-```
+This is an advanced guide. It explains how `detect_outliers()` works for air pressure. Make sure you have first read the getting started material.
 
-# Outliers
+## Outlier detection
 
-Outliers are single measurements that are considered very unlikely to occur. 
-
-## `detect_outliers(x)`
-
-This function takes in a vector of datapoints and returns a boolean vector of outlier indicators:
+Outliers are single measurements that are considered very unlikely to occur. The `detect_outliers()` function takes in a vector of datapoints and returns a boolean vector of outlier indicators:
 
 ```{r}
 x <- c(1000:1005, 975)
 x
-detect_outliers(x)
+gwloggeR::detect_outliers(x)
 ```
 
 So why is $975$ considered an outlier? We can understand the decision procedure better if we add some comprehensive plots and extra output:
 
 ```{r}
-detect_outliers(x, plot = TRUE, verbose = TRUE)
+gwloggeR::detect_outliers(x, plot = TRUE, verbose = TRUE)
 ```
 
 The underlying assumption for outlier detection is normality of $x_i$. Top left plot shows the histogram of the data points. The green curve is the best-fit normal distribution, based on robust estimates of $\mu$ and $\sigma$. The cutoff points are signified by red vertical lines. The top right is the QQ-plot with cutoff points as horizontal lines. The bottom plot is the sequential data, with outliers in red.
@@ -156,33 +150,20 @@ Mean and square root of variance give the most efficient estimators for $\mu$ an
 
 In case of outliers, a way to measure robustness is the breakdown point. The maximum attainable breakdown point is $50 \%$, meaning that $50 \%$ of observations can be replaced by arbitrary large numbers, without breaking the estimator. For $\mu$, the obvious choice is the median. For $\sigma$ it is the median absolute deviation (MAD). They both have a $50 \%$ breakdown point. A problem with the latter is its efficiency (cf. simuation). There exist more efficient $\sigma$-estimators than the MAD. For example the Q-estimator [cf. @Rousseeuw1993]. Currently, MAD suffices because we usualy have lots of data ($n > 5000$) so efficiency suffers less.
 
-## `detect_outliers(x, apriori("air pressure", units = "cmH2O"))`
+### Apriori air pressure information
 
 We can improve the outlier detection by providing _a-priori_ information about $\mathbf{x}$. For example:
 
 ```{r}
 x <- c(990:999)
-detect_outliers(x, apriori = apriori("air pressure", "cmH2O"), plot = TRUE)
+gwloggeR::detect_outliers(x, apriori = gwloggeR::apriori("air pressure", "cmH2O"), plot = TRUE)
 ```
 
 Top left is again the histogram of $\mathbf{x}$. But the green density this time is not a robust normal estimate based on $\mathbf{x}$. Instead it is the hardcoded _a-priori_ density distribution of air pressure ($cmH_2O$) in Belgium. Given the $10$ points and assuming that we want to detect falsely one or more outliers in $1$ of $2000$ tests, we set the red cutoffs appropriately. This results in first $4$ points being identified as outliers.
 
-## `detect_outliers(x, apriori("hydrostatic pressure", units = "cmH2O"))`
+## Future work
 
-TO BE WRITTEN...
+* `detect_outliers(x)` based on $Q_n$ estimator for variance.
+* Option to supply elevation of the air pressure logger.
 
-Hydrostatic pressure incorporates _a-priori_ information about air pressure as the lower limit. The upper limit is determined with the `detect_outliers(x)` approach (i.e. without _a-priori_ information). The following example explains:
-
-```{r}
-x <- c(1070, 985, 1071:1077, 1100)
-ts <- seq(as.POSIXct('2010-01-01'), by = '5 min', length.out = 10L)
-detect_outliers(x, timestamps = ts, apriori = apriori("hydrostatic pressure", "cmH2O"), plot = TRUE)
-```
-
-The top left density is now bimodal. The first mode is just the _a-priori_ air pressure, and the second is the robust estimate of the datapoints themselves, excluding the left outliers, using `detect_outliers(x)`. The reasoning is that hydrostatic pressure should never be higher than air pressure. Thus, since $985 \; cmH_2O$ is very unlikely given our _a-priori_ air pressure information, it is considered an outlier. Subsequently, robust estimates of $\mu$ and $\sigma$ are made based on remaining $\mathbf{x}$, from which $1100 \; cmH_2O$ also seems very unlikely on the right side.
-
-# Levelshifts
-
-To be continued...
-
-# References
+## References
