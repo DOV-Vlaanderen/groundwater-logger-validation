@@ -8,7 +8,7 @@ output: github_document
 knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>",
-  fig.path = "man/fig/"
+  fig.path = "man/figures/" # CRAN figures foder (cf. 2.7 Figures)
 )
 set.seed(2018)
 ```
