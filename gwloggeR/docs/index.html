@@ -95,13 +95,14 @@
 <div id="gwlogger" class="section level1">
 <div class="page-header"><h1 class="hasAnchor">
 <a href="#gwlogger" class="anchor"></a>gwloggeR</h1></div>
-<p><code>gwloggeR</code> is made to to automatize flagging of outliers, levelshifts and temporal changes in raw airpressure and hydrostatic pressure data.</p>
+<p><code>gwloggeR</code> is a R-package for automatic flagging of outliers, levelshifts and temporal changes in raw airpressure and hydrostatic pressure data. For example.</p>
+<p><img src="man/fig/example-1.png"></p>
 <p>Keep reading to learn how to start using <code>gwloggeR</code>.</p>
 <div id="installation" class="section level2">
 <h2 class="hasAnchor">
 <a href="#installation" class="anchor"></a>Installation</h2>
 <p><code>gwloggeR</code> package is not available on CRAN, only on GitHub. The easiest way of installing the package is using the <code>devtools</code> package and referring to the git repository holding the package code:</p>
-<pre><code><a href="https://rdrr.io/pkg/devtools/man/reexports.html">devtools::install_github("DOV-Vlaanderen/groundwater-logger-validation", subdir = "gwloggeR", ref = "x.x.x")</a></code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">devtools<span class="op">::</span><span class="kw"><a href="https://rdrr.io/pkg/devtools/man/reexports.html">install_github</a></span>(<span class="st">"DOV-Vlaanderen/groundwater-logger-validation"</span>, <span class="dt">subdir =</span> <span class="st">"gwloggeR"</span>, <span class="dt">ref =</span> <span class="st">"x.x.x"</span>)</code></pre></div>
 <p>Note the <code>ref = "x.x.x"</code> option. Replace it with the version you want to install. Normally this will be the number of the latest stable release as displayed in the top left corner of this page. Alternatively, one can also install previous releases documented in the <a href="News.html">News</a> section. By omitting the <code>ref</code> option the devopment version will be installed.</p>
 </div>
 <div id="usage" class="section level2">
