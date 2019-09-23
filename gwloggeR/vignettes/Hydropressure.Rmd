@@ -113,6 +113,14 @@ ggplot2::ggplot(data = data.frame('x' = x),
 
 This suggest that the model should be adjusted for tidal effects.
 
+## Extensions
+
+### Outliers
+
+### Levelshifts
+
+### Temporal changes
+
 ## Likelihood optimization
 
 Distribution of errors, for likelihood optimization, is assumed normal. This is because normal PDF (mostly) results in a convex likelihood.
