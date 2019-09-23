@@ -37,6 +37,8 @@ $$
 z_t = z_{t-1} + \epsilon(\Delta t)
 $$
 
+In literature this also goes by the name of a pure random walk: the next point starts from the previous with a random deviation $\epsilon(\Delta t)$.
+
 ### Error function
 
 The error $\epsilon$ is a function of time difference between $t$ and $t-1$. The underlying idea is that the larger this timeinterval $\Delta t$, the larger the variance of $\epsilon$. Based on $\epsilon$ analysis of "correct" hysdrostatic pressure timeseries, the following density gradients are extracted in function of $\Delta t$.
@@ -115,19 +117,77 @@ This suggest that the model should be adjusted for tidal effects.
 
 ## Extensions
 
+The main idea is that $z_t$ is polluted by different kinds of effects. We define each of these effects seperatey. Inspiration of these definitions is mainly taken from the works of Fox (1972) and more recent papers by Chen and Pedro.
+
 ### Outliers
+
+An additive outlier (AO) at time $t_{AO}$ is defined as an exogenous change of a single observation. 
+
+$$
+x_t = z_t + \omega I(t = t_{AO})
+$$
+
+Note that $x_t$ is the observed value, and $z_t$ is the underlying process as defined previously. Rewriting this in function of $x$ we get:
+
+$$
+x_t = x_{t-1} + \epsilon(\Delta t) + \omega \left[I(t=t_{AO}) - I(t = t_{AO} + 1) \right]
+$$
 
 ### Levelshifts
 
+A levelshift (LS) is an exogenous change that lasts.
+
+$$
+x_t = z_t + \frac{\omega I(t = t_{LS})}{1-B}
+$$
+
+Note that $B$ is the back operator. Rewriting this in $x$ gives a more comprehensive form:
+
+$$
+x_t = x_{t-1} + \epsilon(\Delta t) + \omega I(t=t_{LS})
+$$
+
 ### Temporal changes
+
+A temporal change (TC) is an effect that decays exponentially with factor $\delta$.
+
+$$
+x_t = z_t + \frac{\omega I(t = t_{LS})}{1-\delta B}
+$$
+
+Rewritten in $x$ we have:
+
+$$
+x_t = x_{t-1} + \epsilon(\Delta t) + \omega \left[ I(t=t_{TC}) - \frac{(1-\delta)I(t = t_{TC} + 1)}{1 - \delta B} \right]
+$$
 
 ## Likelihood optimization
 
+Based on AO, LS and TC written in function of $x$ only, one sees that the difference $x_t - x_{t-1} = \epsilon (\Delta t)$ unless AO, LS or TC occured. Thus our first step in optimization is to take the differences $x_t - x_{t-1}$ and test how likely they are under the distribution of $\epsilon (\Delta t)$. If very unlikely (cf. TODO), then consider the observation a candidate for AO, LS or TC.
+
+These three effects can come in all kinds of combinations. It seems difficult, if not impossible, to write a decent if-else structure to catch all the possible configurations. That is why we choose a likelihood based approach.
+
+### Likelihood function
+
 Distribution of errors, for likelihood optimization, is assumed normal. This is because normal PDF (mostly) results in a convex likelihood.
+
+### Likelihood ratio testing
+
+At this point, we only know $t$'s which are candidates for AO, LS and TC. But we do not know which is which. That is why we test them all. For testing we use the likelihood ratio (LR) testing. (cf. TODO)
+
+Note that in case of TC we have two parameters: $\omega$ and $\delta$. $\delta$ varies between $0$ and $1$. If $\delta = 0$ we have an outlier (AO), and if $\delta = 1$ we have a levelshift (LS). How do we choose between a TC with $\delta = 0$ and AO? As we will see later, we use likelihood ratio testing: since TC uses two parameters to explain the same effect as AO with one parameter, an AO is more likely. Thus, a TC will only be chosen if $\delta$ is significanly different from $0$ and $1$. 
+
+### Examples
+
+This case shows nicely the "creativity" of the procedure in selecting the effects...
 
 ## Future work
 
 * Adjust model for tidal effects.
+* Better $\epsilon (\Delta t)$ estimation than current +10 % of min/max value.
+* Revise LR test treshold.
+* Use _a-priori_ data more as a prior and estimate $\epsilon(\Delta t)$ with data at hand.
+* Extract AO, LS and TC if `verbose = TRUE`.
 
 ## References
 
