@@ -11,7 +11,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
 
-<meta name="date" content="2019-09-22" />
+<meta name="date" content="2019-09-23" />
 
 <title>Hydrostatic pressure</title>
 
@@ -33,7 +33,7 @@
 
 
 <h1 class="title toc-ignore">Hydrostatic pressure</h1>
-<h4 class="date">2019-09-22</h4>
+<h4 class="date">2019-09-23</h4>
 
 
 <div id="TOC">
@@ -41,6 +41,11 @@
 <li><a href="#hydrostatic-pressure-model">Hydrostatic pressure model</a><ul>
 <li><a href="#error-function">Error function</a></li>
 <li><a href="#distribution-of-errors">Distribution of errors</a></li>
+</ul></li>
+<li><a href="#extensions">Extensions</a><ul>
+<li><a href="#outliers">Outliers</a></li>
+<li><a href="#levelshifts">Levelshifts</a></li>
+<li><a href="#temporal-changes">Temporal changes</a></li>
 </ul></li>
 <li><a href="#likelihood-optimization">Likelihood optimization</a></li>
 <li><a href="#future-work">Future work</a></li>
@@ -67,6 +72,18 @@ z_t = z_{t-1} + \epsilon(\Delta t)
 <p>On the other hand, without tidal effect, the normality seems much more pronounced. For example, <span class="math inline">\(\Delta t = 12 \text{h} 25 \text{min}\)</span>:</p>
 <p><img src="data:image/png;base64,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" /><!-- --></p>
 <p>This suggest that the model should be adjusted for tidal effects.</p>
+</div>
+</div>
+<div id="extensions" class="section level2">
+<h2>Extensions</h2>
+<div id="outliers" class="section level3">
+<h3>Outliers</h3>
+</div>
+<div id="levelshifts" class="section level3">
+<h3>Levelshifts</h3>
+</div>
+<div id="temporal-changes" class="section level3">
+<h3>Temporal changes</h3>
 </div>
 </div>
 <div id="likelihood-optimization" class="section level2">
