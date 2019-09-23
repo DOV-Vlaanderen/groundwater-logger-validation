@@ -19,8 +19,8 @@ reference:
 template:
   params:
     docsearch:
-      api_key: API_KEY
-      index_name: INDEX_NAME
+      api_key: '916810b5c6ccfb35896629383cad80d0'
+      index_name: 'gwlogger'
 
 toc:
   depth: 4
