@@ -1,5 +1,5 @@
 {
-  "index_name": "INDEX_NAME",
+  "index_name": "gwlogger",
   "start_urls": [
     {
       "url": "https://dov-vlaanderen.github.io/groundwater-logger-validation/gwloggeR/docs/index.html",
