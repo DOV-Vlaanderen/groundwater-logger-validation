@@ -5,6 +5,7 @@
 ## TODO
 * `detect_temporalchanges()` should flag everything from start until the decay is insignificant.
 * Complete `Development` vignette.
+* Caching of algorithm results.
 
 ### Diagnostic plots
 * Margin of diagnostic plots y-axis should be the same.
