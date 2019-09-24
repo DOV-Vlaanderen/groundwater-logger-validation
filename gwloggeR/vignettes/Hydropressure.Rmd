@@ -117,7 +117,7 @@ This suggest that the model should be adjusted for tidal effects.
 
 ## Extensions
 
-The main idea is that $z_t$ is polluted by different kinds of events. We define each of these events seperatey. Inspiration of these definitions is mainly taken from the works of @Fox1972 and more recent papers by @Chen1993 and @Galeano2013.
+The main idea is that $z_t$ is polluted by different kinds of events. We define each of these events seperatey. Inspiration of these definitions is mainly taken from the works of @Fox1972 and more recent papers by @Chen1993 and @Galeano2013. Furthermore, an R implmentation by @tsoutliers was used for the initial evaluation of these ideas.
 
 ### Outliers
 
@@ -166,7 +166,7 @@ $$
 
 Based on AO, LS and TC written in function of $x$ only, one sees that the difference $x_t - x_{t-1} = \epsilon (\Delta t)$ unless AO, LS or TC occured. Thus our first step in optimization is to take the differences $x_t - x_{t-1}$ and test how likely they are under the distribution of $\epsilon (\Delta t)$. If very unlikely (cf. TODO), then consider the observation a candidate for AO, LS or TC.
 
-These three events can come in all kinds of combinations. It seems difficult, if not impossible, to write a decent if-else structure to catch all the possible configurations. That is why we choose a likelihood based approach.
+These three events can come in all kinds of combinations. It seems difficult, if not impossible, to write a decent if-else structure to catch all the possible configurations. That is why we chose a likelihood based approach.
 
 ### Likelihood function
 
@@ -176,19 +176,19 @@ $$
 L(\mathbf{\theta} ; \mathbf{x}) = p(\mathbf{x} | \mathbf{\theta}) = \prod_{t=2}^{n} p(x_t, x_{t-1} | \mathbf{\theta})
 $$
 
-where $\mathbf{x} = (x_1, \dots, x_n)$ and $\mathbf{\theta}$ is the vector of parameters, including $\omega$'s, $\delta$'s, but also the indexes $t_{AO}$, $t_{LS}$ and $t_{TC}$.
+where $\mathbf{x} = (x_1, \dots, x_n)$ and $\mathbf{\theta}$ is the vector of parameters $\omega$'s and $\delta$'s accompanied by their corresponding indexes $t_{AO}$, $t_{LS}$ and $t_{TC}$.
 
 ### Stepwise model selection
 
-First problem is that we do not know how many AO, LS and TC events there are. Thus we are naturally led to some form of model selection. Model $M_0$ is a model in which no event occured (i.e. 0 stands for zero-parameter model). $M_1$ is a model in which an AO or LS occured (i.e. a one-parameter model). How do we choose between the two? Well, the one that is more likely wins (i.e. the one for which the likelihood function $L(\mathbf{\theta} ; \mathbf{x})$ results in the highest likelihood.
+First problem is that we do not know how many AO, LS and TC events there are. Thus we are naturally led to some form of model selection. Model $M_0$ is a model in which no event occured (i.e. 0 stands for zero-parameter model). $M_1$ is a model in which an AO or LS event occured (i.e. a one-parameter model). How do we choose between the two? Well, the one that is more likely wins (i.e. the one for which the likelihood function $L(\mathbf{\theta} ; \mathbf{x})$ results in the highest likelihood.)
 
 In the next step we test whether this $M_1$ model is significantly better than the $M_0$ model. We do this with the likelihood ratio (LR) test. If $M_1$ is significantly better than $M_0$ we continue with $M_1$ and add one extra AO or LS parameter which results in a $M_2$ model. This model also competes with a model in which only one TC event occured. (This is because a TC event has two parameters $\omega$ and $\delta$, and thus an empty model with a TC event added is automatically a $M_2$ model.) Then the best $M_2$ model is tested for significance against the best $M_1$ model, etc.
 
-Note that $\delta$ varies between $0$ and $1$. If $\delta = 0$ we have an outlier (AO), and if $\delta = 1$ we have a levelshift (LS). How do we choose between a TC with $\delta = 0$ and AO? Since TC uses two parameters to explain the same event as AO with one parameter, an AO is more likely. Thus, a TC will only be chosen if $\delta$ is significanly different from $0$ and $1$.
+Note that $\delta$ varies between $0$ and $1$. If $\delta = 0$ we have an outlier (AO), and if $\delta = 1$ we have a levelshift (LS). How do we choose between a TC with $\delta = 0$ and AO model? Since the TC model uses two parameters to explain the same event as AO with one parameter, an AO model is more parsimonious and thus more likely. Thus, a TC will only be chosen if $\delta$ is significanly different from $0$ and $1$.
 
-In case we have a tie between multiple $M_m$ models with $m$ parameters, then the one for which the sum of the absolute values of parameters is smallest is taken as best. This is a poor man's simulation of a prior on the parameters: the smaller the parameter, the more likelly it is.
+In case we have a tie between multiple $M_m$ models with $m$ parameters, then the one for which the sum of the absolute values of parameters is smallest is taken as winner. This is a poor man's simulation of a prior on the parameters: the smaller the parameter, the more likelly it is, under equal likelihood.
 
-This model selection is quite involved. Programaticaly, we define an object `ProgressTable` which keeps track of all the best models $M_0$ up till the last significant one. Besides the forward model selection, we also make use of backward selection because adding a parameter sometimes makes an exising parameter insignificant, which opens a new path of possibilities in case it is removed. The eventual model $M_m$ is the most likely model with $m$ parameters of all the ones tested, but not necessarily the most likely of all the possible configurations. In practive, although this maxima might be local (i.e. not global), it is taken as a good compromise between compuational speed and maximization accuracy.
+This model selection procedure is quite involved. Programaticaly, we define an object `ProgressTable` which keeps track of all the best models $M_0$ up till the last significant one. Besides the forward model selection, we also make use of backward selection because adding a parameter sometimes makes an exising parameter insignificant, which opens a new path of possibilities in case the insignificant parameter is removed. The best model $M_m$ is the most likely model with $m$ parameters of all the ones tested, but not necessarily the most likely of all the possible configurations. In practive, although this maxima might be local (i.e. not global), it is taken as a good compromise between compuational speed and maximization accuracy.
 
 ### Likelihood optimization
 
@@ -198,19 +198,20 @@ Futher optimization is also made by noting the effect of AO, LS and TC events on
 
 ### Summary
 
-Algoriyhm for hydrostatic pressure AO, LS and TC detection can be summarized in pseudocode as follows:
+Algorithm for hydrostatic pressure AO, LS and TC detection can be summarized in pseudocode as follows:
 
 * Compute $x_t - x_{t-1}$
 * Test for outliers based on $\epsilon(\Delta t)$ and note the indexes $t_i$
 * For $m$ = 0 .. Inf
-    * Using $M_m$ iterate over all possibilities ($t_i$, AO, LS and TC)
+    * Using $M_m$ iterate over all possible additions ($t_i$, AO, LS and TC)
         * Compute likelihoods
     * Select $M_{m+1}$ as the model with $m$ parameters and highest likelihood 
 * Do while $M_{m+1}$ vs. $M_m$ is significant
+* $M_m$ is the best model: extract AO, LS and TC indexes and parameters.
 
 ### Examples
 
-The following case shows nicely the "creativity" of the procedure in selecting the events.
+The following case shows nicely the "creativity" of the algorithm in selecting the events.
 
 ```{r, eval=FALSE, echo=FALSE}
 options(logger.root.data.path = './../../data/raw/')
@@ -227,7 +228,7 @@ invisible(gwloggeR::detect_outliers(x = df$PRESSURE_VALUE, timestamps = df$TIMES
                                     plot = TRUE))
 ```
 
-The last three outlier (AO) events are obvious. But the first event is a double event: at the same time we have a level shift (LS) and a temporal change (TC). The level shift causes the drop, and then a temporal change jumps and decays back to the new level. It is the best way the model can explain what happened there using AO, LS and TC events.
+The last three outlier (AO) events are obvious. But the first event is a double event: at the same time we have a level shift (LS) and a temporal change (TC). The level shift causes the drop, and then a temporal change jumps and decays back to the new level. It is the best way the model has found to explain what happened there using AO, LS and TC events.
 
 ## Future work
 
