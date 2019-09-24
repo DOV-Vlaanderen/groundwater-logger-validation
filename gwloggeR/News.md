@@ -8,6 +8,7 @@
 * Complete `Development` vignette.
 * Caching of algorithm results.
 * Use travis-ci for website building and build testing.
+* Add date field in DESCRIPTION.
 
 ### Diagnostic plots
 * Margin of diagnostic plots y-axis should be the same.
