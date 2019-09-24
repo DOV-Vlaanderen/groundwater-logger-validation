@@ -101,7 +101,7 @@
     <div class="page-header toc-ignore">
       <h1>Hydrostatic pressure</h1>
             
-            <h4 class="date">2019-09-23</h4>
+            <h4 class="date">2019-09-24</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/DOV-Vlaanderen/groundwater-logger-validation/blob/master/vignettes/Hydropressure.Rmd"><code>vignettes/Hydropressure.Rmd</code></a></small>
       <div class="hidden name"><code>Hydropressure.Rmd</code></div>
@@ -118,6 +118,7 @@
 <p><span class="math display">\[
 z_t = z_{t-1} + \epsilon(\Delta t)
 \]</span></p>
+<p>In literature this also goes by the name of a pure random walk: the next point starts from the previous with a random deviation <span class="math inline">\(\epsilon(\Delta t)\)</span>.</p>
 <div id="error-function" class="section level3">
 <h3 class="hasAnchor">
 <a href="#error-function" class="anchor"></a>Error function</h3>
@@ -128,43 +129,136 @@ z_t = z_{t-1} + \epsilon(\Delta t)
 <h3 class="hasAnchor">
 <a href="#distribution-of-errors" class="anchor"></a>Distribution of errors</h3>
 <p>Based on the “correct” <em>a-priori</em> timeseries, the densities do not seem to be normal. For example, for <span class="math inline">\(\Delta t = 5 \text{min}\)</span> we have:</p>
-<p><img src="Hydropressure_files/figure-html/hydropressure-5min-hist-1.png" width="700"></p>
+<p><img src="Hydropressure_files/figure-html/hydropressure-5min-hist-1.png" width="384"></p>
 <p>On the other hand, without tidal effect, the normality seems much more pronounced. For example, <span class="math inline">\(\Delta t = 12 \text{h} 25 \text{min}\)</span>:</p>
-<p><img src="Hydropressure_files/figure-html/hydropressure-12h-hist-1.png" width="700"></p>
+<p><img src="Hydropressure_files/figure-html/hydropressure-12h-hist-1.png" width="384"></p>
 <p>This suggest that the model should be adjusted for tidal effects.</p>
 </div>
 </div>
 <div id="extensions" class="section level2">
 <h2 class="hasAnchor">
 <a href="#extensions" class="anchor"></a>Extensions</h2>
+<p>The main idea is that <span class="math inline">\(z_t\)</span> is polluted by different kinds of events. We define each of these events seperatey. Inspiration of these definitions is mainly taken from the works of <span class="citation">Fox (1972)</span> and more recent papers by <span class="citation">Chen and Liu (1993)</span> and <span class="citation">Galeano and Pena (2013)</span>.</p>
 <div id="outliers" class="section level3">
 <h3 class="hasAnchor">
 <a href="#outliers" class="anchor"></a>Outliers</h3>
+<p>An additive outlier (AO) at time <span class="math inline">\(t_{AO}\)</span> is defined as an exogenous change of a single observation.</p>
+<p><span class="math display">\[
+x_t = z_t + \omega I(t = t_{AO})
+\]</span></p>
+<p>The <span class="math inline">\(I()\)</span> is the indicator function. Furthermore, <span class="math inline">\(x_t\)</span> is the observed value, and <span class="math inline">\(z_t\)</span> is the underlying process as defined previously. <span class="math inline">\(z_t\)</span> is “polluted” in this case with <span class="math inline">\(\omega\)</span> at time <span class="math inline">\(t = t_{AO}\)</span>. Rewriting this in function of <span class="math inline">\(x\)</span> we get:</p>
+<p><span class="math display">\[
+x_t = x_{t-1} + \epsilon(\Delta t) + \omega \left[I(t=t_{AO}) - I(t = t_{AO} + 1) \right]
+\]</span></p>
+<p>These equations in function of <span class="math inline">\(x\)</span> we need later for likelihood maximization.</p>
 </div>
 <div id="levelshifts" class="section level3">
 <h3 class="hasAnchor">
 <a href="#levelshifts" class="anchor"></a>Levelshifts</h3>
+<p>A levelshift (LS) is an exogenous change that lasts.</p>
+<p><span class="math display">\[
+x_t = z_t + \frac{\omega I(t = t_{LS})}{1-B}
+\]</span></p>
+<p>Note that <span class="math inline">\(B\)</span> is the back operator. Rewriting this in <span class="math inline">\(x\)</span> gives a more comprehensive form:</p>
+<p><span class="math display">\[
+x_t = x_{t-1} + \epsilon(\Delta t) + \omega I(t=t_{LS})
+\]</span></p>
 </div>
 <div id="temporal-changes" class="section level3">
 <h3 class="hasAnchor">
 <a href="#temporal-changes" class="anchor"></a>Temporal changes</h3>
+<p>A temporal change (TC) is an event that decays exponentially with factor <span class="math inline">\(\delta\)</span>.</p>
+<p><span class="math display">\[
+x_t = z_t + \frac{\omega I(t = t_{LS})}{1-\delta B}
+\]</span></p>
+<p>Rewritten in <span class="math inline">\(x\)</span> we have:</p>
+<p><span class="math display">\[
+x_t = x_{t-1} + \epsilon(\Delta t) + \omega \left[ I(t=t_{TC}) - \frac{(1-\delta)I(t = t_{TC} + 1)}{1 - \delta B} \right]
+\]</span></p>
 </div>
 </div>
-<div id="likelihood-optimization" class="section level2">
+<div id="model-building" class="section level2">
 <h2 class="hasAnchor">
-<a href="#likelihood-optimization" class="anchor"></a>Likelihood optimization</h2>
-<p>Distribution of errors, for likelihood optimization, is assumed normal. This is because normal PDF (mostly) results in a convex likelihood.</p>
+<a href="#model-building" class="anchor"></a>Model building</h2>
+<p>Based on AO, LS and TC written in function of <span class="math inline">\(x\)</span> only, one sees that the difference <span class="math inline">\(x_t - x_{t-1} = \epsilon (\Delta t)\)</span> unless AO, LS or TC occured. Thus our first step in optimization is to take the differences <span class="math inline">\(x_t - x_{t-1}\)</span> and test how likely they are under the distribution of <span class="math inline">\(\epsilon (\Delta t)\)</span>. If very unlikely (cf. TODO), then consider the observation a candidate for AO, LS or TC.</p>
+<p>These three events can come in all kinds of combinations. It seems difficult, if not impossible, to write a decent if-else structure to catch all the possible configurations. That is why we choose a likelihood based approach.</p>
+<div id="likelihood-function" class="section level3">
+<h3 class="hasAnchor">
+<a href="#likelihood-function" class="anchor"></a>Likelihood function</h3>
+<p>Assuming independence of the error term we write:</p>
+<p><span class="math display">\[
+L(\mathbf{\theta} ; \mathbf{x}) = p(\mathbf{x} | \mathbf{\theta}) = \prod_{t=2}^{n} p(x_t, x_{t-1} | \mathbf{\theta})
+\]</span></p>
+<p>where <span class="math inline">\(\mathbf{x} = (x_1, \dots, x_n)\)</span> and <span class="math inline">\(\mathbf{\theta}\)</span> is the vector of parameters, including <span class="math inline">\(\omega\)</span>’s, <span class="math inline">\(\delta\)</span>’s, but also the indexes <span class="math inline">\(t_{AO}\)</span>, <span class="math inline">\(t_{LS}\)</span> and <span class="math inline">\(t_{TC}\)</span>.</p>
+</div>
+<div id="stepwise-model-selection" class="section level3">
+<h3 class="hasAnchor">
+<a href="#stepwise-model-selection" class="anchor"></a>Stepwise model selection</h3>
+<p>First problem is that we do not know how many AO, LS and TC events there are. Thus we are naturally led to some form of model selection. Model <span class="math inline">\(M_0\)</span> is a model in which no event occured (i.e. 0 stands for zero-parameter model). <span class="math inline">\(M_1\)</span> is a model in which an AO or LS occured (i.e. a one-parameter model). How do we choose between the two? Well, the one that is more likely wins (i.e. the one for which the likelihood function <span class="math inline">\(L(\mathbf{\theta} ; \mathbf{x})\)</span> results in the highest likelihood.</p>
+<p>In the next step we test whether this <span class="math inline">\(M_1\)</span> model is significantly better than the <span class="math inline">\(M_0\)</span> model. We do this with the likelihood ratio (LR) test. If <span class="math inline">\(M_1\)</span> is significantly better than <span class="math inline">\(M_0\)</span> we continue with <span class="math inline">\(M_1\)</span> and add one extra AO or LS parameter which results in a <span class="math inline">\(M_2\)</span> model. This model also competes with a model in which only one TC event occured. (This is because a TC event has two parameters <span class="math inline">\(\omega\)</span> and <span class="math inline">\(\delta\)</span>, and thus an empty model with a TC event added is automatically a <span class="math inline">\(M_2\)</span> model.) Then the best <span class="math inline">\(M_2\)</span> model is tested for significance against the best <span class="math inline">\(M_1\)</span> model, etc.</p>
+<p>Note that <span class="math inline">\(\delta\)</span> varies between <span class="math inline">\(0\)</span> and <span class="math inline">\(1\)</span>. If <span class="math inline">\(\delta = 0\)</span> we have an outlier (AO), and if <span class="math inline">\(\delta = 1\)</span> we have a levelshift (LS). How do we choose between a TC with <span class="math inline">\(\delta = 0\)</span> and AO? Since TC uses two parameters to explain the same event as AO with one parameter, an AO is more likely. Thus, a TC will only be chosen if <span class="math inline">\(\delta\)</span> is significanly different from <span class="math inline">\(0\)</span> and <span class="math inline">\(1\)</span>.</p>
+<p>This model selection is quite involved. Programaticaly, we define an object <code>ProgressTable</code> which keeps track of all the best models <span class="math inline">\(M_0\)</span> up till the last significant one. Besides the forward model selection, we also use a backward selection because adding a parameter sometimes makes an exising parameter insignificant, which opens a new path of possibilities in case it is removed. The eventual model <span class="math inline">\(M_m\)</span> is the most likely model with <span class="math inline">\(m\)</span> parameters of all the ones tested, but not necessarily the most likely of all the possible configurations. In practive, although this maxima might be local (i.e. not global), it is taken as a good compromise between compuational speed and accuracy.</p>
+</div>
+<div id="likelihood-optimization" class="section level3">
+<h3 class="hasAnchor">
+<a href="#likelihood-optimization" class="anchor"></a>Likelihood optimization</h3>
+<p>Each time we add a parameter, our likelihood function changes and must be optimized for most likely <span class="math inline">\(\mathbf{\theta}\)</span>. Using a smoothing kernel for <span class="math inline">\(\epsilon(\Delta t)\)</span> results in non-convex likelihood. Assuming <span class="math inline">\(\epsilon(\Delta t)\)</span> to be normal has several advantages: speed, numerical stability (due to <span class="math inline">\(logL(\mathbf{\theta} ; \mathbf{x})\)</span>) and “mostly” convexity. Experience shows that mixing AO, LS and TC events sometimes results in non-convex likelihoods.</p>
+<p>Futher optimization is also made by noting the effect of AO, LS and TC events on <span class="math inline">\(x\)</span>. For example, an LS event on <span class="math inline">\(t_{LS}\)</span> has only impact on <span class="math inline">\(x_{t_{LS}}\)</span>. An AO event has only impact on <span class="math inline">\(x_{t_{AO}}\)</span> and <span class="math inline">\(x_{t_{AO} + 1}\)</span>. And a TC event has only impact on <span class="math inline">\(x_{t_{TC}}\)</span> up untill the effect dies out. In other words, we can limit the likelihood optimization to a window of only a few points. (cf. TODO)</p>
+</div>
+<div id="summary" class="section level3">
+<h3 class="hasAnchor">
+<a href="#summary" class="anchor"></a>Summary</h3>
+<p>Algoriyhm for hydrostatic pressure AO, LS and TC detection can be summarized in pseudocode as follows:</p>
+<ul>
+<li>Compute <span class="math inline">\(x_t - x_{t-1}\)</span>
+</li>
+<li>Test for outliers based on <span class="math inline">\(\epsilon(\Delta t)\)</span> and note the indexes <span class="math inline">\(t_i\)</span>
+</li>
+<li>For <span class="math inline">\(m\)</span> = 0 .. Inf
+<ul>
+<li>Using <span class="math inline">\(M_m\)</span> iterate over all possibilities (<span class="math inline">\(t_i\)</span>, AO, LS and TC)
+<ul>
+<li>Compute likelihoods</li>
+</ul>
+</li>
+<li>Select <span class="math inline">\(M_{m+1}\)</span> as the model with <span class="math inline">\(m\)</span> parameters and highest likelihood</li>
+</ul>
+</li>
+<li>Do while <span class="math inline">\(M_{m+1}\)</span> vs. <span class="math inline">\(M_m\)</span> is significant</li>
+</ul>
+</div>
+<div id="examples" class="section level3">
+<h3 class="hasAnchor">
+<a href="#examples" class="anchor"></a>Examples</h3>
+<p>This case shows nicely the “creativity” of the procedure in selecting the effects…</p>
+</div>
 </div>
 <div id="future-work" class="section level2">
 <h2 class="hasAnchor">
 <a href="#future-work" class="anchor"></a>Future work</h2>
 <ul>
 <li>Adjust model for tidal effects.</li>
+<li>Better <span class="math inline">\(\epsilon (\Delta t)\)</span> estimation than current +10 % of min/max value.</li>
+<li>Revise LR test treshold.</li>
+<li>Use <em>a-priori</em> data more as a prior and estimate <span class="math inline">\(\epsilon(\Delta t)\)</span> with data at hand.</li>
+<li>Extract AO, LS and TC if <code>verbose = TRUE</code>.</li>
+<li>Revise the 25 observations window.</li>
 </ul>
 </div>
-<div id="references" class="section level2">
+<div id="references" class="section level2 unnumbered">
 <h2 class="hasAnchor">
 <a href="#references" class="anchor"></a>References</h2>
+<div id="refs" class="references">
+<div id="ref-Chen1993">
+<p>Chen, Chung, and Lon-Mu Liu. 1993. “Joint Estimation of Model Parameters and Outlier Effects in Time Series.” <em>Journal of the American Statistical Association</em> 88 (421). Taylor &amp; Francis: 284–97. doi:<a href="https://doi.org/10.1080/01621459.1993.10594321">10.1080/01621459.1993.10594321</a>.</p>
+</div>
+<div id="ref-Fox1972">
+<p>Fox, Anthony J. 1972. “Outliers in Time Series.” <em>Journal of the Royal Statistical Society. Series B (Methodological)</em> 34 (3). [Royal Statistical Society, Wiley]: 350–63. <a href="http://www.jstor.org/stable/2985071" class="uri">http://www.jstor.org/stable/2985071</a>.</p>
+</div>
+<div id="ref-Galeano2013">
+<p>Galeano, Pedro, and Daniel Pena. 2013. “Finding Outliers in Linear and Nonlinear Time Series.” In <em>Robustness and Complex Data Structures: Festschrift in Honour of Ursula Gather</em>, edited by Claudia Becker, Roland Fried, and Sonja Kuhnt, 243–60. Berlin, Heidelberg: Springer Berlin Heidelberg. doi:<a href="https://doi.org/10.1007/978-3-642-35494-6_15">10.1007/978-3-642-35494-6_15</a>.</p>
+</div>
+</div>
 </div>
   </div>
 
@@ -186,7 +280,15 @@ z_t = z_{t-1} + \epsilon(\Delta t)
       <li><a href="#temporal-changes">Temporal changes</a></li>
       </ul>
 </li>
+      <li>
+<a href="#model-building">Model building</a><ul class="nav nav-pills nav-stacked">
+<li><a href="#likelihood-function">Likelihood function</a></li>
+      <li><a href="#stepwise-model-selection">Stepwise model selection</a></li>
       <li><a href="#likelihood-optimization">Likelihood optimization</a></li>
+      <li><a href="#summary">Summary</a></li>
+      <li><a href="#examples">Examples</a></li>
+      </ul>
+</li>
       <li><a href="#future-work">Future work</a></li>
       <li><a href="#references">References</a></li>
       </ul>
