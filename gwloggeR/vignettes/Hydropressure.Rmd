@@ -93,7 +93,7 @@ ggplot2::ggplot(data = df.grad, mapping = ggplot2::aes(x = x/60/60, y = y)) +
 
 Based on the "correct" _a-priori_ timeseries, the densities do not seem to be normal. For example, for $\Delta t = 5 \text{min}$ we have:
 
-```{r hydropressure-5min-hist, echo=FALSE}
+```{r hydropressure-5min-hist, echo=FALSE, fig.height=2, fig.width=4}
 x <- gwloggeR:::apriori.hydropressure.difference.samples(5*60)
 ggplot2::ggplot(data = data.frame('x' = x), 
                 mapping = ggplot2::aes_string(x = 'x')) +
@@ -104,7 +104,7 @@ ggplot2::ggplot(data = data.frame('x' = x),
 
 On the other hand, without tidal effect, the normality seems much more pronounced. For example, $\Delta t = 12 \text{h} 25 \text{min}$:
 
-```{r hydropressure-12h-hist, echo=FALSE}
+```{r hydropressure-12h-hist, echo=FALSE, fig.height=2, fig.width=4}
 x <- gwloggeR:::apriori.hydropressure.difference.samples(60*60*12 + 60*25)
 ggplot2::ggplot(data = data.frame('x' = x), 
                 mapping = ggplot2::aes_string(x = 'x')) +
@@ -117,7 +117,7 @@ This suggest that the model should be adjusted for tidal effects.
 
 ## Extensions
 
-The main idea is that $z_t$ is polluted by different kinds of effects. We define each of these effects seperatey. Inspiration of these definitions is mainly taken from the works of Fox (1972) and more recent papers by Chen and Pedro.
+The main idea is that $z_t$ is polluted by different kinds of events. We define each of these events seperatey. Inspiration of these definitions is mainly taken from the works of @Fox1972 and more recent papers by @Chen1993 and @Galeano2013.
 
 ### Outliers
 
@@ -127,11 +127,13 @@ $$
 x_t = z_t + \omega I(t = t_{AO})
 $$
 
-Note that $x_t$ is the observed value, and $z_t$ is the underlying process as defined previously. Rewriting this in function of $x$ we get:
+The $I()$ is the indicator function. Furthermore, $x_t$ is the observed value, and $z_t$ is the underlying process as defined previously. $z_t$ is "polluted" in this case with $\omega$ at time $t = t_{AO}$. Rewriting this in function of $x$ we get:
 
 $$
 x_t = x_{t-1} + \epsilon(\Delta t) + \omega \left[I(t=t_{AO}) - I(t = t_{AO} + 1) \right]
 $$
+
+These equations in function of $x$ we need later for likelihood maximization.
 
 ### Levelshifts
 
@@ -149,7 +151,7 @@ $$
 
 ### Temporal changes
 
-A temporal change (TC) is an effect that decays exponentially with factor $\delta$.
+A temporal change (TC) is an event that decays exponentially with factor $\delta$.
 
 $$
 x_t = z_t + \frac{\omega I(t = t_{LS})}{1-\delta B}
@@ -161,21 +163,49 @@ $$
 x_t = x_{t-1} + \epsilon(\Delta t) + \omega \left[ I(t=t_{TC}) - \frac{(1-\delta)I(t = t_{TC} + 1)}{1 - \delta B} \right]
 $$
 
-## Likelihood optimization
+## Model building
 
 Based on AO, LS and TC written in function of $x$ only, one sees that the difference $x_t - x_{t-1} = \epsilon (\Delta t)$ unless AO, LS or TC occured. Thus our first step in optimization is to take the differences $x_t - x_{t-1}$ and test how likely they are under the distribution of $\epsilon (\Delta t)$. If very unlikely (cf. TODO), then consider the observation a candidate for AO, LS or TC.
 
-These three effects can come in all kinds of combinations. It seems difficult, if not impossible, to write a decent if-else structure to catch all the possible configurations. That is why we choose a likelihood based approach.
+These three events can come in all kinds of combinations. It seems difficult, if not impossible, to write a decent if-else structure to catch all the possible configurations. That is why we choose a likelihood based approach.
 
 ### Likelihood function
 
-Distribution of errors, for likelihood optimization, is assumed normal. This is because normal PDF (mostly) results in a convex likelihood.
+Assuming independence of the error term we write:
 
-### Likelihood ratio testing
+$$
+L(\mathbf{\theta} ; \mathbf{x}) = p(\mathbf{x} | \mathbf{\theta}) = \prod_{t=2}^{n} p(x_t, x_{t-1} | \mathbf{\theta})
+$$
 
-At this point, we only know $t$'s which are candidates for AO, LS and TC. But we do not know which is which. That is why we test them all. For testing we use the likelihood ratio (LR) testing. (cf. TODO)
+where $\mathbf{x} = (x_1, \dots, x_n)$ and $\mathbf{\theta}$ is the vector of parameters, including $\omega$'s, $\delta$'s, but also the indexes $t_{AO}$, $t_{LS}$ and $t_{TC}$.
 
-Note that in case of TC we have two parameters: $\omega$ and $\delta$. $\delta$ varies between $0$ and $1$. If $\delta = 0$ we have an outlier (AO), and if $\delta = 1$ we have a levelshift (LS). How do we choose between a TC with $\delta = 0$ and AO? As we will see later, we use likelihood ratio testing: since TC uses two parameters to explain the same effect as AO with one parameter, an AO is more likely. Thus, a TC will only be chosen if $\delta$ is significanly different from $0$ and $1$. 
+### Stepwise model selection
+
+First problem is that we do not know how many AO, LS and TC events there are. Thus we are naturally led to some form of model selection. Model $M_0$ is a model in which no event occured (i.e. 0 stands for zero-parameter model). $M_1$ is a model in which an AO or LS occured (i.e. a one-parameter model). How do we choose between the two? Well, the one that is more likely wins (i.e. the one for which the likelihood function $L(\mathbf{\theta} ; \mathbf{x})$ results in the highest likelihood.
+
+In the next step we test whether this $M_1$ model is significantly better than the $M_0$ model. We do this with the likelihood ratio (LR) test. If $M_1$ is significantly better than $M_0$ we continue with $M_1$ and add one extra AO or LS parameter which results in a $M_2$ model. This model also competes with a model in which only one TC event occured. (This is because a TC event has two parameters $\omega$ and $\delta$, and thus an empty model with a TC event added is automatically a $M_2$ model.) Then the best $M_2$ model is tested for significance against the best $M_1$ model, etc.
+
+Note that $\delta$ varies between $0$ and $1$. If $\delta = 0$ we have an outlier (AO), and if $\delta = 1$ we have a levelshift (LS). How do we choose between a TC with $\delta = 0$ and AO? Since TC uses two parameters to explain the same event as AO with one parameter, an AO is more likely. Thus, a TC will only be chosen if $\delta$ is significanly different from $0$ and $1$.
+
+This model selection is quite involved. Programaticaly, we define an object `ProgressTable` which keeps track of all the best models $M_0$ up till the last significant one. Besides the forward model selection, we also use a backward selection because adding a parameter sometimes makes an exising parameter insignificant, which opens a new path of possibilities in case it is removed. The eventual model $M_m$ is the most likely model with $m$ parameters of all the ones tested, but not necessarily the most likely of all the possible configurations. In practive, although this maxima might be local (i.e. not global), it is taken as a good compromise between compuational speed and accuracy.
+
+### Likelihood optimization
+
+Each time we add a parameter, our likelihood function changes and must be optimized for most likely $\mathbf{\theta}$. Using a smoothing kernel for $\epsilon(\Delta t)$ results in non-convex likelihood. Assuming $\epsilon(\Delta t)$ to be normal has several advantages: speed, numerical stability (due to $logL(\mathbf{\theta} ; \mathbf{x})$) and "mostly" convexity. Experience shows that mixing AO, LS and TC events sometimes results in non-convex likelihoods.
+
+Futher optimization is also made by noting the effect of AO, LS and TC events on $x$. For example, an LS event on $t_{LS}$ has only impact on $x_{t_{LS}}$. An AO event has only impact on $x_{t_{AO}}$ and $x_{t_{AO} + 1}$. And a TC event has only impact on $x_{t_{TC}}$ up untill the effect dies out. In other words, we can limit the likelihood optimization to a window of only a few points. (cf. TODO)
+
+### Summary
+
+Algoriyhm for hydrostatic pressure AO, LS and TC detection can be summarized in pseudocode as follows:
+
+* Compute $x_t - x_{t-1}$
+* Test for outliers based on $\epsilon(\Delta t)$ and note the indexes $t_i$
+* For $m$ = 0 .. Inf
+    * Using $M_m$ iterate over all possibilities ($t_i$, AO, LS and TC)
+        * Compute likelihoods
+    * Select $M_{m+1}$ as the model with $m$ parameters and highest likelihood 
+* Do while $M_{m+1}$ vs. $M_m$ is significant
 
 ### Examples
 
@@ -188,6 +218,7 @@ This case shows nicely the "creativity" of the procedure in selecting the effect
 * Revise LR test treshold.
 * Use _a-priori_ data more as a prior and estimate $\epsilon(\Delta t)$ with data at hand.
 * Extract AO, LS and TC if `verbose = TRUE`.
+* Revise the 25 observations window.
 
 ## References
 
