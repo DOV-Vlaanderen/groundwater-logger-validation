@@ -1,11 +1,13 @@
 # Development version
 
 * gwloggeR website: https://dov-vlaanderen.github.io/groundwater-logger-validation/gwloggeR
+* Hydrostatic pressure model explanation: https://dov-vlaanderen.github.io/groundwater-logger-validation/gwloggeR/docs/articles/Hydropressure.html
 
 ## TODO
 * `detect_temporalchanges()` should flag everything from start until the decay is insignificant.
 * Complete `Development` vignette.
 * Caching of algorithm results.
+* Use travis-ci for website building and build testing.
 
 ### Diagnostic plots
 * Margin of diagnostic plots y-axis should be the same.
