@@ -17,6 +17,66 @@
 
 
 
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css" data-origin="pandoc">
+div.sourceCode { overflow-x: auto; }
+table.sourceCode, tr.sourceCode, td.lineNumbers, td.sourceCode {
+  margin: 0; padding: 0; vertical-align: baseline; border: none; }
+table.sourceCode { width: 100%; line-height: 100%; }
+td.lineNumbers { text-align: right; padding-right: 4px; padding-left: 4px; color: #aaaaaa; border-right: 1px solid #aaaaaa; }
+td.sourceCode { padding-left: 5px; }
+code > span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code > span.dt { color: #902000; } /* DataType */
+code > span.dv { color: #40a070; } /* DecVal */
+code > span.bn { color: #40a070; } /* BaseN */
+code > span.fl { color: #40a070; } /* Float */
+code > span.ch { color: #4070a0; } /* Char */
+code > span.st { color: #4070a0; } /* String */
+code > span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code > span.ot { color: #007020; } /* Other */
+code > span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code > span.fu { color: #06287e; } /* Function */
+code > span.er { color: #ff0000; font-weight: bold; } /* Error */
+code > span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+code > span.cn { color: #880000; } /* Constant */
+code > span.sc { color: #4070a0; } /* SpecialChar */
+code > span.vs { color: #4070a0; } /* VerbatimString */
+code > span.ss { color: #bb6688; } /* SpecialString */
+code > span.im { } /* Import */
+code > span.va { color: #19177c; } /* Variable */
+code > span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code > span.op { color: #666666; } /* Operator */
+code > span.bu { } /* BuiltIn */
+code > span.ex { } /* Extension */
+code > span.pp { color: #bc7a00; } /* Preprocessor */
+code > span.at { color: #7d9029; } /* Attribute */
+code > span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code > span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code > span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+
+</style>
+<script>
+// apply pandoc div.sourceCode style to pre.sourceCode instead
+(function() {
+  var sheets = document.styleSheets;
+  for (var i = 0; i < sheets.length; i++) {
+    if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
+    try { var rules = sheets[i].cssRules; } catch (e) { continue; }
+    for (var j = 0; j < rules.length; j++) {
+      var rule = rules[j];
+      // check if there is a div.sourceCode rule
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") continue;
+      var style = rule.style.cssText;
+      // check if color or background-color is set
+      if (rule.style.color === '' || rule.style.backgroundColor === '') continue;
+      // replace div.sourceCode by a pre.sourceCode rule
+      sheets[i].deleteRule(j);
+      sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
+    }
+  }
+})();
+</script>
 
 
 
@@ -90,11 +150,11 @@ z_t = z_{t-1} + \epsilon(\Delta t)
 <p><span class="math display">\[
 x_t = z_t + \omega I(t = t_{AO})
 \]</span></p>
-<p>The <span class="math inline">\(I()\)</span> is the indicator function. Furthermore, <span class="math inline">\(x_t\)</span> is the observed value, and <span class="math inline">\(z_t\)</span> is the underlying process as defined previously. <span class="math inline">\(z_t\)</span> is “polluted” in this case with <span class="math inline">\(\omega\)</span> at time <span class="math inline">\(t = t_{AO}\)</span>. Rewriting this in function of <span class="math inline">\(x\)</span> we get:</p>
+<p>The <span class="math inline">\(I()\)</span> is the indicator function. Furthermore, <span class="math inline">\(x_t\)</span> is the observed value, and <span class="math inline">\(z_t\)</span> is the underlying latent process as defined previously. <span class="math inline">\(z_t\)</span> is “polluted” in this case with <span class="math inline">\(\omega\)</span> at time <span class="math inline">\(t = t_{AO}\)</span> resulting in observed <span class="math inline">\(x_t\)</span>. Rewriting the equation without <span class="math inline">\(z_t\)</span> we get:</p>
 <p><span class="math display">\[
 x_t = x_{t-1} + \epsilon(\Delta t) + \omega \left[I(t=t_{AO}) - I(t = t_{AO} + 1) \right]
 \]</span></p>
-<p>These equations in function of <span class="math inline">\(x\)</span> we need later for likelihood maximization.</p>
+<p>These equations without <span class="math inline">\(z\)</span> we need later for likelihood maximization.</p>
 </div>
 <div id="levelshifts" class="section level3">
 <h3>Levelshifts</h3>
@@ -102,7 +162,7 @@ x_t = x_{t-1} + \epsilon(\Delta t) + \omega \left[I(t=t_{AO}) - I(t = t_{AO} + 1
 <p><span class="math display">\[
 x_t = z_t + \frac{\omega I(t = t_{LS})}{1-B}
 \]</span></p>
-<p>Note that <span class="math inline">\(B\)</span> is the back operator. Rewriting this in <span class="math inline">\(x\)</span> gives a more comprehensive form:</p>
+<p>Note that <span class="math inline">\(B\)</span> is the back operator. Here the <span class="math inline">\((1-B)^{-1}\)</span> evaluates to <span class="math inline">\(1 + B + B^2 + B^3 + \dots\)</span>. This is nothing more than saying that after <span class="math inline">\(t\)</span> a constant <span class="math inline">\(\omega\)</span> is always added on top of the latent random walk <span class="math inline">\(z_t\)</span>. Removing latent <span class="math inline">\(z_t\)</span> from the equations reveals a more comprehensive form:</p>
 <p><span class="math display">\[
 x_t = x_{t-1} + \epsilon(\Delta t) + \omega I(t=t_{LS})
 \]</span></p>
@@ -111,9 +171,8 @@ x_t = x_{t-1} + \epsilon(\Delta t) + \omega I(t=t_{LS})
 <h3>Temporal changes</h3>
 <p>A temporal change (TC) is an event that decays exponentially with factor <span class="math inline">\(\delta\)</span>.</p>
 <p><span class="math display">\[
-x_t = z_t + \frac{\omega I(t = t_{LS})}{1-\delta B}
-\]</span></p>
-<p>Rewritten in <span class="math inline">\(x\)</span> we have:</p>
+x_t = z_t + \frac{\omega I(t = t_{TC})}{1-\delta B}
+\]</span> We can see this exponential decay more clearly once we rewrite <span class="math inline">\((1-\delta B)^{-1}\)</span> as <span class="math inline">\(1 + \delta B + \delta^2B^2 + \delta^3B^3 + \dots\)</span>. Removing the latent <span class="math inline">\(z_t\)</span> from the equation we end up with:</p>
 <p><span class="math display">\[
 x_t = x_{t-1} + \epsilon(\Delta t) + \omega \left[ I(t=t_{TC}) - \frac{(1-\delta)I(t = t_{TC} + 1)}{1 - \delta B} \right]
 \]</span></p>
@@ -136,11 +195,12 @@ L(\mathbf{\theta} ; \mathbf{x}) = p(\mathbf{x} | \mathbf{\theta}) = \prod_{t=2}^
 <p>First problem is that we do not know how many AO, LS and TC events there are. Thus we are naturally led to some form of model selection. Model <span class="math inline">\(M_0\)</span> is a model in which no event occured (i.e. 0 stands for zero-parameter model). <span class="math inline">\(M_1\)</span> is a model in which an AO or LS occured (i.e. a one-parameter model). How do we choose between the two? Well, the one that is more likely wins (i.e. the one for which the likelihood function <span class="math inline">\(L(\mathbf{\theta} ; \mathbf{x})\)</span> results in the highest likelihood.</p>
 <p>In the next step we test whether this <span class="math inline">\(M_1\)</span> model is significantly better than the <span class="math inline">\(M_0\)</span> model. We do this with the likelihood ratio (LR) test. If <span class="math inline">\(M_1\)</span> is significantly better than <span class="math inline">\(M_0\)</span> we continue with <span class="math inline">\(M_1\)</span> and add one extra AO or LS parameter which results in a <span class="math inline">\(M_2\)</span> model. This model also competes with a model in which only one TC event occured. (This is because a TC event has two parameters <span class="math inline">\(\omega\)</span> and <span class="math inline">\(\delta\)</span>, and thus an empty model with a TC event added is automatically a <span class="math inline">\(M_2\)</span> model.) Then the best <span class="math inline">\(M_2\)</span> model is tested for significance against the best <span class="math inline">\(M_1\)</span> model, etc.</p>
 <p>Note that <span class="math inline">\(\delta\)</span> varies between <span class="math inline">\(0\)</span> and <span class="math inline">\(1\)</span>. If <span class="math inline">\(\delta = 0\)</span> we have an outlier (AO), and if <span class="math inline">\(\delta = 1\)</span> we have a levelshift (LS). How do we choose between a TC with <span class="math inline">\(\delta = 0\)</span> and AO? Since TC uses two parameters to explain the same event as AO with one parameter, an AO is more likely. Thus, a TC will only be chosen if <span class="math inline">\(\delta\)</span> is significanly different from <span class="math inline">\(0\)</span> and <span class="math inline">\(1\)</span>.</p>
-<p>This model selection is quite involved. Programaticaly, we define an object <code>ProgressTable</code> which keeps track of all the best models <span class="math inline">\(M_0\)</span> up till the last significant one. Besides the forward model selection, we also use a backward selection because adding a parameter sometimes makes an exising parameter insignificant, which opens a new path of possibilities in case it is removed. The eventual model <span class="math inline">\(M_m\)</span> is the most likely model with <span class="math inline">\(m\)</span> parameters of all the ones tested, but not necessarily the most likely of all the possible configurations. In practive, although this maxima might be local (i.e. not global), it is taken as a good compromise between compuational speed and accuracy.</p>
+<p>In case we have a tie between multiple <span class="math inline">\(M_m\)</span> models with <span class="math inline">\(m\)</span> parameters, then the one for which the sum of the absolute values of parameters is smallest is taken as best. This is a poor man’s simulation of a prior on the parameters: the smaller the parameter, the more likelly it is.</p>
+<p>This model selection is quite involved. Programaticaly, we define an object <code>ProgressTable</code> which keeps track of all the best models <span class="math inline">\(M_0\)</span> up till the last significant one. Besides the forward model selection, we also make use of backward selection because adding a parameter sometimes makes an exising parameter insignificant, which opens a new path of possibilities in case it is removed. The eventual model <span class="math inline">\(M_m\)</span> is the most likely model with <span class="math inline">\(m\)</span> parameters of all the ones tested, but not necessarily the most likely of all the possible configurations. In practive, although this maxima might be local (i.e. not global), it is taken as a good compromise between compuational speed and maximization accuracy.</p>
 </div>
 <div id="likelihood-optimization" class="section level3">
 <h3>Likelihood optimization</h3>
-<p>Each time we add a parameter, our likelihood function changes and must be optimized for most likely <span class="math inline">\(\mathbf{\theta}\)</span>. Using a smoothing kernel for <span class="math inline">\(\epsilon(\Delta t)\)</span> results in non-convex likelihood. Assuming <span class="math inline">\(\epsilon(\Delta t)\)</span> to be normal has several advantages: speed, numerical stability (due to <span class="math inline">\(logL(\mathbf{\theta} ; \mathbf{x})\)</span>) and “mostly” convexity. Experience shows that mixing AO, LS and TC events sometimes results in non-convex likelihoods.</p>
+<p>Each time we add a parameter, our likelihood function changes and must be optimized for most likely <span class="math inline">\(\mathbf{\theta}\)</span>. Using a smoothing kernel for <span class="math inline">\(\epsilon(\Delta t)\)</span> more often than not results in a non-convex likelihood. Assuming <span class="math inline">\(\epsilon(\Delta t)\)</span> to be normal has several advantages: speed, numerical stability (due to <span class="math inline">\(logL(\mathbf{\theta} ; \mathbf{x})\)</span>) and “mostly” convexity. Experience shows that mixing AO, LS and TC events sometimes results in non-convex likelihoods.</p>
 <p>Futher optimization is also made by noting the effect of AO, LS and TC events on <span class="math inline">\(x\)</span>. For example, an LS event on <span class="math inline">\(t_{LS}\)</span> has only impact on <span class="math inline">\(x_{t_{LS}}\)</span>. An AO event has only impact on <span class="math inline">\(x_{t_{AO}}\)</span> and <span class="math inline">\(x_{t_{AO} + 1}\)</span>. And a TC event has only impact on <span class="math inline">\(x_{t_{TC}}\)</span> up untill the effect dies out. In other words, we can limit the likelihood optimization to a window of only a few points. (cf. TODO)</p>
 </div>
 <div id="summary" class="section level3">
@@ -162,7 +222,13 @@ L(\mathbf{\theta} ; \mathbf{x}) = p(\mathbf{x} | \mathbf{\theta}) = \prod_{t=2}^
 </div>
 <div id="examples" class="section level3">
 <h3>Examples</h3>
-<p>This case shows nicely the “creativity” of the procedure in selecting the effects…</p>
+<p>The following case shows nicely the “creativity” of the procedure in selecting the events.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">df &lt;-<span class="st"> </span><span class="kw">readRDS</span>(<span class="st">'./hydropressure/pp09-1_120829130801_F5474.rds'</span>)<span class="op">$</span>df
+<span class="kw">invisible</span>(gwloggeR<span class="op">::</span><span class="kw">detect_outliers</span>(<span class="dt">x =</span> df<span class="op">$</span>PRESSURE_VALUE, <span class="dt">timestamps =</span> df<span class="op">$</span>TIMESTAMP_UTC, 
+                                    <span class="dt">apriori =</span> gwloggeR<span class="op">::</span><span class="kw">apriori</span>(<span class="st">'hydrostatic pressure'</span>), 
+                                    <span class="dt">plot =</span> <span class="ot">TRUE</span>))</code></pre></div>
+<p><img src="data:image/png;base64,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" /><!-- --></p>
+<p>The last three outlier (AO) events are obvious. But the first event is a double event: at the same time we have a level shift (LS) and a temporal change (TC). The level shift causes the drop, and then a temporal change jumps and decays back to the new level. It is the best way the model can explain what happened there using AO, LS and TC events.</p>
 </div>
 </div>
 <div id="future-work" class="section level2">
@@ -174,6 +240,7 @@ L(\mathbf{\theta} ; \mathbf{x}) = p(\mathbf{x} | \mathbf{\theta}) = \prod_{t=2}^
 <li>Use <em>a-priori</em> data more as a prior and estimate <span class="math inline">\(\epsilon(\Delta t)\)</span> with data at hand.</li>
 <li>Extract AO, LS and TC if <code>verbose = TRUE</code>.</li>
 <li>Revise the 25 observations window.</li>
+<li>Lower treshold based on air pressure for <code>detect_outliers()</code>?</li>
 </ul>
 </div>
 <div id="references" class="section level2 unnumbered">

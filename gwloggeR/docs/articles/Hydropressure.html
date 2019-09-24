@@ -146,11 +146,11 @@ z_t = z_{t-1} + \epsilon(\Delta t)
 <p><span class="math display">\[
 x_t = z_t + \omega I(t = t_{AO})
 \]</span></p>
-<p>The <span class="math inline">\(I()\)</span> is the indicator function. Furthermore, <span class="math inline">\(x_t\)</span> is the observed value, and <span class="math inline">\(z_t\)</span> is the underlying process as defined previously. <span class="math inline">\(z_t\)</span> is “polluted” in this case with <span class="math inline">\(\omega\)</span> at time <span class="math inline">\(t = t_{AO}\)</span>. Rewriting this in function of <span class="math inline">\(x\)</span> we get:</p>
+<p>The <span class="math inline">\(I()\)</span> is the indicator function. Furthermore, <span class="math inline">\(x_t\)</span> is the observed value, and <span class="math inline">\(z_t\)</span> is the underlying latent process as defined previously. <span class="math inline">\(z_t\)</span> is “polluted” in this case with <span class="math inline">\(\omega\)</span> at time <span class="math inline">\(t = t_{AO}\)</span> resulting in observed <span class="math inline">\(x_t\)</span>. Rewriting the equation without <span class="math inline">\(z_t\)</span> we get:</p>
 <p><span class="math display">\[
 x_t = x_{t-1} + \epsilon(\Delta t) + \omega \left[I(t=t_{AO}) - I(t = t_{AO} + 1) \right]
 \]</span></p>
-<p>These equations in function of <span class="math inline">\(x\)</span> we need later for likelihood maximization.</p>
+<p>These equations without <span class="math inline">\(z\)</span> we need later for likelihood maximization.</p>
 </div>
 <div id="levelshifts" class="section level3">
 <h3 class="hasAnchor">
@@ -159,7 +159,7 @@ x_t = x_{t-1} + \epsilon(\Delta t) + \omega \left[I(t=t_{AO}) - I(t = t_{AO} + 1
 <p><span class="math display">\[
 x_t = z_t + \frac{\omega I(t = t_{LS})}{1-B}
 \]</span></p>
-<p>Note that <span class="math inline">\(B\)</span> is the back operator. Rewriting this in <span class="math inline">\(x\)</span> gives a more comprehensive form:</p>
+<p>Note that <span class="math inline">\(B\)</span> is the back operator. Here the <span class="math inline">\((1-B)^{-1}\)</span> evaluates to <span class="math inline">\(1 + B + B^2 + B^3 + \dots\)</span>. This is nothing more than saying that after <span class="math inline">\(t\)</span> a constant <span class="math inline">\(\omega\)</span> is always added on top of the latent random walk <span class="math inline">\(z_t\)</span>. Removing latent <span class="math inline">\(z_t\)</span> from the equations reveals a more comprehensive form:</p>
 <p><span class="math display">\[
 x_t = x_{t-1} + \epsilon(\Delta t) + \omega I(t=t_{LS})
 \]</span></p>
@@ -169,9 +169,8 @@ x_t = x_{t-1} + \epsilon(\Delta t) + \omega I(t=t_{LS})
 <a href="#temporal-changes" class="anchor"></a>Temporal changes</h3>
 <p>A temporal change (TC) is an event that decays exponentially with factor <span class="math inline">\(\delta\)</span>.</p>
 <p><span class="math display">\[
-x_t = z_t + \frac{\omega I(t = t_{LS})}{1-\delta B}
-\]</span></p>
-<p>Rewritten in <span class="math inline">\(x\)</span> we have:</p>
+x_t = z_t + \frac{\omega I(t = t_{TC})}{1-\delta B}
+\]</span> We can see this exponential decay more clearly once we rewrite <span class="math inline">\((1-\delta B)^{-1}\)</span> as <span class="math inline">\(1 + \delta B + \delta^2B^2 + \delta^3B^3 + \dots\)</span>. Removing the latent <span class="math inline">\(z_t\)</span> from the equation we end up with:</p>
 <p><span class="math display">\[
 x_t = x_{t-1} + \epsilon(\Delta t) + \omega \left[ I(t=t_{TC}) - \frac{(1-\delta)I(t = t_{TC} + 1)}{1 - \delta B} \right]
 \]</span></p>
@@ -197,12 +196,13 @@ L(\mathbf{\theta} ; \mathbf{x}) = p(\mathbf{x} | \mathbf{\theta}) = \prod_{t=2}^
 <p>First problem is that we do not know how many AO, LS and TC events there are. Thus we are naturally led to some form of model selection. Model <span class="math inline">\(M_0\)</span> is a model in which no event occured (i.e. 0 stands for zero-parameter model). <span class="math inline">\(M_1\)</span> is a model in which an AO or LS occured (i.e. a one-parameter model). How do we choose between the two? Well, the one that is more likely wins (i.e. the one for which the likelihood function <span class="math inline">\(L(\mathbf{\theta} ; \mathbf{x})\)</span> results in the highest likelihood.</p>
 <p>In the next step we test whether this <span class="math inline">\(M_1\)</span> model is significantly better than the <span class="math inline">\(M_0\)</span> model. We do this with the likelihood ratio (LR) test. If <span class="math inline">\(M_1\)</span> is significantly better than <span class="math inline">\(M_0\)</span> we continue with <span class="math inline">\(M_1\)</span> and add one extra AO or LS parameter which results in a <span class="math inline">\(M_2\)</span> model. This model also competes with a model in which only one TC event occured. (This is because a TC event has two parameters <span class="math inline">\(\omega\)</span> and <span class="math inline">\(\delta\)</span>, and thus an empty model with a TC event added is automatically a <span class="math inline">\(M_2\)</span> model.) Then the best <span class="math inline">\(M_2\)</span> model is tested for significance against the best <span class="math inline">\(M_1\)</span> model, etc.</p>
 <p>Note that <span class="math inline">\(\delta\)</span> varies between <span class="math inline">\(0\)</span> and <span class="math inline">\(1\)</span>. If <span class="math inline">\(\delta = 0\)</span> we have an outlier (AO), and if <span class="math inline">\(\delta = 1\)</span> we have a levelshift (LS). How do we choose between a TC with <span class="math inline">\(\delta = 0\)</span> and AO? Since TC uses two parameters to explain the same event as AO with one parameter, an AO is more likely. Thus, a TC will only be chosen if <span class="math inline">\(\delta\)</span> is significanly different from <span class="math inline">\(0\)</span> and <span class="math inline">\(1\)</span>.</p>
-<p>This model selection is quite involved. Programaticaly, we define an object <code>ProgressTable</code> which keeps track of all the best models <span class="math inline">\(M_0\)</span> up till the last significant one. Besides the forward model selection, we also use a backward selection because adding a parameter sometimes makes an exising parameter insignificant, which opens a new path of possibilities in case it is removed. The eventual model <span class="math inline">\(M_m\)</span> is the most likely model with <span class="math inline">\(m\)</span> parameters of all the ones tested, but not necessarily the most likely of all the possible configurations. In practive, although this maxima might be local (i.e. not global), it is taken as a good compromise between compuational speed and accuracy.</p>
+<p>In case we have a tie between multiple <span class="math inline">\(M_m\)</span> models with <span class="math inline">\(m\)</span> parameters, then the one for which the sum of the absolute values of parameters is smallest is taken as best. This is a poor man’s simulation of a prior on the parameters: the smaller the parameter, the more likelly it is.</p>
+<p>This model selection is quite involved. Programaticaly, we define an object <code>ProgressTable</code> which keeps track of all the best models <span class="math inline">\(M_0\)</span> up till the last significant one. Besides the forward model selection, we also make use of backward selection because adding a parameter sometimes makes an exising parameter insignificant, which opens a new path of possibilities in case it is removed. The eventual model <span class="math inline">\(M_m\)</span> is the most likely model with <span class="math inline">\(m\)</span> parameters of all the ones tested, but not necessarily the most likely of all the possible configurations. In practive, although this maxima might be local (i.e. not global), it is taken as a good compromise between compuational speed and maximization accuracy.</p>
 </div>
 <div id="likelihood-optimization" class="section level3">
 <h3 class="hasAnchor">
 <a href="#likelihood-optimization" class="anchor"></a>Likelihood optimization</h3>
-<p>Each time we add a parameter, our likelihood function changes and must be optimized for most likely <span class="math inline">\(\mathbf{\theta}\)</span>. Using a smoothing kernel for <span class="math inline">\(\epsilon(\Delta t)\)</span> results in non-convex likelihood. Assuming <span class="math inline">\(\epsilon(\Delta t)\)</span> to be normal has several advantages: speed, numerical stability (due to <span class="math inline">\(logL(\mathbf{\theta} ; \mathbf{x})\)</span>) and “mostly” convexity. Experience shows that mixing AO, LS and TC events sometimes results in non-convex likelihoods.</p>
+<p>Each time we add a parameter, our likelihood function changes and must be optimized for most likely <span class="math inline">\(\mathbf{\theta}\)</span>. Using a smoothing kernel for <span class="math inline">\(\epsilon(\Delta t)\)</span> more often than not results in a non-convex likelihood. Assuming <span class="math inline">\(\epsilon(\Delta t)\)</span> to be normal has several advantages: speed, numerical stability (due to <span class="math inline">\(logL(\mathbf{\theta} ; \mathbf{x})\)</span>) and “mostly” convexity. Experience shows that mixing AO, LS and TC events sometimes results in non-convex likelihoods.</p>
 <p>Futher optimization is also made by noting the effect of AO, LS and TC events on <span class="math inline">\(x\)</span>. For example, an LS event on <span class="math inline">\(t_{LS}\)</span> has only impact on <span class="math inline">\(x_{t_{LS}}\)</span>. An AO event has only impact on <span class="math inline">\(x_{t_{AO}}\)</span> and <span class="math inline">\(x_{t_{AO} + 1}\)</span>. And a TC event has only impact on <span class="math inline">\(x_{t_{TC}}\)</span> up untill the effect dies out. In other words, we can limit the likelihood optimization to a window of only a few points. (cf. TODO)</p>
 </div>
 <div id="summary" class="section level3">
@@ -230,7 +230,13 @@ L(\mathbf{\theta} ; \mathbf{x}) = p(\mathbf{x} | \mathbf{\theta}) = \prod_{t=2}^
 <div id="examples" class="section level3">
 <h3 class="hasAnchor">
 <a href="#examples" class="anchor"></a>Examples</h3>
-<p>This case shows nicely the “creativity” of the procedure in selecting the effects…</p>
+<p>The following case shows nicely the “creativity” of the procedure in selecting the events.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">df &lt;-<span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/base/readRDS.html">readRDS</a></span>(<span class="st">'./hydropressure/pp09-1_120829130801_F5474.rds'</span>)<span class="op">$</span>df
+<span class="kw"><a href="https://rdrr.io/r/base/invisible.html">invisible</a></span>(gwloggeR<span class="op">::</span><span class="kw"><a href="https://dov-vlaanderen.github.io/groundwater-logger-validation/gwloggeR/docs/reference/detect_outliers.html">detect_outliers</a></span>(<span class="dt">x =</span> df<span class="op">$</span>PRESSURE_VALUE, <span class="dt">timestamps =</span> df<span class="op">$</span>TIMESTAMP_UTC, 
+                                    <span class="dt">apriori =</span> gwloggeR<span class="op">::</span><span class="kw"><a href="https://dov-vlaanderen.github.io/groundwater-logger-validation/gwloggeR/docs/reference/apriori.html">apriori</a></span>(<span class="st">'hydrostatic pressure'</span>), 
+                                    <span class="dt">plot =</span> <span class="ot">TRUE</span>))</code></pre></div>
+<p><img src="Hydropressure_files/figure-html/hydropressure-interesting-example-1.png" width="700"></p>
+<p>The last three outlier (AO) events are obvious. But the first event is a double event: at the same time we have a level shift (LS) and a temporal change (TC). The level shift causes the drop, and then a temporal change jumps and decays back to the new level. It is the best way the model can explain what happened there using AO, LS and TC events.</p>
 </div>
 </div>
 <div id="future-work" class="section level2">
@@ -243,6 +249,7 @@ L(\mathbf{\theta} ; \mathbf{x}) = p(\mathbf{x} | \mathbf{\theta}) = \prod_{t=2}^
 <li>Use <em>a-priori</em> data more as a prior and estimate <span class="math inline">\(\epsilon(\Delta t)\)</span> with data at hand.</li>
 <li>Extract AO, LS and TC if <code>verbose = TRUE</code>.</li>
 <li>Revise the 25 observations window.</li>
+<li>Lower treshold based on air pressure for <code><a href="../reference/detect_outliers.html">detect_outliers()</a></code>?</li>
 </ul>
 </div>
 <div id="references" class="section level2 unnumbered">
