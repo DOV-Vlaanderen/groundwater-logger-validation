@@ -97,7 +97,7 @@ Armed with thise assumption, lets generate some sample data.
 ```{r hydropressure-sim}
 n <- 100L
 x <- cumsum(c(1200, rnorm(n - 1L, mean = 0, sd = 10/6)))
-timestamps <- seq(as.POSIXct('2000-01-01'), by = '5 min', length.out = 100L)
+timestamps <- seq(as.POSIXct('2000-01-01'), by = '5 min', length.out = n)
 plot(timestamps, x, type = 'l')
 ```
 
@@ -119,7 +119,7 @@ apriori <- gwloggeR::apriori('hydrostatic pressure', units = 'cmH2O')
 Note also, that in this case, we also need to supply `timestamps` to the detection function. This is because the underlying model also considers time-intervals between observations.
 
 ```{r hydropressure-ao}
-gwloggeR::detect_outliers(x, apriori = apriori, timestamps = timestamps, plot = TRUE)
+gwloggeR::detect_outliers(x, timestamps = timestamps, apriori = apriori, plot = TRUE)
 ```
 
 See how the outlier is catched?
