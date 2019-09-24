@@ -127,13 +127,13 @@ $$
 x_t = z_t + \omega I(t = t_{AO})
 $$
 
-The $I()$ is the indicator function. Furthermore, $x_t$ is the observed value, and $z_t$ is the underlying process as defined previously. $z_t$ is "polluted" in this case with $\omega$ at time $t = t_{AO}$. Rewriting this in function of $x$ we get:
+The $I()$ is the indicator function. Furthermore, $x_t$ is the observed value, and $z_t$ is the underlying latent process as defined previously. $z_t$ is "polluted" in this case with $\omega$ at time $t = t_{AO}$ resulting in observed $x_t$. Rewriting the equation without $z_t$ we get:
 
 $$
 x_t = x_{t-1} + \epsilon(\Delta t) + \omega \left[I(t=t_{AO}) - I(t = t_{AO} + 1) \right]
 $$
 
-These equations in function of $x$ we need later for likelihood maximization.
+These equations without $z$ we need later for likelihood maximization.
 
 ### Levelshifts
 
@@ -143,7 +143,7 @@ $$
 x_t = z_t + \frac{\omega I(t = t_{LS})}{1-B}
 $$
 
-Note that $B$ is the back operator. Rewriting this in $x$ gives a more comprehensive form:
+Note that $B$ is the back operator. Here the $(1-B)^{-1}$ evaluates to $1 + B + B^2 + B^3 + \dots$. This is nothing more than saying that after $t$ a constant $\omega$ is always added on top of the latent random walk $z_t$. Removing latent $z_t$ from the equations reveals a more comprehensive form:
 
 $$
 x_t = x_{t-1} + \epsilon(\Delta t) + \omega I(t=t_{LS})
@@ -154,10 +154,9 @@ $$
 A temporal change (TC) is an event that decays exponentially with factor $\delta$.
 
 $$
-x_t = z_t + \frac{\omega I(t = t_{LS})}{1-\delta B}
+x_t = z_t + \frac{\omega I(t = t_{TC})}{1-\delta B}
 $$
-
-Rewritten in $x$ we have:
+We can see this exponential decay more clearly once we rewrite $(1-\delta B)^{-1}$ as $1 + \delta B + \delta^2B^2 + \delta^3B^3 + \dots$. Removing the latent $z_t$ from the equation we end up with:
 
 $$
 x_t = x_{t-1} + \epsilon(\Delta t) + \omega \left[ I(t=t_{TC}) - \frac{(1-\delta)I(t = t_{TC} + 1)}{1 - \delta B} \right]
@@ -187,11 +186,13 @@ In the next step we test whether this $M_1$ model is significantly better than t
 
 Note that $\delta$ varies between $0$ and $1$. If $\delta = 0$ we have an outlier (AO), and if $\delta = 1$ we have a levelshift (LS). How do we choose between a TC with $\delta = 0$ and AO? Since TC uses two parameters to explain the same event as AO with one parameter, an AO is more likely. Thus, a TC will only be chosen if $\delta$ is significanly different from $0$ and $1$.
 
-This model selection is quite involved. Programaticaly, we define an object `ProgressTable` which keeps track of all the best models $M_0$ up till the last significant one. Besides the forward model selection, we also use a backward selection because adding a parameter sometimes makes an exising parameter insignificant, which opens a new path of possibilities in case it is removed. The eventual model $M_m$ is the most likely model with $m$ parameters of all the ones tested, but not necessarily the most likely of all the possible configurations. In practive, although this maxima might be local (i.e. not global), it is taken as a good compromise between compuational speed and accuracy.
+In case we have a tie between multiple $M_m$ models with $m$ parameters, then the one for which the sum of the absolute values of parameters is smallest is taken as best. This is a poor man's simulation of a prior on the parameters: the smaller the parameter, the more likelly it is.
+
+This model selection is quite involved. Programaticaly, we define an object `ProgressTable` which keeps track of all the best models $M_0$ up till the last significant one. Besides the forward model selection, we also make use of backward selection because adding a parameter sometimes makes an exising parameter insignificant, which opens a new path of possibilities in case it is removed. The eventual model $M_m$ is the most likely model with $m$ parameters of all the ones tested, but not necessarily the most likely of all the possible configurations. In practive, although this maxima might be local (i.e. not global), it is taken as a good compromise between compuational speed and maximization accuracy.
 
 ### Likelihood optimization
 
-Each time we add a parameter, our likelihood function changes and must be optimized for most likely $\mathbf{\theta}$. Using a smoothing kernel for $\epsilon(\Delta t)$ results in non-convex likelihood. Assuming $\epsilon(\Delta t)$ to be normal has several advantages: speed, numerical stability (due to $logL(\mathbf{\theta} ; \mathbf{x})$) and "mostly" convexity. Experience shows that mixing AO, LS and TC events sometimes results in non-convex likelihoods.
+Each time we add a parameter, our likelihood function changes and must be optimized for most likely $\mathbf{\theta}$. Using a smoothing kernel for $\epsilon(\Delta t)$ more often than not results in a non-convex likelihood. Assuming $\epsilon(\Delta t)$ to be normal has several advantages: speed, numerical stability (due to $logL(\mathbf{\theta} ; \mathbf{x})$) and "mostly" convexity. Experience shows that mixing AO, LS and TC events sometimes results in non-convex likelihoods.
 
 Futher optimization is also made by noting the effect of AO, LS and TC events on $x$. For example, an LS event on $t_{LS}$ has only impact on $x_{t_{LS}}$. An AO event has only impact on $x_{t_{AO}}$ and $x_{t_{AO} + 1}$. And a TC event has only impact on $x_{t_{TC}}$ up untill the effect dies out. In other words, we can limit the likelihood optimization to a window of only a few points. (cf. TODO)
 
@@ -209,7 +210,24 @@ Algoriyhm for hydrostatic pressure AO, LS and TC detection can be summarized in 
 
 ### Examples
 
-This case shows nicely the "creativity" of the procedure in selecting the effects...
+The following case shows nicely the "creativity" of the procedure in selecting the events.
+
+```{r, eval=FALSE, echo=FALSE}
+options(logger.root.data.path = './../../data/raw/')
+devtools::load_all('./../../gwloggeR.data', export_all = FALSE)
+detach('package:gwloggeR.data')
+saveRDS(file = './hydropressure/pp09-1_120829130801_F5474.rds', 
+        object = gwloggeR.data::read('pp09-1_120829130801_F5474'))
+```
+
+```{r hydropressure-interesting-example}
+df <- readRDS('./hydropressure/pp09-1_120829130801_F5474.rds')$df
+invisible(gwloggeR::detect_outliers(x = df$PRESSURE_VALUE, timestamps = df$TIMESTAMP_UTC, 
+                                    apriori = gwloggeR::apriori('hydrostatic pressure'), 
+                                    plot = TRUE))
+```
+
+The last three outlier (AO) events are obvious. But the first event is a double event: at the same time we have a level shift (LS) and a temporal change (TC). The level shift causes the drop, and then a temporal change jumps and decays back to the new level. It is the best way the model can explain what happened there using AO, LS and TC events.
 
 ## Future work
 
@@ -219,6 +237,7 @@ This case shows nicely the "creativity" of the procedure in selecting the effect
 * Use _a-priori_ data more as a prior and estimate $\epsilon(\Delta t)$ with data at hand.
 * Extract AO, LS and TC if `verbose = TRUE`.
 * Revise the 25 observations window.
+* Lower treshold based on air pressure for `detect_outliers()`?
 
 ## References
 
