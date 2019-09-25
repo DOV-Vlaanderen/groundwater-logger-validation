@@ -40,7 +40,7 @@ Keep reading to learn how to start using `gwloggeR`.
 
 ## Installation
 
-`gwloggeR` package is not available on CRAN, only on GitHub. The easiest way of installing the package is using the `devtools` package and referring to the git repository holding the package code:
+`gwloggeR` package is not available on CRAN, only on GitHub. The easiest way to install it is with `devtools` package and referring to the git repository holding the package code:
 
 ```{r eval=FALSE}
 devtools::install_github("DOV-Vlaanderen/groundwater-logger-validation", subdir = "gwloggeR", ref = "x.x.x")

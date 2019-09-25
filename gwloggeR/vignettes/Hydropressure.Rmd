@@ -143,7 +143,7 @@ $$
 x_t = z_t + \frac{\omega I(t = t_{LS})}{1-B}
 $$
 
-Note that $B$ is the back operator. Here the $(1-B)^{-1}$ evaluates to $1 + B + B^2 + B^3 + \dots$. This is nothing more than saying that after $t$ a constant $\omega$ is always added on top of the latent random walk $z_t$. Removing latent $z_t$ from the equations reveals a more comprehensive form:
+Note that $B$ is the backshift operator such that $Bx_t = x_{t-1}$ and $BI(t = t_{LS}) = I(t-1 = t_{LS})$. Here the $(1-B)^{-1}$ evaluates to $1 + B + B^2 + B^3 + \dots$. This is nothing more than saying that after $t$ a constant $\omega$ is always added on top of the latent random walk $z_t$. Removing latent $z_t$ from the equations reveals a more comprehensive form:
 
 $$
 x_t = x_{t-1} + \epsilon(\Delta t) + \omega I(t=t_{LS})
