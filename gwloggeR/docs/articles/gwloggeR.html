@@ -110,28 +110,28 @@
 
     
     
-<p><code>gwloggeR</code> is a package for automatizing flagging of outliers, levelshifts and temporal changes in raw airpressure and hydrostatic pressure data.</p>
-<p>Here you find the basic building-blocks of the package. Before continuing, make sure you have corerctly <a href="">installed</a> the last stable version of <code>gwloggeR</code>.</p>
+<p><code>gwloggeR</code> is a package for automatized flagging of outliers, level shifts and temporal changes in raw air and hydrostatic pressure data.</p>
+<p>Here you find the basic building-blocks of the package. Before continuing, make sure you have correctly <a href="../index.html#installation">installed</a> the last stable version of <code>gwloggeR</code>.</p>
 <div id="detect-functions" class="section level2">
 <h2 class="hasAnchor">
 <a href="#detect-functions" class="anchor"></a>Detect functions</h2>
-<p>At its core <code>gwloggeR</code> consists of several <code>detect_</code> functions which take as input a vector of observations, and return a boolean vector of the same lenghth specifying TRUE for each positive detection.</p>
+<p>At its core <code>gwloggeR</code> consists of several <a href="../reference/index.html#section-detection-functions"><code>detect_</code></a> functions which take as input a vector of observations, and return a boolean vector of the same length specifying TRUE for each positive detection, and FALSE otherwise.</p>
 <p>Currently, there are three <code>detect_</code> functions defined:</p>
 <ul>
 <li>
 <code><a href="../reference/detect_outliers.html">gwloggeR::detect_outliers()</a></code> which detects outliers.</li>
 <li>
-<code><a href="../reference/detect_levelshifts.html">gwloggeR::detect_levelshifts()</a></code> which detects levelshifts.</li>
+<code><a href="../reference/detect_levelshifts.html">gwloggeR::detect_levelshifts()</a></code> which detects level shifts.</li>
 <li>
 <code><a href="../reference/detect_temporalchanges.html">gwloggeR::detect_temporalchanges()</a></code> which detects changes that have a temporal effect with an exponential decay.</li>
 </ul>
-<p>These functions are mainly to be used with raw air and hydrostatic pressure data.</p>
+<p>These functions are mainly to be used with raw air or hydrostatic pressure data.</p>
 </div>
 <div id="air-pressure" class="section level2">
 <h2 class="hasAnchor">
 <a href="#air-pressure" class="anchor"></a>Air pressure</h2>
-<p>The underlying assumption for air pressure data is that it is normaly distributed.</p>
-<p>Lets generate some sample air pressure data. Based on Belgium, our gaussian parameter estimates for air pressure are: <span class="math inline">\(\hat{\mu} = 1033 \; cmH_2O\)</span> and <span class="math inline">\(\hat{\sigma} = 9.5 \; cmH_2O\)</span></p>
+<p>The underlying assumption for air pressure data is that it is normally distributed.</p>
+<p>Lets generate some sample air pressure data. Based on Belgium, our Gaussian parameter estimates for air pressure are: <span class="math inline">\(\hat{\mu} = 1033 \; cmH_2O\)</span> and <span class="math inline">\(\hat{\sigma} = 9.5 \; cmH_2O\)</span></p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">n &lt;-<span class="st"> </span>100L
 mu &lt;-<span class="st"> </span><span class="dv">1033</span>
 sigma &lt;-<span class="st"> </span><span class="fl">9.5</span>
@@ -141,14 +141,14 @@ x &lt;-<span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/stat
 <div id="detect-outliers" class="section level3">
 <h3 class="hasAnchor">
 <a href="#detect-outliers" class="anchor"></a>Detect outliers</h3>
-<p>Now lets add an outlier to <code>x</code>. An outlier we define as a single extreme value. E.g. <span class="math inline">\(6 \times \hat{\sigma}\)</span>.</p>
+<p>Now lets add an outlier to <code>x</code>. An outlier we define as a single extreme value (e.g. <span class="math inline">\(6 \times \hat{\sigma}\)</span>).</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">x[5L] &lt;-<span class="st"> </span>mu <span class="op">+</span><span class="st"> </span><span class="dv">6</span><span class="op">*</span>sigma
 <span class="kw"><a href="https://rdrr.io/r/graphics/plot.html">plot</a></span>(x, <span class="dt">type =</span> <span class="st">'l'</span>, <span class="dt">ylim =</span> <span class="kw"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="dv">1000</span>, <span class="dv">1100</span>))</code></pre></div>
 <p><img src="gwloggeR_files/figure-html/airpressure-ao-sim-1.png" width="700"></p>
 <div id="without-apriori-information" class="section level4">
 <h4 class="hasAnchor">
 <a href="#without-apriori-information" class="anchor"></a>Without apriori information</h4>
-<p>Assuming we do not have any apriori information about <code>x</code>, we can execute:</p>
+<p>Assuming we do not have any <em>a-priori</em> information about <code>x</code>, we execute:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">gwloggeR<span class="op">::</span><span class="kw"><a href="https://dov-vlaanderen.github.io/groundwater-logger-validation/gwloggeR/docs/reference/detect_outliers.html">detect_outliers</a></span>(x, <span class="dt">plot =</span> <span class="ot">TRUE</span>)</code></pre></div>
 <p><img src="gwloggeR_files/figure-html/airpressure-ao-noapr-1.png" width="700"></p>
 <pre><code>#&gt;  [1] FALSE FALSE FALSE FALSE  TRUE FALSE FALSE FALSE FALSE FALSE
@@ -164,15 +164,15 @@ gwloggeR<span class="op">::</span><span class="kw"><a href="https://dov-vlaander
 <p><img src="gwloggeR_files/figure-html/airpressure-ao-apr-1.png" width="700"></p>
 <pre><code>#&gt;  [1] FALSE FALSE FALSE FALSE  TRUE FALSE FALSE FALSE FALSE FALSE
 #&gt;  [ reached getOption("max.print") -- omitted 90 entries ]</code></pre>
-<p>Without <em>a-priori</em> information the <code><a href="../reference/detect_outliers.html">detect_outliers()</a></code> function will assume normality of <code>x</code> and estimate the <span class="math inline">\(\hat{\mu}\)</span> and <span class="math inline">\(\hat{\sigma}\)</span> parameters in a robust way. When we supply <em>a-priori</em> information, then other extra assumptions might apply and the detection result will improve.</p>
+<p>Without <em>a-priori</em> information the <code><a href="../reference/detect_outliers.html">detect_outliers()</a></code> function will assume normality of <code>x</code> and estimate the <span class="math inline">\(\hat{\mu}\)</span> and <span class="math inline">\(\hat{\sigma}\)</span> parameters in a robust way. When we supply <em>a-priori</em> information, then other extra assumptions might apply and the detection result will improve. Wonder what exact assumptions and how it all fits together? Then read the <a href="Airpressure.html">Air pressure vignette</a>.</p>
 </div>
 </div>
 </div>
 <div id="hydrostatic-pressure" class="section level2">
 <h2 class="hasAnchor">
 <a href="#hydrostatic-pressure" class="anchor"></a>Hydrostatic pressure</h2>
-<p>The underlying assumption for hydrostatic pressure is that it is a pure random walk with a gaussian error term. We also assume that de variance of the error term depends on the time-interval between observations. For example, if a time-interval is 5 minutes, then we do not expect a change of more than 10 cmH2O.</p>
-<p>Armed with thise assumption, lets generate some sample data.</p>
+<p>The underlying assumption for hydrostatic pressure is that it is a pure random walk with a Gaussian error term. We also assume that the variance of the error term depends on the time-interval between the observations. For example, if a time-interval is 5 minutes, then we do not expect a change of more than 10 cmH2O.</p>
+<p>Armed with these assumptions, lets generate some sample data.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">n &lt;-<span class="st"> </span>100L
 x &lt;-<span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/base/cumsum.html">cumsum</a></span>(<span class="kw"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="dv">1200</span>, <span class="kw"><a href="https://rdrr.io/r/stats/Normal.html">rnorm</a></span>(n <span class="op">-</span><span class="st"> </span>1L, <span class="dt">mean =</span> <span class="dv">0</span>, <span class="dt">sd =</span> <span class="dv">10</span><span class="op">/</span><span class="dv">6</span>)))
 timestamps &lt;-<span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/base/seq.html">seq</a></span>(<span class="kw"><a href="https://rdrr.io/r/base/as.POSIXlt.html">as.POSIXct</a></span>(<span class="st">'2000-01-01'</span>), <span class="dt">by =</span> <span class="st">'5 min'</span>, <span class="dt">length.out =</span> n)
@@ -181,23 +181,23 @@ timestamps &lt;-<span class="st"> </span><span class="kw"><a href="https://rdrr.
 <div id="detect-outliers-1" class="section level3">
 <h3 class="hasAnchor">
 <a href="#detect-outliers-1" class="anchor"></a>Detect outliers</h3>
-<p>Now lets add an outlier to our observations <code>x</code>. Here also we define an outlier as a single extreme value in the random walk, but which does not have any effect on subsequent values.</p>
+<p>Now lets add an outlier to our observations <code>x</code>. Here we also define an outlier as a single extreme value in the random walk, but which does not have any effect on subsequent values.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">x[5L] &lt;-<span class="st"> </span>x[5L] <span class="op">-</span><span class="st"> </span><span class="dv">15</span>
 <span class="kw"><a href="https://rdrr.io/r/graphics/plot.html">plot</a></span>(timestamps, x, <span class="dt">type =</span> <span class="st">'l'</span>)</code></pre></div>
 <p><img src="gwloggeR_files/figure-html/hydropressure-ao-sim-1.png" width="700"></p>
-<p>Our <code>x</code> is not normaly distributed. Remeber that <code><a href="../reference/detect_outliers.html">detect_outliers()</a></code> assumes normality of <code>x</code>? So if we do not provide any <em>a-priori</em> information about <code>x</code>, the outlier detection will be bad. To improve it, we state that <code>x</code> is hydrostatic pressure data.</p>
+<p>Our <code>x</code> is not normally distributed. Remember that <code><a href="../reference/detect_outliers.html">detect_outliers()</a></code> without any <em>a-priori</em> information assumes normality of <code>x</code>? So if we do not provide any <em>a-priori</em> information about <code>x</code>, the outlier detection will be bad. To improve it, we state that <code>x</code> is hydrostatic pressure data.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">apriori &lt;-<span class="st"> </span>gwloggeR<span class="op">::</span><span class="kw"><a href="https://dov-vlaanderen.github.io/groundwater-logger-validation/gwloggeR/docs/reference/apriori.html">apriori</a></span>(<span class="st">'hydrostatic pressure'</span>, <span class="dt">units =</span> <span class="st">'cmH2O'</span>)</code></pre></div>
 <p>Note also, that in this case, we also need to supply <code>timestamps</code> to the detection function. This is because the underlying model also considers time-intervals between observations.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">gwloggeR<span class="op">::</span><span class="kw"><a href="https://dov-vlaanderen.github.io/groundwater-logger-validation/gwloggeR/docs/reference/detect_outliers.html">detect_outliers</a></span>(x, <span class="dt">timestamps =</span> timestamps, <span class="dt">apriori =</span> apriori, <span class="dt">plot =</span> <span class="ot">TRUE</span>)</code></pre></div>
 <p><img src="gwloggeR_files/figure-html/hydropressure-ao-1.png" width="700"></p>
 <pre><code>#&gt;  [1] FALSE FALSE FALSE FALSE  TRUE FALSE FALSE FALSE FALSE FALSE
 #&gt;  [ reached getOption("max.print") -- omitted 90 entries ]</code></pre>
-<p>See how the outlier is catched?</p>
+<p>See how the outlier is caught?</p>
 </div>
-<div id="detect-levelshifts" class="section level3">
+<div id="detect-level-shifts" class="section level3">
 <h3 class="hasAnchor">
-<a href="#detect-levelshifts" class="anchor"></a>Detect levelshifts</h3>
-<p>Contrary to outliers, levelshifts do have a lasting constant effect on the random walk. Lets simulate one:</p>
+<a href="#detect-level-shifts" class="anchor"></a>Detect level shifts</h3>
+<p>Contrary to outliers, level shifts do have a lasting constant effect on the random walk. Lets simulate one:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">x[6L<span class="op">:</span>9L] &lt;-<span class="st"> </span>x[6L<span class="op">:</span>9L] <span class="op">-</span><span class="st"> </span><span class="dv">15</span>
 <span class="kw"><a href="https://rdrr.io/r/graphics/plot.html">plot</a></span>(timestamps, x, <span class="dt">type =</span> <span class="st">'l'</span>)</code></pre></div>
 <p><img src="gwloggeR_files/figure-html/hydropressure-ls-sim-1.png" width="700"></p>
@@ -206,11 +206,12 @@ timestamps &lt;-<span class="st"> </span><span class="kw"><a href="https://rdrr.
 <p><img src="gwloggeR_files/figure-html/hydropressure-ls-1.png" width="700"></p>
 <pre><code>#&gt;  [1] FALSE FALSE FALSE FALSE  TRUE FALSE FALSE FALSE FALSE  TRUE
 #&gt;  [ reached getOption("max.print") -- omitted 90 entries ]</code></pre>
+<p>The 5-th observation is the start of a level shift down (blue background), and the 10-th observation is the start of a level shift up (red background).</p>
 </div>
 <div id="detect-temporal-changes" class="section level3">
 <h3 class="hasAnchor">
 <a href="#detect-temporal-changes" class="anchor"></a>Detect temporal changes</h3>
-<p>Contrary to levelshifts that have a constant effect, temporal changes decay exponentialy with time. First we undo the levelshift, and then simulate a temporal change with a decay factor of 0.7:</p>
+<p>Contrary to level shifts that have a constant effect, temporal changes decay exponentially with time. First we undo the level shift, and then simulate a temporal change with a decay factor of 0.7:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">x[5L<span class="op">:</span>9L] &lt;-<span class="st"> </span>x[5L<span class="op">:</span>9L] <span class="op">+</span><span class="st"> </span><span class="dv">15</span>
 x[5L<span class="op">:</span>15L] &lt;-<span class="st"> </span>x[5L<span class="op">:</span>15L] <span class="op">-</span><span class="st"> </span><span class="dv">15</span><span class="op">*</span><span class="fl">0.7</span><span class="op">^</span>(<span class="dv">0</span><span class="op">:</span><span class="dv">10</span>)
 <span class="kw"><a href="https://rdrr.io/r/graphics/plot.html">plot</a></span>(timestamps, x, <span class="dt">type =</span> <span class="st">'l'</span>)</code></pre></div>
@@ -220,6 +221,9 @@ x[5L<span class="op">:</span>15L] &lt;-<span class="st"> </span>x[5L<span class=
 <p><img src="gwloggeR_files/figure-html/hydropressure-tc-1.png" width="700"></p>
 <pre><code>#&gt;  [1] FALSE FALSE FALSE FALSE  TRUE FALSE FALSE FALSE FALSE FALSE
 #&gt;  [ reached getOption("max.print") -- omitted 90 entries ]</code></pre>
+<p>The temporal change starts at the 5-th observation until it decays around the 9-th.</p>
+<p>Now if all this was very obvious to you, you can give <code>gwlogger</code> a try on the real data. If you still wonder how all this works, you can read more about the algorithm in the <a href="Hydropressure.html">Hydrostatic pressure vignette</a>.</p>
+<p>Hmm… wonder what’s next? Me too!</p>
 </div>
 </div>
   </div>
@@ -243,7 +247,7 @@ x[5L<span class="op">:</span>15L] &lt;-<span class="st"> </span>x[5L<span class=
       <li>
 <a href="#hydrostatic-pressure">Hydrostatic pressure</a><ul class="nav nav-pills nav-stacked">
 <li><a href="#detect-outliers-1">Detect outliers</a></li>
-      <li><a href="#detect-levelshifts">Detect levelshifts</a></li>
+      <li><a href="#detect-level-shifts">Detect level shifts</a></li>
       <li><a href="#detect-temporal-changes">Detect temporal changes</a></li>
       </ul>
 </li>
