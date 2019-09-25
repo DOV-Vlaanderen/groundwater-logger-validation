@@ -30,11 +30,11 @@ options('max.print' = 10)
 
 `gwloggeR` is a package for automatized flagging of outliers, level shifts and temporal changes in raw air and hydrostatic pressure data.
 
-Here you find the basic building-blocks of the package. Before continuing, make sure you have correctly [installed](https://dov-vlaanderen.github.io/groundwater-logger-validation/gwloggeR/docs/index.html#installation) the last stable version of `gwloggeR`.
+Here you find the basic building-blocks of the package. Before continuing, make sure you have correctly [installed](../index.html#installation) the last stable version of `gwloggeR`.
 
 ## Detect functions
 
-At its core `gwloggeR` consists of several [`detect_`](https://dov-vlaanderen.github.io/groundwater-logger-validation/gwloggeR/docs/reference/index.html#section-detection-functions) functions which take as input a vector of observations, and return a boolean vector of the same length specifying TRUE for each positive detection, and FALSE otherwise.
+At its core `gwloggeR` consists of several [`detect_`](../reference/index.html#section-detection-functions) functions which take as input a vector of observations, and return a boolean vector of the same length specifying TRUE for each positive detection, and FALSE otherwise.
 
 Currently, there are three `detect_` functions defined:
 
@@ -86,7 +86,7 @@ apriori <- gwloggeR::apriori('air pressure', units = 'cmH2O')
 gwloggeR::detect_outliers(x = x, apriori = apriori, plot = TRUE)
 ```
 
-Without _a-priori_ information the `detect_outliers()` function will assume normality of `x` and estimate the $\hat{\mu}$ and $\hat{\sigma}$ parameters in a robust way. When we supply _a-priori_ information, then other extra assumptions might apply and the detection result will improve. Wonder what exact assumptions and how it all fits together? Then read the [Air pressure vignette](https://dov-vlaanderen.github.io/groundwater-logger-validation/gwloggeR/docs/articles/Airpressure.html).
+Without _a-priori_ information the `detect_outliers()` function will assume normality of `x` and estimate the $\hat{\mu}$ and $\hat{\sigma}$ parameters in a robust way. When we supply _a-priori_ information, then other extra assumptions might apply and the detection result will improve. Wonder what exact assumptions and how it all fits together? Then read the [Air pressure vignette](Airpressure.html).
 
 ## Hydrostatic pressure
 
@@ -159,6 +159,6 @@ gwloggeR::detect_temporalchanges(x = x, timestamps = timestamps, apriori = aprio
 
 The temporal change starts at the 5-th observation until it decays around the 9-th.
 
-Now if all this was very obvious to you, you can give `gwlogger` a try on the real data. If you still wonder how all this works, you can read more about the algorithm in the [Hydrostatic pressure vignette](https://dov-vlaanderen.github.io/groundwater-logger-validation/gwloggeR/docs/articles/Hydropressure.html).
+Now if all this was very obvious to you, you can give `gwlogger` a try on the real data. If you still wonder how all this works, you can read more about the algorithm in the [Hydrostatic pressure vignette](Hydropressure.html).
 
 Hmm... wonder what's next? Me too!
