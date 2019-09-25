@@ -26,11 +26,11 @@ knitr::opts_chunk$set(
 )
 ```
 
-This is an advanced guide. It explains how `detect_outliers()` works for air pressure. Make sure you have first read the getting started material.
+This is an advanced guide. It explains how `detect_outliers()` works for air pressure data. Make sure you have first read the [getting started](gwloggeR.html) material.
 
 ## Outlier detection
 
-Outliers are single measurements that are considered very unlikely to occur. The `detect_outliers()` function takes in a vector of datapoints and returns a boolean vector of outlier indicators:
+Outliers are single measurements that are considered very unlikely to occur. The `detect_outliers()` function takes in a vector of observations and returns a boolean vector of outlier indicators:
 
 ```{r}
 x <- c(1000:1005, 975)
@@ -48,9 +48,9 @@ The underlying assumption for outlier detection is normality of $x_i$. Top left 
 
 ### Estimation of cutoff lines
 
-How do we determine where to place the red cutoff lines? Well, for start, we want to minimize false positives. Suppose that we take $100$ random points from a standard normal distribution. If we place the cutoff lines at $c = \pm 1.96$ then we expect to find $5$ outliers on average. But these are not real outliers! Remeber our assumption that all the points in this set are from the standard normal distribution. So we want to set the cutoff lines at the optimal place: not too small, so we don't flag points as outliers incorrectly, but also not too big either, because in that case we might miss real outliers.
+How do we determine where to place the red cutoff lines? Well, for start, we want to minimize false positives. Suppose that we take $100$ random points from a standard normal distribution. If we place the cutoff lines at $c = \pm 1.96$ then we expect to find $5$ outliers on average. But these are not real outliers! Remember our assumption that all the points in this set are from the standard normal distribution. So we want to set the cutoff lines at the optimal place: not too small, so we don't flag points as outliers incorrectly, but also not too big either, because in that case we might miss real outliers.
 
-Let us formalize the above intuition. Assume that $\mathbf{x}$ consists of $n$ independent and identically distributed datapoints $(x_1, x_2, \dots, x_n)$ taken from a standard normal distribution with fixed $\mu = 0$ and $\sigma = 1$. Now we choose some $c$ as the cutoff line. We can then calculate the probability of at least one outlier detected in the `detect_outliers(x)` process:
+Let us formalize the above intuition. Assume that $\mathbf{x}$ consists of $n$ independent and identically distributed observations $(x_1, x_2, \dots, x_n)$ taken from a standard normal distribution with fixed $\mu = 0$ and $\sigma = 1$. Now we choose some $c$ as the cutoff line. We can then calculate the probability of at least one outlier detected in the `detect_outliers(x)` process:
 
 $$
 P(|x_1| > c \lor |x_2| > c \lor \; \dots \; \lor |x_n| > c) = \alpha
@@ -123,7 +123,7 @@ parallel::stopCluster(cl)
 saveRDS(df, 'airpressure/simulation.rds')
 ```
 
-Black horizontal line represents the expected $0.01$ failure rate. The blue curve is the failure rate estimate based on mean and standard deviation, which are most efficient estimators in case there are no outliers. The red curve is the failure rate based on median and MAD. In case $n < 500$, the MAD approach is very optimistic: it is $2$ to $3$ times more likely to detect falsely one or more outliers. The green curve is based on the the Qn scale estimator (TODO).
+Black horizontal line represents the expected $0.01$ failure rate. The blue curve is the failure rate estimate based on mean and standard deviation, which are most efficient estimators in case there are no outliers. The red curve is the failure rate based on median and MAD. In case $n < 500$, the MAD approach is very optimistic: it is $2$ to $3$ times more likely to detect falsely one or more outliers. The green curve is based on the the $Q_n$ scale estimator (TODO).
 
 ```{r detect_outliers_norm_power, echo=FALSE}
 df <- readRDS('airpressure/simulation.rds')
@@ -148,7 +148,7 @@ In calculating $c$ we assumed $x_i$ being normal with $\mu = 0$ and $\sigma = 1$
 
 Mean and square root of variance give the most efficient estimators for $\mu$ and $\sigma$ as long as $\forall i : y_i \sim \mathcal{N}(\mu, \sigma^2)$ and mutually independent. Under influence of real outliers, these estimators get easily biased. [cf. @Leys2013] So we need more robust estimators for $\mu$ and $\sigma$.
 
-In case of outliers, a way to measure robustness is the breakdown point. The maximum attainable breakdown point is $50 \%$, meaning that $50 \%$ of observations can be replaced by arbitrary large numbers, without breaking the estimator. For $\mu$, the obvious choice is the median. For $\sigma$ it is the median absolute deviation (MAD). They both have a $50 \%$ breakdown point. A problem with the latter is its efficiency (cf. simuation). There exist more efficient $\sigma$-estimators than the MAD. For example the Q-estimator [cf. @Rousseeuw1993]. Currently, MAD suffices because we usualy have lots of data ($n > 5000$) so efficiency suffers less.
+In case of outliers, a way to measure robustness is the breakdown point. The maximum attainable breakdown point is $50 \%$, meaning that $50 \%$ of observations can be replaced by arbitrary large numbers, without breaking the estimator. For $\mu$, the obvious choice is the median. For $\sigma$ it is the median absolute deviation (MAD). They both have a $50 \%$ breakdown point. A problem with the latter is its efficiency (cf. simulation). There exist more efficient $\sigma$-estimators than the MAD. For example the $Qn$-estimator [cf. @Rousseeuw1993]. Currently, MAD suffices because we usually have lots of data ($n > 5000$) so efficiency suffers less.
 
 ### Apriori air pressure information
 
@@ -159,7 +159,7 @@ x <- c(990:999)
 gwloggeR::detect_outliers(x, apriori = gwloggeR::apriori("air pressure", "cmH2O"), plot = TRUE)
 ```
 
-Top left is again the histogram of $\mathbf{x}$. But the green density this time is not a robust normal estimate based on $\mathbf{x}$. Instead it is the hardcoded _a-priori_ density distribution of air pressure ($cmH_2O$) in Belgium. Given the $10$ points and assuming that we want to detect falsely one or more outliers in $1$ of $2000$ tests, we set the red cutoffs appropriately. This results in first $4$ points being identified as outliers.
+Top left is again the histogram of $\mathbf{x}$. But the green density this time is not a robust normal estimate based on $\mathbf{x}$. Instead it is the hard-coded _a-priori_ density distribution of air pressure ($cmH_2O$) in Belgium. Given the $10$ points and assuming that we want to detect falsely one or more outliers in $1$ of $2000$ tests, we set the red cutoffs appropriately. This results in first $4$ points being identified as outliers.
 
 ## Future work
 
