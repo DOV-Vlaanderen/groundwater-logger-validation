@@ -11,7 +11,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
 
-<meta name="date" content="2019-09-24" />
+<meta name="date" content="2019-09-25" />
 
 <title>Hydrostatic pressure</title>
 
@@ -93,7 +93,7 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 
 
 <h1 class="title toc-ignore">Hydrostatic pressure</h1>
-<h4 class="date">2019-09-24</h4>
+<h4 class="date">2019-09-25</h4>
 
 
 <div id="TOC">
@@ -162,7 +162,7 @@ x_t = x_{t-1} + \epsilon(\Delta t) + \omega \left[I(t=t_{AO}) - I(t = t_{AO} + 1
 <p><span class="math display">\[
 x_t = z_t + \frac{\omega I(t = t_{LS})}{1-B}
 \]</span></p>
-<p>Note that <span class="math inline">\(B\)</span> is the back operator. Here the <span class="math inline">\((1-B)^{-1}\)</span> evaluates to <span class="math inline">\(1 + B + B^2 + B^3 + \dots\)</span>. This is nothing more than saying that after <span class="math inline">\(t\)</span> a constant <span class="math inline">\(\omega\)</span> is always added on top of the latent random walk <span class="math inline">\(z_t\)</span>. Removing latent <span class="math inline">\(z_t\)</span> from the equations reveals a more comprehensive form:</p>
+<p>Note that <span class="math inline">\(B\)</span> is the backshift operator such that <span class="math inline">\(Bx_t = x_{t-1}\)</span> and <span class="math inline">\(BI(t = t_{LS}) = I(t-1 = t_{LS})\)</span>. Here the <span class="math inline">\((1-B)^{-1}\)</span> evaluates to <span class="math inline">\(1 + B + B^2 + B^3 + \dots\)</span>. This is nothing more than saying that after <span class="math inline">\(t\)</span> a constant <span class="math inline">\(\omega\)</span> is always added on top of the latent random walk <span class="math inline">\(z_t\)</span>. Removing latent <span class="math inline">\(z_t\)</span> from the equations reveals a more comprehensive form:</p>
 <p><span class="math display">\[
 x_t = x_{t-1} + \epsilon(\Delta t) + \omega I(t=t_{LS})
 \]</span></p>
