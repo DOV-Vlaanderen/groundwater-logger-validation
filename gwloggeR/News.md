@@ -1,9 +1,13 @@
 # Development version
 
+## Website
 * gwloggeR website: https://dov-vlaanderen.github.io/groundwater-logger-validation/gwloggeR
+* Getting started tutorial: https://dov-vlaanderen.github.io/groundwater-logger-validation/gwloggeR/docs/articles/gwloggeR.html 
 * Hydrostatic pressure model explanation: https://dov-vlaanderen.github.io/groundwater-logger-validation/gwloggeR/docs/articles/Hydropressure.html
 
 ## TODO
+
+### General
 * `detect_temporalchanges()` should flag everything from start until the decay is insignificant.
 * Complete `Development` vignette.
 * Caching of algorithm results.

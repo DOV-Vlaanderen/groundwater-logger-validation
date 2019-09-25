@@ -46,7 +46,7 @@ Keep reading to learn how to start using `gwloggeR`.
 devtools::install_github("DOV-Vlaanderen/groundwater-logger-validation", subdir = "gwloggeR", ref = "x.x.x")
 ```
 
-Note the `ref = "x.x.x"` option. Replace it with the version you want to install. Normally this will be the number of the latest stable release as displayed in the top left corner of this page. Alternatively, one can also install previous releases documented in the [Changelog](News.md) section. By omitting the `ref` option the latest development version will be installed.
+Note the `ref = "x.x.x"` option. Replace it with the version you want to install. Normally this will be the number of the latest stable release as displayed in the top left corner of this page. Alternatively, one can also install previous releases documented in the [News](News.md) section. By omitting the `ref` option the latest development version will be installed.
 
 ## Usage
 
