@@ -28,27 +28,27 @@ set.seed(2019)
 options('max.print' = 10)
 ```
 
-`gwloggeR` is a package for automatizing flagging of outliers, levelshifts and temporal changes in raw airpressure and hydrostatic pressure data.
+`gwloggeR` is a package for automatized flagging of outliers, level shifts and temporal changes in raw air and hydrostatic pressure data.
 
-Here you find the basic building-blocks of the package. Before continuing, make sure you have corerctly [installed]() the last stable version of `gwloggeR`.
+Here you find the basic building-blocks of the package. Before continuing, make sure you have correctly [installed](https://dov-vlaanderen.github.io/groundwater-logger-validation/gwloggeR/docs/index.html#installation) the last stable version of `gwloggeR`.
 
 ## Detect functions
 
-At its core `gwloggeR` consists of several `detect_` functions which take as input a vector of observations, and return a boolean vector of the same lenghth specifying TRUE for each positive detection.
+At its core `gwloggeR` consists of several [`detect_`](https://dov-vlaanderen.github.io/groundwater-logger-validation/gwloggeR/docs/reference/index.html#section-detection-functions) functions which take as input a vector of observations, and return a boolean vector of the same length specifying TRUE for each positive detection, and FALSE otherwise.
 
 Currently, there are three `detect_` functions defined:
 
 * `gwloggeR::detect_outliers()` which detects outliers.
-* `gwloggeR::detect_levelshifts()` which detects levelshifts.
+* `gwloggeR::detect_levelshifts()` which detects level shifts.
 * `gwloggeR::detect_temporalchanges()` which detects changes that have a temporal effect with an exponential decay.
 
-These functions are mainly to be used with raw air and hydrostatic pressure data.
+These functions are mainly to be used with raw air or hydrostatic pressure data.
 
 ## Air pressure
 
-The underlying assumption for air pressure data is that it is normaly distributed.
+The underlying assumption for air pressure data is that it is normally distributed.
 
-Lets generate some sample air pressure data. Based on Belgium, our gaussian parameter estimates for air pressure are: $\hat{\mu} = 1033 \; cmH_2O$ and $\hat{\sigma} = 9.5 \; cmH_2O$
+Lets generate some sample air pressure data. Based on Belgium, our Gaussian parameter estimates for air pressure are: $\hat{\mu} = 1033 \; cmH_2O$ and $\hat{\sigma} = 9.5 \; cmH_2O$
 
 ```{r airpressure-sim}
 n <- 100L
@@ -60,7 +60,7 @@ plot(x, type = 'l', ylim = c(1000, 1100))
 
 ### Detect outliers
 
-Now lets add an outlier to `x`. An outlier we define as a single extreme value. E.g. $6 \times \hat{\sigma}$.
+Now lets add an outlier to `x`. An outlier we define as a single extreme value (e.g. $6 \times \hat{\sigma}$).
 
 ```{r airpressure-ao-sim}
 x[5L] <- mu + 6*sigma
@@ -69,7 +69,7 @@ plot(x, type = 'l', ylim = c(1000, 1100))
 
 #### Without apriori information
 
-Assuming we do not have any apriori information about `x`, we can execute:
+Assuming we do not have any _a-priori_ information about `x`, we execute:
 
 ```{r airpressure-ao-noapr}
 gwloggeR::detect_outliers(x, plot = TRUE)
@@ -86,13 +86,13 @@ apriori <- gwloggeR::apriori('air pressure', units = 'cmH2O')
 gwloggeR::detect_outliers(x = x, apriori = apriori, plot = TRUE)
 ```
 
-Without _a-priori_ information the `detect_outliers()` function will assume normality of `x` and estimate the $\hat{\mu}$ and $\hat{\sigma}$ parameters in a robust way. When we supply _a-priori_ information, then other extra assumptions might apply and the detection result will improve.
+Without _a-priori_ information the `detect_outliers()` function will assume normality of `x` and estimate the $\hat{\mu}$ and $\hat{\sigma}$ parameters in a robust way. When we supply _a-priori_ information, then other extra assumptions might apply and the detection result will improve. Wonder what exact assumptions and how it all fits together? Then read the [Air pressure vignette](https://dov-vlaanderen.github.io/groundwater-logger-validation/gwloggeR/docs/articles/Airpressure.html).
 
 ## Hydrostatic pressure
 
-The underlying assumption for hydrostatic pressure is that it is a pure random walk with a gaussian error term. We also assume that de variance of the error term depends on the time-interval between observations. For example, if a time-interval is 5 minutes, then we do not expect a change of more than 10 cmH2O.
+The underlying assumption for hydrostatic pressure is that it is a pure random walk with a Gaussian error term. We also assume that the variance of the error term depends on the time-interval between the observations. For example, if a time-interval is 5 minutes, then we do not expect a change of more than 10 cmH2O.
 
-Armed with thise assumption, lets generate some sample data.
+Armed with these assumptions, lets generate some sample data.
 
 ```{r hydropressure-sim}
 n <- 100L
@@ -103,14 +103,14 @@ plot(timestamps, x, type = 'l')
 
 ### Detect outliers
 
-Now lets add an outlier to our observations `x`. Here also we define an outlier as a single extreme value in the random walk, but which does not have any effect on subsequent values.
+Now lets add an outlier to our observations `x`. Here we also define an outlier as a single extreme value in the random walk, but which does not have any effect on subsequent values.
 
 ```{r hydropressure-ao-sim}
 x[5L] <- x[5L] - 15
 plot(timestamps, x, type = 'l')
 ```
 
-Our `x` is not normaly distributed. Remeber that `detect_outliers()` assumes normality of `x`? So if we do not provide any _a-priori_ information about `x`, the outlier detection will be bad. To improve it, we state that `x` is hydrostatic pressure data.
+Our `x` is not normally distributed. Remember that `detect_outliers()` without any _a-priori_ information assumes normality of `x`? So if we do not provide any _a-priori_ information about `x`, the outlier detection will be bad. To improve it, we state that `x` is hydrostatic pressure data.
 
 ```{r}
 apriori <- gwloggeR::apriori('hydrostatic pressure', units = 'cmH2O')
@@ -122,11 +122,11 @@ Note also, that in this case, we also need to supply `timestamps` to the detecti
 gwloggeR::detect_outliers(x, timestamps = timestamps, apriori = apriori, plot = TRUE)
 ```
 
-See how the outlier is catched?
+See how the outlier is caught?
 
-### Detect levelshifts
+### Detect level shifts
 
-Contrary to outliers, levelshifts do have a lasting constant effect on the random walk. Lets simulate one:
+Contrary to outliers, level shifts do have a lasting constant effect on the random walk. Lets simulate one:
 
 ```{r hydropressure-ls-sim}
 x[6L:9L] <- x[6L:9L] - 15
@@ -139,9 +139,11 @@ Now let us see how `detect_levelshifts()` handles this.
 gwloggeR::detect_levelshifts(x = x, timestamps = timestamps, apriori = apriori, plot = TRUE)
 ```
 
+The 5-th observation is the start of a level shift down (blue background), and the 10-th observation is the start of a level shift up (red background).
+
 ### Detect temporal changes
 
-Contrary to levelshifts that have a constant effect, temporal changes decay exponentialy with time. First we undo the levelshift, and then simulate a temporal change with a decay factor of 0.7:
+Contrary to level shifts that have a constant effect, temporal changes decay exponentially with time. First we undo the level shift, and then simulate a temporal change with a decay factor of 0.7:
 
 ```{r hydropressure-tc-sim}
 x[5L:9L] <- x[5L:9L] + 15
@@ -155,3 +157,8 @@ Now lets see how `detect_temporalchanges()` reacts:
 gwloggeR::detect_temporalchanges(x = x, timestamps = timestamps, apriori = apriori, plot = TRUE)
 ```
 
+The temporal change starts at the 5-th observation until it decays around the 9-th.
+
+Now if all this was very obvious to you, you can give `gwlogger` a try on the real data. If you still wonder how all this works, you can read more about the algorithm in the [Hydrostatic pressure vignette](https://dov-vlaanderen.github.io/groundwater-logger-validation/gwloggeR/docs/articles/Hydropressure.html).
+
+Hmm... wonder what's next? Me too!
