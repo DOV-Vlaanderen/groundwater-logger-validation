@@ -3,7 +3,7 @@
 gwloggeR
 ========
 
-`gwloggeR` is a R-package for automatic flagging of outliers, levelshifts and temporal changes in raw air and hydrostatic pressure data. For example.
+`gwloggeR` is a R-package for automatic flagging of outliers, level shifts and temporal changes in raw air and hydrostatic pressure data. For example.
 
 ![](man/figures/example-1.png)
 
@@ -12,22 +12,22 @@ Keep reading to learn how to start using `gwloggeR`.
 Installation
 ------------
 
-`gwloggeR` package is not available on CRAN, only on GitHub. The easiest way of installing the package is using the `devtools` package and referring to the git repository holding the package code:
+`gwloggeR` package is not available on CRAN, only on GitHub. The easiest way to install it is with the `devtools` package and referring to the git repository holding the `gwloggeR` source code:
 
 ``` r
 devtools::install_github("DOV-Vlaanderen/groundwater-logger-validation", subdir = "gwloggeR", ref = "x.x.x")
 ```
 
-Note the `ref = "x.x.x"` option. Replace it with the version you want to install. Normally this will be the number of the latest stable release as displayed in the top left corner of this page. Alternatively, one can also install previous releases documented in the [News](News.md) section. By omitting the `ref` option the devopment version will be installed.
+Note the `ref = "x.x.x"` option. Replace it with the version you want to install. Normally this will be the number of the latest stable release as displayed in the top left corner of this page. Alternatively, one can also install previous releases documented in the [Changelog](News.md) section. By omitting the `ref` option the latest development version will be installed.
 
 Usage
 -----
 
 For general use, consult the [getting started](https://dov-vlaanderen.github.io/groundwater-logger-validation/gwloggeR/docs/articles/gwloggeR.html) tutorial.
 
-For advanced understanding, consult the specific vignettes.
+For advanced understanding, consult the specific vignettes in the Articles section.
 
 Development
 -----------
 
-Developers and maintainers of this package can find some general guidelines in the Development guide.
+Developers and maintainers of this package can find some general guidelines in the [Development guide](https://dov-vlaanderen.github.io/groundwater-logger-validation/gwloggeR/docs/articles/Development.html).
