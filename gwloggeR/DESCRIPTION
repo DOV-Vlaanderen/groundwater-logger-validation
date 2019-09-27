@@ -29,6 +29,7 @@ Imports:
     digest
 Suggests: 
     knitr,
-    rmarkdown
+    rmarkdown,
+    testthat (>= 2.1.0)
 BuildVignettes: True
 VignetteBuilder: knitr, rmarkdown
