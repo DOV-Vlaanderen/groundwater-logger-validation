@@ -188,7 +188,7 @@ Note that $\delta$ varies between $0$ and $1$. If $\delta = 0$ we have an outlie
 
 In case we have a tie between multiple $M_m$ models with $m$ parameters, then the one for which the sum of the absolute values of parameters is smallest is taken as winner. This is a poor man's simulation of a prior on the parameters: the smaller the parameter, the more likely it is, under equal likelihood.
 
-This model selection procedure is quite involved. Programmaticaly, we define an object `ProgressTable` which keeps track of all the best models $M_0$ up till the last significant one. Besides the forward model selection, we also make use of backward selection because adding a parameter sometimes makes an existing parameter insignificant, which opens a new path of possibilities in case the insignificant parameter is removed. The best model $M_m$ is the most likely model with $m$ parameters of all the ones tested, but not necessarily the most likely of all the possible configurations. In practice, although this maxima might be local (i.e. not global), it is taken as a good compromise between computational speed and maximization accuracy.
+This model selection procedure is quite involved. Programmaticaly, we define an object `ProgressTable` which keeps track of all the best models $M_0$ up till the last significant one. Besides the forward model selection, we also make use of backward selection (cf. TODO) because adding a parameter sometimes makes an existing parameter insignificant, which opens a new path of possibilities in case the insignificant parameter is removed. The best model $M_m$ is the most likely model with $m$ parameters of all the ones tested, but not necessarily the most likely of all the possible configurations. In practice, although this maxima might be local (i.e. not global), it is taken as a good compromise between computational speed and maximization accuracy.
 
 ### Likelihood optimization
 
@@ -238,6 +238,7 @@ The last three outlier (AO) events are obvious. But the first event is a double 
 * Use _a-priori_ data more as a prior and estimate $\epsilon(\Delta t)$ with data at hand.
 * Extract AO, LS and TC if `verbose = TRUE`.
 * Revise the 25 observations window.
+* Revise parameter significance test.
 * Lower threshold based on air pressure for `detect_outliers()`?
 
 ## References
