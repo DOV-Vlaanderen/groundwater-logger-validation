@@ -243,9 +243,9 @@ ProgressTable <- function() {
     resultmap[[hashkey(types = types, indexes = indexes)]]
   }
 
-  interface$get.df.base.swept <- function() df.base.swept
+  interface$get.df.base.swept <- function() {df.base.swept}
 
-  interface$set.df.base.swept <- function(df) df.base.swept <<- df
+  interface$set.df.base.swept <- function(df) {df.base.swept <<- df}
 
   interface
 }
@@ -343,6 +343,35 @@ seeker <- function(x, mu, sigma2, outlier, types){
   pt$get.best.result(pt$get.df.base.swept())
 }
 
+Events <- function(results, index.offsets) {
+
+  # Results are local windows, so index.offsets of windows are needed to
+  # determine the global index of the event.
+
+  if (length(results) != length(index.offsets))
+    stop('ERROR: results and index.offsets must match.')
+
+  if (length(results) == 0L) return (
+    data.table::data.table('type' = character(), 'index' = integer(),
+                           'alpha' = numeric(), 'delta' = numeric())
+  )
+
+  events <- mapply(results, index.offsets, FUN = function(result, index.offset) {
+    type.par.nr <- ifelse(attr(result, 'types') == 'TC', 2L, 1L)
+    par.idx.delta <- cumsum(type.par.nr)[which(type.par.nr == 2L)]
+    par.idx.alpha <- setdiff(seq.int(1L, length.out = sum(type.par.nr)), par.idx.delta)
+    par.delta <- rep(NA, length(type.par.nr))
+    par.delta[attr(result, 'types') == 'TC'] <- attr(result, 'par')[par.idx.delta]
+
+    data.frame('type' = attr(result, 'types'),
+               'index' = attr(result, 'indexes') + index.offset,
+               'alpha' = attr(result, 'par')[par.idx.alpha],
+               'delta' = par.delta)
+  }, SIMPLIFY = FALSE)
+
+  data.table::rbindlist(events)
+}
+
 detect <- function(x, timestamps, types = c('AO', 'LS', 'TC'), nr.tail = 25) {
   stopifnot(length(x) == length(timestamps))
   idx <- order(timestamps)
@@ -380,29 +409,16 @@ detect <- function(x, timestamps, types = c('AO', 'LS', 'TC'), nr.tail = 25) {
   empty.df <- data.table::data.table('type' = character(), 'index' = integer(),
                                      'alpha' = numeric(), 'delta' = numeric())
 
-  res <- mapply(start = drle[, start], end = drle[, end], FUN = function(start, end) {
+  results <- mapply(start = drle[, start], end = drle[, end], FUN = function(start, end) {
     df <- dif[start:end, ]
-
-    res <- seeker(x = df$vdiff, outlier = df$outlier, types = types, mu = df$mu, sigma2 = df$sigma2)
-
-    type.par.nr <- ifelse(attr(res, 'types') == 'TC', 2L, 1L)
-    par.idx.delta <- cumsum(type.par.nr)[which(type.par.nr == 2L)]
-    par.idx.alpha <- setdiff(seq.int(1L, length.out = sum(type.par.nr)), par.idx.delta)
-    par.delta <- rep(NA, length(type.par.nr))
-    par.delta[attr(res, 'types') == 'TC'] <- attr(res, 'par')[par.idx.delta]
-
-    data.frame('type' = attr(res, 'types'),
-               'index' = attr(res, 'indexes') + start,
-               'alpha' = attr(res, 'par')[par.idx.alpha],
-               'delta' = par.delta)
+    seeker(x = df$vdiff, outlier = df$outlier, types = types, mu = df$mu, sigma2 = df$sigma2)
   }, SIMPLIFY = FALSE)
 
-  res <- data.table::rbindlist(res)
+  events <- Events(results, drle[, start])
+  if (nrow(events) != 0L) events[, index := idx[index]] # back to original idx
 
-  res <- if (nrow(res) == 0L) empty.df else res[, index := idx[index]] # back to original idx
+  set.version(events, Version('0.06'))
 
-  set.version(res, Version('0.06'))
-
-  res
+  events
 }
 
