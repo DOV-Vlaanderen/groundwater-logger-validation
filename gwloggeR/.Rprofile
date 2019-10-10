@@ -1,11 +1,9 @@
 cat("#########################################################\n");
 cat(".Rprofile file is loading...\n");
 
-requireNamespace('pkgbuild')
-
 # Needed for rmarkdown which uses pdflatex.exe.
 Sys.setenv(PATH = paste(Sys.getenv("PATH"), "W:/Tools/miktex/program/miktex/bin", sep=.Platform$path.sep));
-cat(paste("LaTeX installed:", pkgbuild::has_latex(), "\n"))
+try(cat(paste("LaTeX installed:", pkgbuild::has_latex(), "\n")))
 
 # RTools
 Sys.setenv(PATH = paste(normalizePath("W:/Tools/rtools/program/mingw_64/bin", winslash = "/"),
@@ -17,7 +15,7 @@ Sys.setenv(PATH = paste(normalizePath("W:/Tools/rtools/program/bin", winslash = 
 # targeting win32 and one targeting win64. If you compile R packages you need both at
 # the same time. Hence the "$(WIN)" variable in the BINPREF.
 Sys.setenv(BINPREF = normalizePath("W:/Tools/rtools/program/mingw_64/bin/", winslash = "/"))
-cat(paste("RTools installed:", pkgbuild::has_build_tools(debug = TRUE), "\n"))
+try(cat(paste("RTools installed:", pkgbuild::has_build_tools(debug = TRUE), "\n")))
 
 # QPDF, used by CRAN to compress pdf's
 Sys.setenv(PATH = paste(Sys.getenv("PATH"), "W:/Tools/pdf/qpdf/program/x64/bin", sep=.Platform$path.sep))
