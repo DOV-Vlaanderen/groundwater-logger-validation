@@ -1,6 +1,6 @@
 Package: gwloggeR
 Type: Package
-Title: Validate and annotate logger time series of groundwater divers
+Title: Validate and annotate raw logger air and hydrostatic pressure time series
 Version: 0.1.4
 Authors@R: c(person("Davor", "Josipovic", email = "davor.josipovic@inbo.be", role = c("cre", "aut"), 
                     comment = c(ORCID = "0000-0003-1204-8637"))) 

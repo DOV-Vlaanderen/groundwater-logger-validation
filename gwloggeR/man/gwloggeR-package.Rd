@@ -4,7 +4,7 @@
 \name{gwloggeR-package}
 \alias{gwloggeR}
 \alias{gwloggeR-package}
-\title{gwloggeR: Validate and annotate logger time series of groundwater divers}
+\title{gwloggeR: Validate and annotate raw logger air and hydrostatic pressure time series}
 \description{
 Groundwater divers measure hydrostatic pressure, air pressure and
     temperature. These raw time series contain issues such as outliers,
