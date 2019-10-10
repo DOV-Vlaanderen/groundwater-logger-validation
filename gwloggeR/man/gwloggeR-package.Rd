@@ -29,7 +29,7 @@ Useful links:
 
 }
 \author{
-\strong{Maintainer}: Davor Josipovic \email{davor.josipovic@inbo.be}
+\strong{Maintainer}: Davor Josipovic \email{davor.josipovic@inbo.be} (0000-0003-1204-8637)
 
 }
 \keyword{internal}

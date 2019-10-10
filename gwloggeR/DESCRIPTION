@@ -2,7 +2,8 @@ Package: gwloggeR
 Type: Package
 Title: Validate and annotate logger time series of groundwater divers
 Version: 0.1.4
-Authors@R: c(person("Davor", "Josipovic", email = "davor.josipovic@inbo.be", role = c("cre", "aut"))) 
+Authors@R: c(person("Davor", "Josipovic", email = "davor.josipovic@inbo.be", role = c("cre", "aut"), 
+                    comment = c(ORCID = "0000-0003-1204-8637"))) 
 Description: Groundwater divers measure hydrostatic pressure, air pressure and
     temperature. These raw time series contain issues such as outliers,
     drift,... This package provides functions to facilitate the validation
