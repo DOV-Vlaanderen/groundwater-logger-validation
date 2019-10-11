@@ -51,7 +51,7 @@ indicator <- function(type = c('AO', 'LS', 'TC'), index, n) {
 
   switch (type,
           'AO' = if (index == n) rep(0, n) # if last point, then all 0
-          else rep(c(0, 1, -1, 0), c(index - 1L, 1L, 1L, n - index - 1L)),
+                 else rep(c(0, 1, -1, 0), c(index - 1L, 1L, 1L, n - index - 1L)),
           'LS' = rep(c(0, 1, 0), c(index - 1L, 1L, n - index)),
           'TC' = rep(c(0, 1), c(index - 1L, n - index + 1L))
   )
