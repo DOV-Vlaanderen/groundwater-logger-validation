@@ -10,9 +10,6 @@ knitr::opts_chunk$set(fig.pos = 'H', fig.path='figures/', warning=FALSE,
                       cache = FALSE, autodep = TRUE, cache.path = 'cache/', out.height='150px'
 )
 
-# memory in MB
-cat(paste('Memory limit:', utils::memory.limit(size = 50000), 'Mb.\n'))
-
 # Load gwloggeR package
 devtools::load_all('./../../gwloggeR', export_all = FALSE)
 detach('package:gwloggeR')
