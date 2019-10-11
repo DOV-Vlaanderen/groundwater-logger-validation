@@ -47,11 +47,9 @@ Outliers <- function(x.rejects, x.mean, x.sd,
 #' # In case of a dataframe, select the column:
 #' detect_outliers(cars$dist)
 #'
-#' \dontrun{
 #' # Or use the tidyverse approach:
 #' library(magrittr)
 #' cars %>% dplyr::mutate("outlier" = detect_outliers(dist))
-#' }
 #'
 #' @importFrom methods setGeneric
 #' @export
