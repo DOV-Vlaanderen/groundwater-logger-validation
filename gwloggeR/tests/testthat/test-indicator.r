@@ -23,3 +23,13 @@ testthat::test_that('Indicator function for AO, LS and TC events produces correc
 testthat::test_that('Indicator function failes on unknown type.', {
   testthat::expect_error(indicator('AA', 5, 5))
 })
+
+testthat::context('Decay function')
+
+# Decay function test ------------------------------------------------------
+
+testthat::test_that('Decay function works correctly.', {
+  testthat::expect_equal(object = round(decay(2, 0.7, 5), 2), c(0.00,  1.00, -0.30, -0.21, -0.15))
+  testthat::expect_equal(object = round(decay(1, 0.7, 2), 2), c(1.00, -0.30))
+  testthat::expect_equal(object = round(decay(1, 0.7, 1), 2), 1)
+})

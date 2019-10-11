@@ -63,10 +63,6 @@ decay <- function(index, decay, n) {
   exp.decay - c(0, exp.decay[-n])
 }
 
-decay(2, 0.7, 5)
-decay(1, 0.7, 2)
-decay(1, 0.7, 1)
-
 # Dit is z_t - z_t-1 - ... = w_t ~ epsilon distributed
 logL.base <- function(w, mu, sigma2) {
   -sum((w - mu)^2/(2*sigma2))
