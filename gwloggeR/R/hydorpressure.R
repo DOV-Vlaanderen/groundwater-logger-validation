@@ -345,8 +345,11 @@ seeker <- function(x, mu, sigma2, outlier, types){
 
 #' @title Events object
 #' @description Events is a dataframe object that holds the indexes,
-#' corresponding types and parameters.
+#' corresponding types and parameters. The function is vectorized.
 #' @param results a list of one or multiple Optimizer.Result objects.
+#' @param index.offsets starting index of window based on original data.
+#' @keywords internal
+#'
 Events <- function(results, index.offsets) {
 
   # Results are local windows, so index.offsets of windows are needed to

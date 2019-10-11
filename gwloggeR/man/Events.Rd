@@ -8,8 +8,11 @@ Events(results, index.offsets)
 }
 \arguments{
 \item{results}{a list of one or multiple Optimizer.Result objects.}
+
+\item{index.offsets}{starting index of window based on original data.}
 }
 \description{
 Events is a dataframe object that holds the indexes,
-corresponding types and parameters.
+corresponding types and parameters. The function is vectorized.
 }
+\keyword{internal}
