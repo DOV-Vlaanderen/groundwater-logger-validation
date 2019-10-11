@@ -37,6 +37,15 @@ So first we need to checkout this repository somewhere localy.
 git checkout https://github.com/DOV-Vlaanderen/groundwater-logger-validation.git
 ```
 
+### Projects
+
+The repository consists of 2 project roots:
+
+* [`src/r/groundwater.rproj`](https://github.com/DOV-Vlaanderen/groundwater-logger-validation/blob/master/src/r/groundwater.rproj) which is mainly used for data analysis with R. This project, when opened in Rstudio, will also load [`src/r/.Rprofile`](https://github.com/DOV-Vlaanderen/groundwater-logger-validation/blob/master/src/r/.Rprofile) which will setup the environment for data analysis. Note that here one can also find test-cases for specific versions of `gwloggeR`. For example, [`src/r/outliers/outliers_v0.06_inbo`](https://github.com/DOV-Vlaanderen/groundwater-logger-validation/tree/master/src/r/outliers/outliers_v0.06_inbo) contains all the results based on v0.06 (cf. [#35](https://github.com/DOV-Vlaanderen/groundwater-logger-validation/issues/35)) of the algorithm, which can be used as regression test for new versions of `gwloggeR`.
+* [`gwloggeR/gwloggeR.rproj`](https://github.com/DOV-Vlaanderen/groundwater-logger-validation/blob/master/gwloggeR/gwloggeR.Rproj) used for `gwloggeR` package development and testing.
+
+Note that cross-linking of files between projects based on relative paths is allowed since all projects reside in the same repository.
+
 ## Documentation
 
 The documentation is built using `roxygen2`. If you are using RStudio and `roxygen2` is installed, then pressing `Ctrl` + `Shift` + `B` will generate:

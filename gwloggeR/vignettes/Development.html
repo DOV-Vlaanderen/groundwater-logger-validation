@@ -99,7 +99,9 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 
 <div id="TOC">
 <ul>
-<li><a href="#general">General</a></li>
+<li><a href="#general">General</a><ul>
+<li><a href="#projects">Projects</a></li>
+</ul></li>
 <li><a href="#documentation">Documentation</a><ul>
 <li><a href="#readme.rmd">README.Rmd</a></li>
 </ul></li>
@@ -113,6 +115,15 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 <p><code>gwloggeR</code> is developed as part of a larger git-repository: <a href="https://github.com/DOV-Vlaanderen/groundwater-logger-validation" class="uri">https://github.com/DOV-Vlaanderen/groundwater-logger-validation</a>.</p>
 <p>So first we need to checkout this repository somewhere localy.</p>
 <pre><code>git checkout https://github.com/DOV-Vlaanderen/groundwater-logger-validation.git</code></pre>
+<div id="projects" class="section level3">
+<h3>Projects</h3>
+<p>The repository consists of 2 project roots:</p>
+<ul>
+<li><a href="https://github.com/DOV-Vlaanderen/groundwater-logger-validation/blob/master/src/r/groundwater.rproj"><code>src/r/groundwater.rproj</code></a> which is mainly used for data analysis with R. This project, when opened in Rstudio, will also load <a href="https://github.com/DOV-Vlaanderen/groundwater-logger-validation/blob/master/src/r/.Rprofile"><code>src/r/.Rprofile</code></a> which will setup the environment for data analysis. Note that here one can also find test-cases for specific versions of <code>gwloggeR</code>. For example, <a href="https://github.com/DOV-Vlaanderen/groundwater-logger-validation/tree/master/src/r/outliers/outliers_v0.06_inbo"><code>src/r/outliers/outliers_v0.06_inbo</code></a> contains all the results based on v0.06 (cf. <a href="https://github.com/DOV-Vlaanderen/groundwater-logger-validation/issues/35">#35</a>) of the algorithm, which can be used as regression test for new versions of <code>gwloggeR</code>.</li>
+<li><a href="https://github.com/DOV-Vlaanderen/groundwater-logger-validation/blob/master/gwloggeR/gwloggeR.Rproj"><code>gwloggeR/gwloggeR.rproj</code></a> used for <code>gwloggeR</code> package development and testing.</li>
+</ul>
+<p>Note that cross-linking of files between projects based on relative paths is allowed since all projects reside in the same repository.</p>
+</div>
 </div>
 <div id="documentation" class="section level2">
 <h2>Documentation</h2>

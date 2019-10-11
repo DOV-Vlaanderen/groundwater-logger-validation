@@ -31,22 +31,29 @@ For the package related to this project, see subfolder [gwloggeR](https://github
 
 The repository structure is based on [Cookiecutter Data Science](http://drivendata.github.io/cookiecutter-data-science/). Files and directories indicated with GENERATED should not be edited manually.:
 
-
 ```
-├── README.md              : Description of this repository
-├── LICENSE                : Repository license
-├── .gitignore             : Files and directories to be ignored by git
+├── README.md                  : Description of this repository
+├── LICENSE                    : Repository license
+├── .gitignore                 : Files and directories to be ignored by git
 │
 ├── data
-│   ├── raw                : Source logger data as received from the partners (INBO,...)
-│   │    ├── inbo           : A subfolder for each partner 
-│   │    └── ...
-│   ├── interim            : Folder for interim outputs GENERATED
-│   └── processed          : Resulting outputs used for reporting,...  GENERATED
+│   ├── raw                    : Source logger data as received from the partners (INBO,...)
+│   │   ├── inbo               : A subfolder for each partner 
+│   │   └── ...
+│   ├── interim                : Folder for interim outputs GENERATED
+│   └── processed              : Resulting outputs used for reporting,...  GENERATED
+│     
+├── docs                       : Documentation of the algorithms, flagging,...
 │
-├── docs                   : Documentation of the algorithms, flagging,...
-│
-└── src                    : source code for the analysis 
+├── gwloggeR                   : gwloggeR package root folder
+|
+├── gwloggeR.data              : gwloggeR.daya package root folder
+|
+├── src                        : Source code for the analysis 
+│   ├── r                  
+│   │   ├── groundwater.rproj  : Rstudio project file for data analysis.
+│   │   ├── outliers           : Grouped analysis files 
+│   │   └── ...                
 ```
 
 ## Contributors
