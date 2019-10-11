@@ -1,6 +1,6 @@
 local({
 
-  ROOT.PATH <- './temporalchanges/temporalchanges_v0.06_inbo//'
+  ROOT.PATH <- './temporalchanges/temporalchanges_v0.06_inbo/'
 
   print(Sys.time())
   for (f in gwloggeR.data::enumerate(partner = 'inbo')) {
