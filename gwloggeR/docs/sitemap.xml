@@ -10,6 +10,9 @@
     <loc>https://dov-vlaanderen.github.io/groundwater-logger-validation/gwloggeR/docs/reference/CONST.ALPHA.html</loc>
   </url>
   <url>
+    <loc>https://dov-vlaanderen.github.io/groundwater-logger-validation/gwloggeR/docs/reference/decay.html</loc>
+  </url>
+  <url>
     <loc>https://dov-vlaanderen.github.io/groundwater-logger-validation/gwloggeR/docs/reference/detect_duplicates.html</loc>
   </url>
   <url>
@@ -29,6 +32,9 @@
   </url>
   <url>
     <loc>https://dov-vlaanderen.github.io/groundwater-logger-validation/gwloggeR/docs/reference/gwloggeR-package.html</loc>
+  </url>
+  <url>
+    <loc>https://dov-vlaanderen.github.io/groundwater-logger-validation/gwloggeR/docs/reference/indicator.html</loc>
   </url>
   <url>
     <loc>https://dov-vlaanderen.github.io/groundwater-logger-validation/gwloggeR/docs/reference/Levelshifts.html</loc>
