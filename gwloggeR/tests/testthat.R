@@ -1,1 +1,1 @@
-test_check("gwloggeR")
+testthat::test_check("gwloggeR")
