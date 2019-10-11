@@ -343,6 +343,7 @@ seeker <- function(x, mu, sigma2, outlier, types){
   pt$get.best.result(pt$get.df.base.swept())
 }
 
+#' @title Events object
 #' @description Events is a dataframe object that holds the indexes,
 #' corresponding types and parameters.
 #' @param results a list of one or multiple Optimizer.Result objects.
