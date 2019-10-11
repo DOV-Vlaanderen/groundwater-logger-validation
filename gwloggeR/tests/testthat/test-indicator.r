@@ -20,7 +20,7 @@ testthat::test_that('Indicator function for AO, LS and TC events produces correc
 })
 
 
-testthat::test_that('Indicator function failes on unknown type.', {
+testthat::test_that('Indicator function fails on unknown type.', {
   testthat::expect_error(indicator('AA', 5, 5))
 })
 
