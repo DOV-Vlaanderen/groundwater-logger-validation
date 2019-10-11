@@ -101,7 +101,7 @@
     <div class="page-header toc-ignore">
       <h1>Hydrostatic pressure</h1>
             
-            <h4 class="date">2019-09-25</h4>
+            <h4 class="date">2019-10-11</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/DOV-Vlaanderen/groundwater-logger-validation/blob/master/vignettes/Hydropressure.Rmd"><code>vignettes/Hydropressure.Rmd</code></a></small>
       <div class="hidden name"><code>Hydropressure.Rmd</code></div>
@@ -197,7 +197,7 @@ L(\mathbf{\theta} ; \mathbf{x}) = p(\mathbf{x} | \mathbf{\theta}) = \prod_{t=2}^
 <p>In the next step we test whether this <span class="math inline">\(M_1\)</span> model is significantly better than the <span class="math inline">\(M_0\)</span> model. We do this with the likelihood ratio (LR) test. If <span class="math inline">\(M_1\)</span> is significantly better than <span class="math inline">\(M_0\)</span> we continue with <span class="math inline">\(M_1\)</span> and add one extra AO or LS parameter which results in a <span class="math inline">\(M_2\)</span> model. This model also competes with a model in which only one TC event occurred. (This is because a TC event has two parameters <span class="math inline">\(\omega\)</span> and <span class="math inline">\(\delta\)</span>, and thus an empty model with a TC event added is automatically a <span class="math inline">\(M_2\)</span> model.) Then the best <span class="math inline">\(M_2\)</span> model is tested for significance against the best <span class="math inline">\(M_1\)</span> model, etc.</p>
 <p>Note that <span class="math inline">\(\delta\)</span> varies between <span class="math inline">\(0\)</span> and <span class="math inline">\(1\)</span>. If <span class="math inline">\(\delta = 0\)</span> we have an outlier (AO), and if <span class="math inline">\(\delta = 1\)</span> we have a level shift (LS). How do we choose between a TC with <span class="math inline">\(\delta = 0\)</span> and an AO model? Since the TC model uses two parameters to explain the same event as AO with one parameter, an AO model is more parsimonious and thus more likely. Thus, a TC will only be chosen if <span class="math inline">\(\delta\)</span> is significantly different from <span class="math inline">\(0\)</span> and <span class="math inline">\(1\)</span>.</p>
 <p>In case we have a tie between multiple <span class="math inline">\(M_m\)</span> models with <span class="math inline">\(m\)</span> parameters, then the one for which the sum of the absolute values of parameters is smallest is taken as winner. This is a poor man’s simulation of a prior on the parameters: the smaller the parameter, the more likely it is, under equal likelihood.</p>
-<p>This model selection procedure is quite involved. Programmaticaly, we define an object <code>ProgressTable</code> which keeps track of all the best models <span class="math inline">\(M_0\)</span> up till the last significant one. Besides the forward model selection, we also make use of backward selection because adding a parameter sometimes makes an existing parameter insignificant, which opens a new path of possibilities in case the insignificant parameter is removed. The best model <span class="math inline">\(M_m\)</span> is the most likely model with <span class="math inline">\(m\)</span> parameters of all the ones tested, but not necessarily the most likely of all the possible configurations. In practice, although this maxima might be local (i.e. not global), it is taken as a good compromise between computational speed and maximization accuracy.</p>
+<p>This model selection procedure is quite involved. Programmaticaly, we define an object <code>ProgressTable</code> which keeps track of all the best models <span class="math inline">\(M_0\)</span> up till the last significant one. Besides the forward model selection, we also make use of backward selection (cf. TODO) because adding a parameter sometimes makes an existing parameter insignificant, which opens a new path of possibilities in case the insignificant parameter is removed. The best model <span class="math inline">\(M_m\)</span> is the most likely model with <span class="math inline">\(m\)</span> parameters of all the ones tested, but not necessarily the most likely of all the possible configurations. In practice, although this maxima might be local (i.e. not global), it is taken as a good compromise between computational speed and maximization accuracy.</p>
 </div>
 <div id="likelihood-optimization" class="section level3">
 <h3 class="hasAnchor">
@@ -251,6 +251,7 @@ L(\mathbf{\theta} ; \mathbf{x}) = p(\mathbf{x} | \mathbf{\theta}) = \prod_{t=2}^
 <li>Use <em>a-priori</em> data more as a prior and estimate <span class="math inline">\(\epsilon(\Delta t)\)</span> with data at hand.</li>
 <li>Extract AO, LS and TC if <code>verbose = TRUE</code>.</li>
 <li>Revise the 25 observations window.</li>
+<li>Revise parameter significance test.</li>
 <li>Lower threshold based on air pressure for <code><a href="../reference/detect_outliers.html">detect_outliers()</a></code>?</li>
 </ul>
 </div>
@@ -275,6 +276,7 @@ L(\mathbf{\theta} ; \mathbf{x}) = p(\mathbf{x} | \mathbf{\theta}) = \prod_{t=2}^
   </div>
 
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
+
         <div id="tocnav">
       <h2 class="hasAnchor">
 <a href="#tocnav" class="anchor"></a>Contents</h2>
