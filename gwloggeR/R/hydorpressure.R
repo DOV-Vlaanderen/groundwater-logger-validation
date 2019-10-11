@@ -1,4 +1,5 @@
 #' @keywords internal
+#'
 hydropressure.timestamp.validation <- function(timestamps, x) {
   if (is.null(timestamps)) stop('ERROR: for hydrostatic pressure one needs to supply timestamps.')
   if (length(timestamps) != length(x)) stop('ERROR: x and timestamps must have same length.')
@@ -8,6 +9,7 @@ hydropressure.timestamp.validation <- function(timestamps, x) {
 
 #' @importFrom data.table :=
 #' @keywords internal
+#'
 apriori.hydropressure.difference.samples <- function(interval.sec) {
   # interval.sec adjustment: if > 24h, then adjust so it is divisible by 15min
   if (interval.sec > 60*60*24)
@@ -45,6 +47,11 @@ apriori.hydropressure.difference.samples <- function(interval.sec) {
   df.hp[, list('DIFF.VALUE' = diff(PRESSURE_VALUE)), by = FILE][, DIFF.VALUE]
 }
 
+
+#' @title Indicator function
+#' @description Indicator function for an event (AO, LS, etc.).
+#' @keywords internal
+#'
 indicator <- function(type = c('AO', 'LS', 'TC'), index, n) {
   if (index > n) stop('ERROR: index larger than n.')
   type <- match.arg(type)
@@ -56,7 +63,11 @@ indicator <- function(type = c('AO', 'LS', 'TC'), index, n) {
           'TC' = rep(c(0, 1), c(index - 1L, n - index + 1L))
   )
 }
-
+#' @title Decay function for x
+#' @description Decay function for TC exponential decay when the model is written
+#' in function of x only.
+#' @keywords internal
+#'
 decay <- function(index, decay, n) {
   if (index > n) stop('ERROR: index larger than n.')
   exp.decay <- c(rep(0, index - 1L), decay^(0:(n-index)))
@@ -77,6 +88,8 @@ Optimizer.Result <- function(logLval, par, types, types.significant, indexes) {
   opt
 }
 
+#' @keywords internal
+#'
 Optimizer <- function(z, types, indexes, mu, sigma2, par.init = NULL) {
   n <- length(z)
 
@@ -175,6 +188,8 @@ Optimizer <- function(z, types, indexes, mu, sigma2, par.init = NULL) {
 # tmp <- Optimizer(z = DF$vdiff, types = 'TC', indexes = 54L, mu = DF$mu, sigma2 = DF$sigma2)
 # tmp$optimize()
 
+#' @keywords internal
+#'
 ProgressTable <- function() {
 
   # index is df + 1L (since df can be 0)
@@ -239,6 +254,8 @@ ProgressTable <- function() {
   interface
 }
 
+#' @keywords internal
+#'
 sweep <- function(x, base.types = NULL, base.indexes = NULL, base.par = NULL,
                   sweep.indexes, types, mu, sigma2, pt) {
 
@@ -296,7 +313,8 @@ lrtest <- function(logL0, logL, df.diff) {
   as.vector(1-pchisq(q = -2*(logL0 - logL), df = df.diff))
 }
 
-
+#' @keywords internal
+#'
 seeker <- function(x, mu, sigma2, outlier, types){
   sweep.indexes <- which(outlier)
   pt <- ProgressTable()
@@ -368,6 +386,8 @@ Events <- function(results, index.offsets) {
   data.table::rbindlist(events)
 }
 
+#' @keywords internal
+#'
 detect <- function(x, timestamps, types = c('AO', 'LS', 'TC'), nr.tail = 25) {
   stopifnot(length(x) == length(timestamps))
   idx <- order(timestamps)
