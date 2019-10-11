@@ -233,7 +233,7 @@ The last three outlier (AO) events are obvious. But the first event is a double 
 ## Future work
 
 * Adjust model for tidal effects.
-* Better $\epsilon (\Delta t)$ estimation than current +10 % of min/max value.
+* Better $\epsilon (\Delta t)$ treshold estimation than current +10 % of min/max value.
 * Revise LR test threshold.
 * Use _a-priori_ data more as a prior and estimate $\epsilon(\Delta t)$ with data at hand.
 * Extract AO, LS and TC if `verbose = TRUE`.
