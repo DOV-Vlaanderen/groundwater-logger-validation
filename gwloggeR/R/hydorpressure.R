@@ -57,13 +57,6 @@ indicator <- function(type = c('AO', 'LS', 'TC'), index, n) {
   )
 }
 
-# indicator('AO', 1, 1)
-# indicator('TC', 1, 1)
-# indicator('AO', 2, 5)
-# indicator('LS', 1, 5)
-# indicator('TC', 5, 5)
-# indicator('AA', 5, 5)
-
 decay <- function(index, decay, n) {
   if (index > n) stop('ERROR: index larger than n.')
   exp.decay <- c(rep(0, index - 1L), decay^(0:(n-index)))
