@@ -56,7 +56,7 @@ setMethod(
       levelshifts <- Levelshifts(ls.x)
       set.version(levelshifts, attr(events, 'version'))
 
-      if (plot) plot.generic(x = x, timestamps = timestamps, df.types = events, title = title)
+      if (plot) plot.generic(x = x, timestamps = timestamps, events = events, title = title)
 
       if (verbose) levelshifts else as.vector(levelshifts)
     })

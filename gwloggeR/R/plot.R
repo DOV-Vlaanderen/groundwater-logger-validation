@@ -58,16 +58,16 @@ plot.add.tempchanges <- function(plot) {
 #   data
 # }
 
-plot.data <- function(x, timestamps = NULL, df.types) {
+plot.data <- function(x, timestamps = NULL, events) {
   n <- length(x)
   timestamps.invalid <- is.null(timestamps) | all(is.na(timestamps))
   x.axis <- if (timestamps.invalid) 1:n else timestamps
   data <- data.table::data.table(x = x.axis, y = x, outliers = FALSE, levelshifts = FALSE,
                                  tempchanges = FALSE)
-  data[df.types[type == 'AO', index], outliers := TRUE]
-  data[df.types[type == 'LS', index], levelshifts := TRUE]
+  data[events[type == 'AO', index], outliers := TRUE]
+  data[events[type == 'LS', index], levelshifts := TRUE]
 
-  df.decay <- df.types[type == 'TC', .('decay' = alpha*delta^(0:1000)), by = index][abs(decay) > 5, .(decay, .N), by = index]
+  df.decay <- events[type == 'TC', .('decay' = alpha*delta^(0:1000)), by = index][abs(decay) > 5, .(decay, .N), by = index]
   if (nrow(df.decay) > 0L) data[df.decay[, .('idx' =index:(index + N - 1L)), by = .(index, N)][, idx], tempchanges := TRUE]
 
   data <- data[!is.na(x),]
@@ -76,8 +76,8 @@ plot.data <- function(x, timestamps = NULL, df.types) {
   data
 }
 
-plot.generic <- function(x, timestamps, df.types, title) {
-  df.plot <- plot.data(x = x, timestamps = timestamps, df.types = df.types)
+plot.generic <- function(x, timestamps, events, title) {
+  df.plot <- plot.data(x = x, timestamps = timestamps, events = events)
   g <- plot.base(data = df.plot)
   g <- plot.add.levelshifts(g)
   g <- plot.add.tempchanges(g)
@@ -96,7 +96,7 @@ plot.generic <- function(x, timestamps, df.types, title) {
 
 #' df <- plot.data('timestamps' = c(seq(Sys.time(), Sys.time() - 60*60*24*7, length.out = 99), NA), # wrong timestamp order + NA
 #'                 'x' = rnorm(100),
-#'                 'df.types' = data.table::data.table('type' = c('AO', 'LS', 'AO'), 'index' = c(10, 20, 71))
+#'                 'events' = data.table::data.table('type' = c('AO', 'LS', 'AO'), 'index' = c(10, 20, 71))
 #'                 #'outliers' = rep(c(FALSE, TRUE, FALSE, TRUE, FALSE), c(9, 1, 60, 1, 29)),
 #'                 #'levelshifts' = rep(c(FALSE, TRUE, FALSE), c(20, 1, 79))
 #'                 )
