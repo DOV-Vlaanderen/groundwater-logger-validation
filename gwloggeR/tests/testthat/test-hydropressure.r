@@ -7,13 +7,19 @@ x <- c(-50, rnorm(18), 50, rnorm(19) + 50, -50, rnorm(4), rnorm(45) + 100*0.8^(0
 timestamps <- seq(as.POSIXct('2000-01-01'), length.out = length(x), by = '15 min')
 # plot(x)
 
-# saveRDS(detect(x = x, timestamps = timestamps)[order(index, type)], file = './tests/testthat/test-hydropressure-detect.rds')
-res.expected <- readRDS('test-hydropressure-detect.rds')
-res.expected
-
 testthat::test_that('Hydrostatic pressure detect function finds all the events.', {
+  # saveRDS(detect(x = x, timestamps = timestamps)[order(index, type)], file = './tests/testthat/test-hydropressure-detect.rds')
+  res.expected <- readRDS('test-hydropressure-detect.rds')
   res <- detect(x = x, timestamps = timestamps)[order(index, type)]
   testthat::expect_equal(object = res, expected = res.expected)
+})
+
+testthat::test_that('Hydrostatic pressure LS is detected.', {
+  res.expected <- rep(FALSE, length(x))
+  res.expected[c(2, 20, 40)] <- TRUE
+  res <- detect_levelshifts(x = x, timestamps = timestamps,
+                            apriori = apriori('hydrostatic pressure'))
+  testthat::expect_equal(res, res.expected)
 })
 
 # Optimization function test ---------------------------------------------------
