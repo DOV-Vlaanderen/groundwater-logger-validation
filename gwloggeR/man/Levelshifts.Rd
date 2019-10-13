@@ -2,9 +2,15 @@
 % Please edit documentation in R/levelshifts.R
 \name{Levelshifts}
 \alias{Levelshifts}
+\alias{Levelshifts.logical}
+\alias{Levelshifts.Events}
 \title{Levelshifts object}
 \usage{
-Levelshifts(vec)
+Levelshifts(x)
+
+\method{Levelshifts}{logical}(x)
+
+\method{Levelshifts}{Events}(events)
 }
 \description{
 Levelshifts object holds all the necessary information about detected levelshifts.

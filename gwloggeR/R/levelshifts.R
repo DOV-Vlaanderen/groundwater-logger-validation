@@ -1,10 +1,27 @@
 #' @title Levelshifts object
+#'
 #' @description Levelshifts object holds all the necessary information about detected levelshifts.
+#'
+#' @rdname Levelshifts
+#'
 #' @keywords internal
 #'
-Levelshifts <- function(vec) {
-  if (!is.logical(vec)) stop('ERROR: input vector must be a logical.')
-  structure(vec, 'class' = c('logical', 'Levelshifts'))
+#' @rdname Levelshifts
+Levelshifts <- function(x) {
+  UseMethod('Levelshifts', x)
+}
+
+#' @rdname Levelshifts
+Levelshifts.logical <- function(x) {
+  structure(x, 'class' = c('logical', 'Levelshifts'))
+}
+
+#' @rdname Levelshifts
+Levelshifts.Events <- function(events) {
+  x <- rep(FALSE, attr(events, 'n'))
+  x[events[type == 'LS', index]] <- TRUE
+  set.version(x, attr(events, 'version'))
+  Levelshifts(x)
 }
 
 #' @title Detect levelshifts
@@ -50,11 +67,7 @@ setMethod(
       hydropressure.timestamp.validation(timestamps, x)
 
       events <- detect(x = x, timestamps = timestamps)
-      ls.x <- rep(FALSE, length(x))
-      ls.x[events[type == 'LS', index]] <- TRUE
-
-      levelshifts <- Levelshifts(ls.x)
-      set.version(levelshifts, attr(events, 'version'))
+      levelshifts <- Levelshifts(events)
 
       if (plot) plot.generic(x = x, timestamps = timestamps, events = events, title = title)
 
