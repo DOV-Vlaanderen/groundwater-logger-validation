@@ -1,22 +1,23 @@
 #' @title Levelshifts object
-#'
 #' @description Levelshifts object holds all the necessary information about detected levelshifts.
-#'
 #' @rdname Levelshifts
-#'
 #' @keywords internal
-#'
 #' @rdname Levelshifts
+#'
 Levelshifts <- function(x) {
   UseMethod('Levelshifts', x)
 }
 
+
 #' @rdname Levelshifts
+#'
 Levelshifts.logical <- function(x) {
   structure(x, 'class' = c('logical', 'Levelshifts'))
 }
 
+
 #' @rdname Levelshifts
+#'
 Levelshifts.Events <- function(events) {
   x <- rep(FALSE, attr(events, 'n'))
   x[events[type == 'LS', index]] <- TRUE
