@@ -22,6 +22,15 @@ testthat::test_that('Hydrostatic pressure LS is detected.', {
   testthat::expect_equal(res, res.expected)
 })
 
+testthat::test_that('Hydrostatic pressure TC is detected.', {
+  res.expected <- rep(FALSE, length(x))
+  res.expected[45] <- TRUE
+  res <- detect_temporalchanges(x = x, timestamps = timestamps,
+                                apriori = apriori('hydrostatic pressure'))
+  testthat::expect_equal(res, res.expected)
+})
+
+
 # Optimization function test ---------------------------------------------------
 
 testthat::test_that("Optimizing 1 point on AO shouldn't have any effect on parameters.", {
