@@ -102,11 +102,11 @@ Optimizer <- function(z, types, indexes, mu, sigma2, par.init = NULL) {
   if (length(types) != length(indexes))
     stop('ERROR: types and indexes must have equal length.')
 
-  if (!(n == length(mu) || length(mu) == 1L))
-    stop('ERROR: z and mu must have same length or length(mu) == 1.')
+  if (!(n == length(mu)))
+    stop('ERROR: z and mu must have same length.')
 
-  if (!(n == length(sigma2) || length(sigma2) == 1L))
-    stop('ERROR: z and sigma2 must have same length or length(sigma2) == 1.')
+  if (!(n == length(sigma2)))
+    stop('ERROR: z and sigma2 must have same length.')
 
   # M is the indicator matrix according to type
   # mapply costs 35 mus, while indicator 15 mus for n = 1000

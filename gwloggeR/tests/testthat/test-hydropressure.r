@@ -25,7 +25,8 @@ testthat::test_that("Optimizing 1 point on AO shouldn't have any effect on param
 })
 
 testthat::test_that("Optimizing without types shoudn't fail.", {
-  opt <- Optimizer(z = rnorm(1000), types = NULL, indexes = NULL, mu = 0, sigma2 = 1)
+  opt <- Optimizer(z = rnorm(1000), types = NULL, indexes = NULL,
+                   mu = rep(0, 1000), sigma2 = rep(1, 1000))
   res <- opt$optimize()
   testthat::expect_length(attr(res, 'par'), n = 0)
 })
