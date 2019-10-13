@@ -425,9 +425,6 @@ detect <- function(x, timestamps, types = c('AO', 'LS', 'TC'), nr.tail = 25) {
                     'end' = pmin(ends[length(ends)] + nr.tail, nrow(dif))),
                by = traverse.id]
 
-  empty.df <- data.table::data.table('type' = character(), 'index' = integer(),
-                                     'alpha' = numeric(), 'delta' = numeric())
-
   results <- mapply(start = drle[, start], end = drle[, end], FUN = function(start, end) {
     df <- dif[start:end, ]
     seeker(x = df$vdiff, outlier = df$outlier, types = types, mu = df$mu, sigma2 = df$sigma2)
