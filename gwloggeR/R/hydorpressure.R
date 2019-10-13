@@ -385,7 +385,7 @@ Events <- function(results, index.offsets, n) {
     events <- data.table::data.table('type' = character(), 'index' = integer(),
                                      'alpha' = numeric(), 'delta' = numeric())
   }
-  structure(events, 'class' = c(class(events), 'Events'), 'n' = n)
+  structure(events, 'class' = c('Events', class(events)), 'n' = n)
 }
 
 
