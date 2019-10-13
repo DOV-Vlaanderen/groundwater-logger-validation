@@ -254,7 +254,7 @@ ProgressTable <- function() {
 
 #' @keywords internal
 #'
-sweep <- function(x, base.types = NULL, base.indexes = NULL, base.par = NULL,
+sweep <- function(dx, base.types = NULL, base.indexes = NULL, base.par = NULL,
                   sweep.indexes, types, mu, sigma2, pt) {
 
   sweeper <- function(type, index, base.types, base.indexes, base.par) {
@@ -269,7 +269,7 @@ sweep <- function(x, base.types = NULL, base.indexes = NULL, base.par = NULL,
     if (pt$exists(types = types, indexes = indexes)) return(NULL)
 
     # Optimize
-    O <- Optimizer(dx = x, mu = mu, sigma2 = sigma2,
+    O <- Optimizer(dx = dx, mu = mu, sigma2 = sigma2,
                    types = types,
                    indexes = indexes)
     O$set.par.init(c(base.par, if (type == 'TC') c(0, 0.7) else 0))
@@ -315,11 +315,11 @@ lrtest <- function(logL0, logL, df.diff) {
 
 #' @keywords internal
 #'
-seeker <- function(x, mu, sigma2, outlier, types){
+seeker <- function(dx, mu, sigma2, outlier, types){
   sweep.indexes <- which(outlier)
   pt <- ProgressTable()
-  pt$update(Optimizer(dx = x, types = NULL, indexes = NULL, mu = mu, sigma2 = sigma2)$optimize())
-  invisible(rapply(object = sweep(x, mu = mu, sigma2 = sigma2,
+  pt$update(Optimizer(dx = dx, types = NULL, indexes = NULL, mu = mu, sigma2 = sigma2)$optimize())
+  invisible(rapply(object = sweep(dx, mu = mu, sigma2 = sigma2,
                                   types = types, sweep.indexes = sweep.indexes,
                                   pt = pt),
                    f = pt$update, classes = 'Optimizer.Result'))
@@ -332,7 +332,7 @@ seeker <- function(x, mu, sigma2, outlier, types){
     base <- pt$get.best.result(base.df)
     pt$set.df.base.swept(base.df)
 
-    invisible(rapply(object = sweep(x = x,
+    invisible(rapply(object = sweep(dx = dx,
                                     base.types = attr(base, 'types'),
                                     base.indexes = attr(base, 'indexes'),
                                     base.par = attr(base, 'par'),
@@ -427,7 +427,7 @@ detect <- function(x, timestamps, types = c('AO', 'LS', 'TC'), nr.tail = 25) {
 
   results <- mapply(start = drle[, start], end = drle[, end], FUN = function(start, end) {
     df <- dif[start:end, ]
-    seeker(x = df$vdiff, outlier = df$outlier, types = types, mu = df$mu, sigma2 = df$sigma2)
+    seeker(dx = df$vdiff, outlier = df$outlier, types = types, mu = df$mu, sigma2 = df$sigma2)
   }, SIMPLIFY = FALSE)
 
   events <- Events(results, drle[, start], n = length(x))
