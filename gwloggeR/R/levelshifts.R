@@ -12,7 +12,7 @@ Levelshifts <- function(x) {
 #' @rdname Levelshifts
 #'
 Levelshifts.logical <- function(x) {
-  structure(x, 'class' = c('logical', 'Levelshifts'))
+  structure(x, 'class' = c('Levelshifts', 'logical'))
 }
 
 
