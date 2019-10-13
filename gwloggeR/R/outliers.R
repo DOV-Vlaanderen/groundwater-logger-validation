@@ -6,15 +6,33 @@ CONST.ALPHA <- 1/2000
 #' @title Outliers object
 #' @description Outliers object holds all the necessary information about detected outiers.
 #' @keywords internal
+#' @rdname Outliers
+#'
+Outliers <- function(x, ...) {
+  UseMethod('Outliers', x)
+}
 
-Outliers <- function(x.rejects, x.mean, x.sd,
-                     sigma.reject, alpha, type,
-                     fun.density, cutpoints) {
-  if (!is.logical(x.rejects)) stop('ERROR: input vector must be a logical.')
-  structure(x.rejects, "class" = c("logical", "Outliers"),
+
+#' @rdname Outliers
+#'
+Outliers.logical <- function(x.rejects, x.mean, x.sd,
+                             sigma.reject, alpha, type,
+                             fun.density, cutpoints) {
+  structure(x.rejects, "class" = c("Outliers", "logical"),
             "x.mean" = x.mean, "x.sd" = x.sd,
             "sigma.reject" = sigma.reject, "alpha" = alpha, "type" = type,
             "fun.density" = fun.density, "cutpoints" = cutpoints)
+}
+
+
+#' @rdname Outliers
+#'
+Outliers.Events <- function(events) {
+  x <- rep(FALSE, attr(events, 'n'))
+  x[events[type == 'AO', index]] <- TRUE
+  set.version(x, attr(events, 'version'))
+  Outliers(x, x.mean = NULL, x.sd = NULL, alpha = NULL, sigma.reject = NULL,
+           type = "two.sided", fun.density = NULL, cutpoints = NULL)
 }
 
 
@@ -120,12 +138,7 @@ setMethod(
       hydropressure.timestamp.validation(timestamps, x)
 
       events <- detect(x = x, timestamps = timestamps)
-      rejects.x <- rep(FALSE, length(x))
-      rejects.x[events[type == 'AO', index]] <- TRUE
-
-      outliers <- Outliers(rejects.x, x.mean = NULL, x.sd = NULL, alpha = NULL, sigma.reject = NULL,
-                           type = "two.sided", fun.density = NULL, cutpoints = NULL)
-      set.version(outliers, attr(events, 'version'))
+      outliers <- Outliers(events)
 
       if (plot) plot.generic(x = x, timestamps = timestamps, events = events, title = title)
 

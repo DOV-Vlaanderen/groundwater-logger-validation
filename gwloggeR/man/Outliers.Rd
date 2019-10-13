@@ -2,10 +2,16 @@
 % Please edit documentation in R/outliers.R
 \name{Outliers}
 \alias{Outliers}
+\alias{Outliers.logical}
+\alias{Outliers.Events}
 \title{Outliers object}
 \usage{
-Outliers(x.rejects, x.mean, x.sd, sigma.reject, alpha, type, fun.density,
-  cutpoints)
+Outliers(x, ...)
+
+\method{Outliers}{logical}(x.rejects, x.mean, x.sd, sigma.reject, alpha,
+  type, fun.density, cutpoints)
+
+\method{Outliers}{Events}(events)
 }
 \description{
 Outliers object holds all the necessary information about detected outiers.
