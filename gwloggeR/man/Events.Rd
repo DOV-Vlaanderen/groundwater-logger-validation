@@ -4,12 +4,14 @@
 \alias{Events}
 \title{Events object}
 \usage{
-Events(results, index.offsets)
+Events(results, index.offsets, n)
 }
 \arguments{
 \item{results}{a list of one or multiple Optimizer.Result objects.}
 
 \item{index.offsets}{starting index of window based on original data.}
+
+\item{n}{length of the original x vector}
 }
 \description{
 Events is a dataframe object that holds the indexes,

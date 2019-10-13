@@ -356,20 +356,16 @@ seeker <- function(x, mu, sigma2, outlier, types){
 #' corresponding types and parameters. The function is vectorized.
 #' @param results a list of one or multiple Optimizer.Result objects.
 #' @param index.offsets starting index of window based on original data.
+#' @param n length of the original x vector
 #' @keywords internal
 #'
-Events <- function(results, index.offsets) {
+Events <- function(results, index.offsets, n) {
 
   # Results are local windows, so index.offsets of windows are needed to
   # determine the global index of the event.
 
   if (length(results) != length(index.offsets))
     stop('ERROR: results and index.offsets must match.')
-
-  if (length(results) == 0L) return (
-    data.table::data.table('type' = character(), 'index' = integer(),
-                           'alpha' = numeric(), 'delta' = numeric())
-  )
 
   events <- mapply(results, index.offsets, FUN = function(result, index.offset) {
     type.par.nr <- ifelse(attr(result, 'types') == 'TC', 2L, 1L)
@@ -384,7 +380,12 @@ Events <- function(results, index.offsets) {
                'delta' = par.delta)
   }, SIMPLIFY = FALSE)
 
-  data.table::rbindlist(events)
+  events <- data.table::rbindlist(events)
+  if (nrow(events) == 0L) {
+    events <- data.table::data.table('type' = character(), 'index' = integer(),
+                                     'alpha' = numeric(), 'delta' = numeric())
+  }
+  structure(events, 'class' = c(class(events), 'Events'), 'n' = n)
 }
 
 
@@ -432,7 +433,7 @@ detect <- function(x, timestamps, types = c('AO', 'LS', 'TC'), nr.tail = 25) {
     seeker(x = df$vdiff, outlier = df$outlier, types = types, mu = df$mu, sigma2 = df$sigma2)
   }, SIMPLIFY = FALSE)
 
-  events <- Events(results, drle[, start])
+  events <- Events(results, drle[, start], n = length(x))
   if (nrow(events) != 0L) events[, index := idx[index]] # back to original idx
 
   set.version(events, Version('0.06'))
