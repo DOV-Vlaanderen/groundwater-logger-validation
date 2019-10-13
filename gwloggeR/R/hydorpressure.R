@@ -397,23 +397,23 @@ detect <- function(x, timestamps, types = c('AO', 'LS', 'TC'), nr.tail = 25) {
   x <- x[idx]
   timestamps <- timestamps[idx]
 
-  tsdiff <- as.numeric(diff(timestamps), units = 'secs')
-  vdiff <- diff(x)
-  ftab <- table(tsdiff)
+  dt <- as.numeric(diff(timestamps), units = 'secs')
+  dx <- diff(x)
+  ftab <- table(dt)
   map <- mapply(interval.sec = as.numeric(names(ftab)), n = ftab,
                 FUN = function(interval.sec, n) {
                   dens <- apriori.hydropressure.difference.samples(interval.sec)
                   tr <- range(dens)
-                  list('tsdiff' = interval.sec,
+                  list('dt' = interval.sec,
                        'lower.bound' = tr[1], 'upper.bound' = tr[2],
                        'mu' = mean(dens), 'sigma2' = var(dens),
                        'n.dens' = length(dens),
                        'c' = c.norm.optimal(alpha = 1/2000, n = n, type = 'two.sided'))
                 }, SIMPLIFY = FALSE)
   map <- data.table::rbindlist(map)
-  dif <- data.table::data.table('tsdiff' = tsdiff, 'vdiff' = vdiff)
+  dif <- data.table::data.table('dt' = dt, 'dx' = dx)
   dif <- merge(dif, map, all.x = TRUE, sort = FALSE)
-  dif[, 'outlier' := abs(vdiff) > pmax(abs(lower.bound), abs(upper.bound))*1.2]
+  dif[, 'outlier' := abs(dx) > pmax(abs(lower.bound), abs(upper.bound))*1.2]
 
   drle <- data.table::as.data.table(unclass(rle(dif$outlier)))
   drle[, 'ends' := cumsum(lengths)]
@@ -427,7 +427,7 @@ detect <- function(x, timestamps, types = c('AO', 'LS', 'TC'), nr.tail = 25) {
 
   results <- mapply(start = drle[, start], end = drle[, end], FUN = function(start, end) {
     df <- dif[start:end, ]
-    seeker(dx = df$vdiff, outlier = df$outlier, types = types, mu = df$mu, sigma2 = df$sigma2)
+    seeker(dx = df$dx, outlier = df$outlier, types = types, mu = df$mu, sigma2 = df$sigma2)
   }, SIMPLIFY = FALSE)
 
   events <- Events(results, drle[, start], n = length(x))
