@@ -7,6 +7,7 @@ hydropressure.timestamp.validation <- function(timestamps, x) {
   assert.notna.timestamp(timestamps)
 }
 
+
 #' @importFrom data.table :=
 #' @keywords internal
 #'
@@ -63,6 +64,8 @@ indicator <- function(type = c('AO', 'LS', 'TC'), index, n) {
           'TC' = rep(c(0, 1), c(index - 1L, n - index + 1L))
   )
 }
+
+
 #' @title Decay function for x
 #' @description Decay function for TC exponential decay when the model is written
 #' in function of x only.
@@ -74,19 +77,22 @@ decay <- function(index, decay, n) {
   exp.decay - c(0, exp.decay[-n])
 }
 
+
 # Dit is z_t - z_t-1 - ... = w_t ~ epsilon distributed
 logL.base <- function(w, mu, sigma2) {
   -sum((w - mu)^2/(2*sigma2))
 }
 
-Optimizer.Result <- function(logLval, par, types, types.significant, indexes) {
+
+Optimizer.Result <- function(logLval, par, types, types.significant, indexes, optim) {
   opt <- structure(round(logLval, digits = 4),
                    'par' = round(par, digits = 3),
                    'types' = types, 'types.significant' = types.significant,
-                   'indexes' = indexes)
+                   'indexes' = indexes, 'optim' = optim)
   class(opt) <- 'Optimizer.Result'
   opt
 }
+
 
 #' @keywords internal
 #'
@@ -171,22 +177,14 @@ Optimizer <- function(z, types, indexes, mu, sigma2, par.init = NULL) {
     Optimizer.Result(logLval = round(opt$value, digits = 4),
                      par = round(opt$par, digits = 3),
                      types = types, types.significant = types.significant(opt$par),
-                     indexes = indexes)
+                     indexes = indexes,
+                     optim = opt)
   }
 
   list('optimize' = optimize,
        'set.par.init' = set.par.init)
 }
 
-#tmp <- Optimizer(z = rnorm(1), types = c('AO'), indexes = 1, mu = 0, sigma2 = 1)
-#tmp <- Optimizer(z = rnorm(1000), types = NULL, indexes = NULL, mu = 0, sigma2 = 1)
-#tmp <- Optimizer(z = rnorm(1000), types = c('AO'), indexes = 1, mu = 0, sigma2 = 1)
-#tmp <- Optimizer(z = rnorm(1000), types = c('AO', 'LS'), indexes = c(1, 3), mu = 0, sigma2 = 1)
-#tmp <- Optimizer(z = rnorm(1000), types = c('AO', 'TC', 'LS'), indexes = c(1, 2, 3), mu = 0, sigma2 = 100)
-# tmp <- Optimizer(z = X, types = 'TC', indexes = 26L, mu = MU, sigma2 = SIGMA2)
-# tmp <- Optimizer(z = X, types = c('LS', 'TC'), indexes = c(26L, 26L), mu = MU, sigma2 = SIGMA2)
-# tmp <- Optimizer(z = DF$vdiff, types = 'TC', indexes = 54L, mu = DF$mu, sigma2 = DF$sigma2)
-# tmp$optimize()
 
 #' @keywords internal
 #'
@@ -254,6 +252,7 @@ ProgressTable <- function() {
   interface
 }
 
+
 #' @keywords internal
 #'
 sweep <- function(x, base.types = NULL, base.indexes = NULL, base.par = NULL,
@@ -309,9 +308,11 @@ sweep <- function(x, base.types = NULL, base.indexes = NULL, base.par = NULL,
          SIMPLIFY = FALSE)
 }
 
+
 lrtest <- function(logL0, logL, df.diff) {
   as.vector(1-pchisq(q = -2*(logL0 - logL), df = df.diff))
 }
+
 
 #' @keywords internal
 #'
@@ -350,6 +351,7 @@ seeker <- function(x, mu, sigma2, outlier, types){
   pt$get.best.result(pt$get.df.base.swept())
 }
 
+
 #' @title Events object
 #' @description Events is a dataframe object that holds the indexes,
 #' corresponding types and parameters. The function is vectorized.
@@ -385,6 +387,7 @@ Events <- function(results, index.offsets) {
 
   data.table::rbindlist(events)
 }
+
 
 #' @keywords internal
 #'
