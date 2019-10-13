@@ -397,10 +397,11 @@ detect <- function(x, timestamps, types = c('AO', 'LS', 'TC'), nr.tail = 25) {
   x <- x[idx]
   timestamps <- timestamps[idx]
 
-  dt <- as.numeric(diff(timestamps), units = 'secs')
-  dx <- diff(x)
-  ftab <- table(dt)
-  map <- mapply(interval.sec = as.numeric(names(ftab)), n = ftab,
+  dif <- data.table::data.table('dt' = as.numeric(diff(timestamps), units = 'secs'),
+                                'dx' = diff(x))
+
+  freq <- dif[, .N, by = dt]
+  map <- mapply(interval.sec = freq$dt, n = freq$N,
                 FUN = function(interval.sec, n) {
                   dens <- apriori.hydropressure.difference.samples(interval.sec)
                   tr <- range(dens)
@@ -411,8 +412,8 @@ detect <- function(x, timestamps, types = c('AO', 'LS', 'TC'), nr.tail = 25) {
                        'c' = c.norm.optimal(alpha = 1/2000, n = n, type = 'two.sided'))
                 }, SIMPLIFY = FALSE)
   map <- data.table::rbindlist(map)
-  dif <- data.table::data.table('dt' = dt, 'dx' = dx)
-  dif <- merge(dif, map, all.x = TRUE, sort = FALSE)
+
+  dif <- merge(dif, map, by = 'dt', all.x = TRUE, sort = FALSE)
   dif[, 'outlier' := abs(dx) > pmax(abs(lower.bound), abs(upper.bound))*1.2]
 
   drle <- data.table::as.data.table(unclass(rle(dif$outlier)))
