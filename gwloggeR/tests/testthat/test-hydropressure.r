@@ -19,18 +19,18 @@ testthat::test_that('Hydrostatic pressure detect function finds all the events.'
 # Optimization function test ---------------------------------------------------
 
 testthat::test_that("Optimizing 1 point on AO shouldn't have any effect on parameters.", {
-  opt <- Optimizer(z = rnorm(1), types = c('AO'), indexes = 1, mu = 0, sigma2 = 1)
+  opt <- Optimizer(dx = rnorm(1), types = c('AO'), indexes = 1, mu = 0, sigma2 = 1)
   res <- opt$optimize()
   testthat::expect_equal(attr(res,"optim")$counts, expected = c('function' = 1, 'gradient' = 1))
 })
 
 testthat::test_that("Optimizing without types shoudn't fail.", {
-  opt <- Optimizer(z = rnorm(1000), types = NULL, indexes = NULL,
+  opt <- Optimizer(dx = rnorm(1000), types = NULL, indexes = NULL,
                    mu = rep(0, 1000), sigma2 = rep(1, 1000))
   res <- opt$optimize()
   testthat::expect_length(attr(res, 'par'), n = 0)
 })
 
-# Optimizer(z = rnorm(1000), types = c('AO'), indexes = 1, mu = 0, sigma2 = 1)$optimize()
-# Optimizer(z = rnorm(1000), types = c('AO', 'LS'), indexes = c(1, 3), mu = 0, sigma2 = 1)$optimize()
-# Optimizer(z = rnorm(1000), types = c('AO', 'TC', 'LS'), indexes = c(1, 2, 3), mu = 0, sigma2 = 100)$optimize()
+# Optimizer(dx = rnorm(1000), types = c('AO'), indexes = 1, mu = 0, sigma2 = 1)$optimize()
+# Optimizer(dx = rnorm(1000), types = c('AO', 'LS'), indexes = c(1, 3), mu = 0, sigma2 = 1)$optimize()
+# Optimizer(dx = rnorm(1000), types = c('AO', 'TC', 'LS'), indexes = c(1, 2, 3), mu = 0, sigma2 = 100)$optimize()

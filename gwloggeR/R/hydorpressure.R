@@ -78,9 +78,8 @@ decay <- function(index, decay, n) {
 }
 
 
-# Dit is z_t - z_t-1 - ... = w_t ~ epsilon distributed
-logL.base <- function(w, mu, sigma2) {
-  -sum((w - mu)^2/(2*sigma2))
+logL.base <- function(dz, mu, sigma2) {
+  -sum((dz - mu)^2/(2*sigma2))
 }
 
 
@@ -96,17 +95,17 @@ Optimizer.Result <- function(logLval, par, types, types.significant, indexes, op
 
 #' @keywords internal
 #'
-Optimizer <- function(z, types, indexes, mu, sigma2, par.init = NULL) {
-  n <- length(z)
+Optimizer <- function(dx, types, indexes, mu, sigma2, par.init = NULL) {
+  n <- length(dx)
 
   if (length(types) != length(indexes))
     stop('ERROR: types and indexes must have equal length.')
 
   if (!(n == length(mu)))
-    stop('ERROR: z and mu must have same length.')
+    stop('ERROR: dx and mu must have same length.')
 
   if (!(n == length(sigma2)))
-    stop('ERROR: z and sigma2 must have same length.')
+    stop('ERROR: dx and sigma2 must have same length.')
 
   # M is the indicator matrix according to type
   # mapply costs 35 mus, while indicator 15 mus for n = 1000
@@ -119,7 +118,7 @@ Optimizer <- function(z, types, indexes, mu, sigma2, par.init = NULL) {
 
   if (is.null(par.init)) {
     par.init <- rep(0, sum(type.par.nr))
-    par.init[par.idx.alpha] <- z[indexes]
+    par.init[par.idx.alpha] <- dx[indexes]
     par.init[par.idx.delta] <- 0.7
   }
 
@@ -136,7 +135,7 @@ Optimizer <- function(z, types, indexes, mu, sigma2, par.init = NULL) {
 
   logL <- function(par) {
 
-    if (length(types) == 0L) return(logL.base(w = z, mu = mu, sigma2 = sigma2))
+    if (length(types) == 0L) return(logL.base(dz = dx, mu = mu, sigma2 = sigma2))
 
     # matrix multiplication columnwise with a vector
     # https://stackoverflow.com/a/32364355/1548942
@@ -148,7 +147,7 @@ Optimizer <- function(z, types, indexes, mu, sigma2, par.init = NULL) {
       M[, type.idx.tc] <- M[, type.idx.tc] * decays
     }
 
-    logL.base(w = z - rowSums(M), mu = mu, sigma2 = sigma2)
+    logL.base(dz = dx - rowSums(M), mu = mu, sigma2 = sigma2)
   }
 
   types.significant <- function(par, p.val.trehold = 1e-5) {
@@ -270,7 +269,7 @@ sweep <- function(x, base.types = NULL, base.indexes = NULL, base.par = NULL,
     if (pt$exists(types = types, indexes = indexes)) return(NULL)
 
     # Optimize
-    O <- Optimizer(z = x, mu = mu, sigma2 = sigma2,
+    O <- Optimizer(dx = x, mu = mu, sigma2 = sigma2,
                    types = types,
                    indexes = indexes)
     O$set.par.init(c(base.par, if (type == 'TC') c(0, 0.7) else 0))
@@ -319,7 +318,7 @@ lrtest <- function(logL0, logL, df.diff) {
 seeker <- function(x, mu, sigma2, outlier, types){
   sweep.indexes <- which(outlier)
   pt <- ProgressTable()
-  pt$update(Optimizer(z = x, types = NULL, indexes = NULL, mu = mu, sigma2 = sigma2)$optimize())
+  pt$update(Optimizer(dx = x, types = NULL, indexes = NULL, mu = mu, sigma2 = sigma2)$optimize())
   invisible(rapply(object = sweep(x, mu = mu, sigma2 = sigma2,
                                   types = types, sweep.indexes = sweep.indexes,
                                   pt = pt),
