@@ -119,15 +119,15 @@ setMethod(
 
       hydropressure.timestamp.validation(timestamps, x)
 
-      det <- detect(x = x, timestamps = timestamps)
+      events <- detect(x = x, timestamps = timestamps)
       rejects.x <- rep(FALSE, length(x))
-      rejects.x[det[type == 'AO', index]] <- TRUE
+      rejects.x[events[type == 'AO', index]] <- TRUE
 
       outliers <- Outliers(rejects.x, x.mean = NULL, x.sd = NULL, alpha = NULL, sigma.reject = NULL,
                            type = "two.sided", fun.density = NULL, cutpoints = NULL)
-      set.version(outliers, attr(det, 'version'))
+      set.version(outliers, attr(events, 'version'))
 
-      if (plot) plot.generic(x = x, timestamps = timestamps, df.types = det, title = title)
+      if (plot) plot.generic(x = x, timestamps = timestamps, df.types = events, title = title)
 
       if (verbose) outliers else as.vector(outliers)
     })

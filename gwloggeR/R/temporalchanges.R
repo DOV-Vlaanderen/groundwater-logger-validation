@@ -49,14 +49,14 @@ setMethod(
 
       hydropressure.timestamp.validation(timestamps, x)
 
-      det <- detect(x = x, timestamps = timestamps)
+      events <- detect(x = x, timestamps = timestamps)
       ls.x <- rep(FALSE, length(x))
-      ls.x[det[type == 'TC', index]] <- TRUE
+      ls.x[events[type == 'TC', index]] <- TRUE
 
       temporalchanges <- Temporalchanges(ls.x)
-      set.version(temporalchanges, attr(det, 'version'))
+      set.version(temporalchanges, attr(events, 'version'))
 
-      if (plot) plot.generic(x = x, timestamps = timestamps, df.types = det, title = title)
+      if (plot) plot.generic(x = x, timestamps = timestamps, df.types = events, title = title)
 
       if (verbose) temporalchanges else as.vector(temporalchanges)
     })
