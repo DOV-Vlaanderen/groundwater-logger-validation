@@ -2,9 +2,15 @@
 % Please edit documentation in R/temporalchanges.R
 \name{Temporalchanges}
 \alias{Temporalchanges}
+\alias{Temporalchanges.logical}
+\alias{Temporalchanges.Events}
 \title{Temporalchanges object}
 \usage{
-Temporalchanges(vec)
+Temporalchanges(x)
+
+\method{Temporalchanges}{logical}(x)
+
+\method{Temporalchanges}{Events}(events)
 }
 \description{
 Temporalchanges object holds all the necessary information about detected temporal changes.

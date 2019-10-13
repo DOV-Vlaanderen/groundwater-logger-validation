@@ -1,11 +1,29 @@
 #' @title Temporalchanges object
 #' @description Temporalchanges object holds all the necessary information about detected temporal changes.
 #' @keywords internal
+#' @rdname Temporalchanges
 #'
-Temporalchanges <- function(vec) {
-  if (!is.logical(vec)) stop('ERROR: input vector must be a logical.')
-  structure(vec, 'class' = c('logical', 'Temporalchanges'))
+Temporalchanges <- function(x) {
+  UseMethod('Temporalchanges', x)
 }
+
+
+#' @rdname Temporalchanges
+#'
+Temporalchanges.logical <- function(x) {
+  structure(x, 'class' = c('Temporalchanges', 'logical'))
+}
+
+
+#' @rdname Temporalchanges
+#'
+Temporalchanges.Events <- function(events) {
+  x <- rep(FALSE, attr(events, 'n'))
+  x[events[type == 'TC', index]] <- TRUE
+  set.version(x, attr(events, 'version'))
+  Temporalchanges(x)
+}
+
 
 #' @title Detect Temporal changes
 #' @description
@@ -50,11 +68,7 @@ setMethod(
       hydropressure.timestamp.validation(timestamps, x)
 
       events <- detect(x = x, timestamps = timestamps)
-      ls.x <- rep(FALSE, length(x))
-      ls.x[events[type == 'TC', index]] <- TRUE
-
-      temporalchanges <- Temporalchanges(ls.x)
-      set.version(temporalchanges, attr(events, 'version'))
+      temporalchanges <- Temporalchanges(events)
 
       if (plot) plot.generic(x = x, timestamps = timestamps, events = events, title = title)
 
@@ -62,4 +76,4 @@ setMethod(
     })
 
     NULL
-  })
+})
