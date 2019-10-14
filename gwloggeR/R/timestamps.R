@@ -18,6 +18,14 @@ assert.notna.timestamp <- function(timestamps) {
   if (any(is.na(timestamps))) stop('ERROR: timestamps may not be NA.')
 }
 
+assert.noduplicates.timestamp <- function(timestamps) {
+  if (sum(duplicated(timestamps)) > 0L) stop('ERROR: duplicate timestamps detected.')
+}
+
+assert.ordered.timestamps <- function(timestamps) {
+  if (!identical(sort(timestamps), timestamps)) stop('ERROR: timestamps must be ordered.')
+}
+
 validate.timestamp <- function(timestamps) {
   nr.na <- sum(is.na(timestamps))
   if (nr.na > 0L)
