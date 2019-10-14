@@ -1,7 +1,7 @@
 #' @title Detect duplicate timestamps
 #' @description
 #' This function marks duplicate timestamps in the input vector.
-#' @param ts timestamp vector of type Date or POSIXct
+#' @param timestamps timestamp vector of type Date or POSIXct
 #' @return Logical vector with same length as x, specifying TRUE for a duplicate value.
 #' @examples
 #' # In case of a vector:
@@ -12,8 +12,7 @@
 #' @export
 #' @rdname detect_duplicates
 
-detect_duplicates <- function(ts) {
-  if(!(inherits(ts, "POSIXct") | inherits(ts, "Date")))
-    stop('ERROR: ts must either be POSIXct or Date.')
-  duplicated(ts)
+detect_duplicates <- function(timestamps) {
+  assert.timestamp(timestamps)
+  duplicated(timestamps)
 }

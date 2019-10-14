@@ -4,10 +4,10 @@
 \alias{detect_duplicates}
 \title{Detect duplicate timestamps}
 \usage{
-detect_duplicates(ts)
+detect_duplicates(timestamps)
 }
 \arguments{
-\item{ts}{timestamp vector of type Date or POSIXct}
+\item{timestamps}{timestamp vector of type Date or POSIXct}
 }
 \value{
 Logical vector with same length as x, specifying TRUE for a duplicate value.
