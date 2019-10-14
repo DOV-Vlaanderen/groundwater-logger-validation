@@ -35,8 +35,7 @@ In case there are duplicates and NA values, only warnings will be raised
 which might suggest that something is wrong with x.
 For hydrostatic pressure, timestamps are important. Therefore an error
 is raised if timestamps are not supplied, or if any of the timestamps
-are NA.
-Note that in any case, timestamps do not have to be ordered.}
+are NA or duplicates.}
 }
 \value{
 Logical vector with same length as x, specifying TRUE for an outlier.

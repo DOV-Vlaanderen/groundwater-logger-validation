@@ -51,8 +51,7 @@ Outliers.Events <- function(events) {
 #' which might suggest that something is wrong with x.
 #' For hydrostatic pressure, timestamps are important. Therefore an error
 #' is raised if timestamps are not supplied, or if any of the timestamps
-#' are NA.
-#' Note that in any case, timestamps do not have to be ordered.
+#' are NA or duplicates.
 #' @return Logical vector with same length as x, specifying TRUE for an outlier.
 #' @references
 #' Chen, C. e.a., Joint Estimation of Model Parameters and Outlier Effects in Time Series, 1993.
