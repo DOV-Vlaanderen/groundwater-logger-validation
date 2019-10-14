@@ -62,7 +62,7 @@ detect_outliers(cars$dist)
 
 # Or use the tidyverse approach:
 library(magrittr)
-cars \%>\% dplyr::mutate("outlier" = detect_outliers(dist))
+cars[1:10,] \%>\% dplyr::mutate("outlier" = detect_outliers(dist))
 
 }
 \references{

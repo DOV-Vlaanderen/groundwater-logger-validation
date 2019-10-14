@@ -66,7 +66,7 @@ Outliers.Events <- function(events) {
 #'
 #' # Or use the tidyverse approach:
 #' library(magrittr)
-#' cars %>% dplyr::mutate("outlier" = detect_outliers(dist))
+#' cars[1:10,] %>% dplyr::mutate("outlier" = detect_outliers(dist))
 #'
 #' @importFrom methods setGeneric
 #' @export
