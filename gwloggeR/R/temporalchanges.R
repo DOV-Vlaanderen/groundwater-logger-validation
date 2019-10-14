@@ -19,7 +19,10 @@ Temporalchanges.logical <- function(x) {
 #'
 Temporalchanges.Events <- function(events) {
   x <- rep(FALSE, attr(events, 'n'))
-  x[events[type == 'TC', index]] <- TRUE
+  df.decay <- events[type == 'TC', .('decay' = alpha*delta^(0:1000)), by = index]
+  df.decay <- df.decay[abs(decay) > 5, .(decay, .N), by = index]
+  idx <- if (nrow(df.decay) > 0L) df.decay[, .('idx' = index:(index + N - 1L)), by = .(index, N)][idx <= length(x) , idx]
+  x[idx] <- TRUE
   set.version(x, attr(events, 'version'))
   Temporalchanges(x)
 }

@@ -24,7 +24,7 @@ testthat::test_that('Hydrostatic pressure LS is detected.', {
 
 testthat::test_that('Hydrostatic pressure TC is detected.', {
   res.expected <- rep(FALSE, length(x))
-  res.expected[45] <- TRUE
+  res.expected[45:58] <- TRUE
   res <- detect_temporalchanges(x = x, timestamps = timestamps,
                                 apriori = apriori('hydrostatic pressure'))
   testthat::expect_equal(res, res.expected)
