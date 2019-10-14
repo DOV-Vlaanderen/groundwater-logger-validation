@@ -54,15 +54,16 @@ median and MAD as described in Leys, 2013.
 
 \examples{
 # In case of a vector:
-x <- c(1:10, 100)
+x <- c(1:9, 100)
 detect_outliers(x)
 
 # In case of a dataframe, select the column:
-detect_outliers(cars$dist)
+df <- data.frame('x' = x)
+detect_outliers(df$x)
 
 # Or use the tidyverse approach:
 library(magrittr)
-cars[1:10,] \%>\% dplyr::mutate("outlier" = detect_outliers(dist))
+df \%>\% dplyr::mutate("outlier" = detect_outliers(x))
 
 }
 \references{
