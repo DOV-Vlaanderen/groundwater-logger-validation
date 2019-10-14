@@ -196,8 +196,7 @@ In case there are duplicates and NA values, only warnings will be raised
 which might suggest that something is wrong with x.
 For hydrostatic pressure, timestamps are important. Therefore an error
 is raised if timestamps are not supplied, or if any of the timestamps
-are NA.
-Note that in any case, timestamps do not have to be ordered.</p></td>
+are NA or duplicates.</p></td>
     </tr>
     </table>
 
@@ -215,8 +214,8 @@ median and MAD as described in Leys, 2013.</p></li>
 </ul>
     <h2 class="hasAnchor" id="references"><a class="anchor" href="#references"></a>References</h2>
 
-    <p>Chen, C. e.a., Joint Estimation of Model Parameters and Outlier Effects in Time Series, 1993.
-Leys, C. e.a., Detecting outliers, 2013.</p>
+    <p><a href='https://dov-vlaanderen.github.io/groundwater-logger-validation/gwloggeR/docs/articles/Airpressure.html'>Air pressure vignette</a>
+<a href='https://dov-vlaanderen.github.io/groundwater-logger-validation/gwloggeR/docs/articles/Hydropressure.html'>Hydrostatic pressure vignette</a></p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'><span class='co'># In case of a vector:</span>
@@ -230,7 +229,7 @@ Leys, C. e.a., Detecting outliers, 2013.</p>
 #&gt; [49] FALSE FALSE</div><div class='input'>
 <span class='co'># Or use the tidyverse approach:</span>
 <span class='fu'><a href='https://rdrr.io/r/base/library.html'>library</a></span>(<span class='no'>magrittr</span>)
-<span class='no'>cars</span> <span class='kw'>%&gt;%</span> <span class='kw pkg'>dplyr</span><span class='kw ns'>::</span><span class='fu'><a href='https://dplyr.tidyverse.org/reference/mutate.html'>mutate</a></span>(<span class='st'>"outlier"</span> <span class='kw'>=</span> <span class='fu'>detect_outliers</span>(<span class='no'>dist</span>))</div><div class='output co'>#&gt;    speed dist outlier
+<span class='no'>cars</span>[<span class='fl'>1</span>:<span class='fl'>10</span>,] <span class='kw'>%&gt;%</span> <span class='kw pkg'>dplyr</span><span class='kw ns'>::</span><span class='fu'><a href='https://dplyr.tidyverse.org/reference/mutate.html'>mutate</a></span>(<span class='st'>"outlier"</span> <span class='kw'>=</span> <span class='fu'>detect_outliers</span>(<span class='no'>dist</span>))</div><div class='output co'>#&gt;    speed dist outlier
 #&gt; 1      4    2   FALSE
 #&gt; 2      4   10   FALSE
 #&gt; 3      7    4   FALSE
@@ -240,47 +239,7 @@ Leys, C. e.a., Detecting outliers, 2013.</p>
 #&gt; 7     10   18   FALSE
 #&gt; 8     10   26   FALSE
 #&gt; 9     10   34   FALSE
-#&gt; 10    11   17   FALSE
-#&gt; 11    11   28   FALSE
-#&gt; 12    12   14   FALSE
-#&gt; 13    12   20   FALSE
-#&gt; 14    12   24   FALSE
-#&gt; 15    12   28   FALSE
-#&gt; 16    13   26   FALSE
-#&gt; 17    13   34   FALSE
-#&gt; 18    13   34   FALSE
-#&gt; 19    13   46   FALSE
-#&gt; 20    14   26   FALSE
-#&gt; 21    14   36   FALSE
-#&gt; 22    14   60   FALSE
-#&gt; 23    14   80   FALSE
-#&gt; 24    15   20   FALSE
-#&gt; 25    15   26   FALSE
-#&gt; 26    15   54   FALSE
-#&gt; 27    16   32   FALSE
-#&gt; 28    16   40   FALSE
-#&gt; 29    17   32   FALSE
-#&gt; 30    17   40   FALSE
-#&gt; 31    17   50   FALSE
-#&gt; 32    18   42   FALSE
-#&gt; 33    18   56   FALSE
-#&gt; 34    18   76   FALSE
-#&gt; 35    18   84   FALSE
-#&gt; 36    19   36   FALSE
-#&gt; 37    19   46   FALSE
-#&gt; 38    19   68   FALSE
-#&gt; 39    20   32   FALSE
-#&gt; 40    20   48   FALSE
-#&gt; 41    20   52   FALSE
-#&gt; 42    20   56   FALSE
-#&gt; 43    20   64   FALSE
-#&gt; 44    22   66   FALSE
-#&gt; 45    23   54   FALSE
-#&gt; 46    24   70   FALSE
-#&gt; 47    24   92   FALSE
-#&gt; 48    24   93   FALSE
-#&gt; 49    24  120   FALSE
-#&gt; 50    25   85   FALSE</div><div class='input'>
+#&gt; 10    11   17   FALSE</div><div class='input'>
 </div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">

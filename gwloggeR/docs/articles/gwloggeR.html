@@ -101,7 +101,7 @@
     <div class="page-header toc-ignore">
       <h1>Introduction to gwloggeR</h1>
             
-            <h4 class="date">2019-10-11</h4>
+            <h4 class="date">2019-10-14</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/DOV-Vlaanderen/groundwater-logger-validation/blob/master/vignettes/gwloggeR.Rmd"><code>vignettes/gwloggeR.Rmd</code></a></small>
       <div class="hidden name"><code>gwloggeR.Rmd</code></div>
@@ -219,7 +219,7 @@ x[5L<span class="op">:</span>15L] &lt;-<span class="st"> </span>x[5L<span class=
 <p>Now lets see how <code><a href="../reference/detect_temporalchanges.html">detect_temporalchanges()</a></code> reacts:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">gwloggeR<span class="op">::</span><span class="kw"><a href="https://dov-vlaanderen.github.io/groundwater-logger-validation/gwloggeR/docs/reference/detect_temporalchanges.html">detect_temporalchanges</a></span>(<span class="dt">x =</span> x, <span class="dt">timestamps =</span> timestamps, <span class="dt">apriori =</span> apriori, <span class="dt">plot =</span> <span class="ot">TRUE</span>)</code></pre></div>
 <p><img src="gwloggeR_files/figure-html/hydropressure-tc-1.png" width="700"></p>
-<pre><code>#&gt;  [1] FALSE FALSE FALSE FALSE  TRUE FALSE FALSE FALSE FALSE FALSE
+<pre><code>#&gt;  [1] FALSE FALSE FALSE FALSE  TRUE  TRUE  TRUE  TRUE FALSE FALSE
 #&gt;  [ reached getOption("max.print") -- omitted 90 entries ]</code></pre>
 <p>The temporal change starts at the 5-th observation until it decays around the 9-th.</p>
 <p>Now if all this was very obvious to you, you can give <code>gwlogger</code> a try on the real data. If you still wonder how all this works, you can read more about the algorithm in the <a href="Hydropressure.html">Hydrostatic pressure vignette</a>.</p>

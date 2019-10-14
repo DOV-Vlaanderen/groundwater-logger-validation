@@ -150,8 +150,14 @@
     <p>Outliers object holds all the necessary information about detected outiers.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>Outliers</span>(<span class='no'>x.rejects</span>, <span class='no'>x.mean</span>, <span class='no'>x.sd</span>, <span class='no'>sigma.reject</span>, <span class='no'>alpha</span>, <span class='no'>type</span>, <span class='no'>fun.density</span>,
-  <span class='no'>cutpoints</span>)</pre>
+    <pre class="usage"><span class='fu'>Outliers</span>(<span class='no'>x</span>, <span class='no'>...</span>)
+
+<span class='co'># S3 method for logical</span>
+<span class='fu'>Outliers</span>(<span class='no'>x.rejects</span>, <span class='no'>x.mean</span>, <span class='no'>x.sd</span>, <span class='no'>sigma.reject</span>, <span class='no'>alpha</span>,
+  <span class='no'>type</span>, <span class='no'>fun.density</span>, <span class='no'>cutpoints</span>)
+
+<span class='co'># S3 method for Events</span>
+<span class='fu'>Outliers</span>(<span class='no'>events</span>)</pre>
 
 
 

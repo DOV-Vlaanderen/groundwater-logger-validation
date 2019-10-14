@@ -157,6 +157,23 @@
 </li>
 </ul>
 </div>
+<div id="interface" class="section level2">
+<h2 class="hasAnchor">
+<a href="#interface" class="anchor"></a>Interface</h2>
+<ul>
+<li>Hydrostatic pressure detect functions assert timestamps to be ordered.</li>
+<li>Hydrostatic pressure detect functions assert no duplicate timestamps.</li>
+<li>
+<code><a href="reference/detect_temporalchanges.html">detect_temporalchanges()</a></code> glags everything from start until the decay is below 5.</li>
+</ul>
+<div id="diagnostic-plots" class="section level3">
+<h3 class="hasAnchor">
+<a href="#diagnostic-plots" class="anchor"></a>Diagnostic plots</h3>
+<ul>
+<li>Hydrostatic pressure x-axis label now shows correctly ‘timestamps’ instead of ‘sequence’.</li>
+</ul>
+</div>
+</div>
 <div id="todo" class="section level2">
 <h2 class="hasAnchor">
 <a href="#todo" class="anchor"></a>TODO</h2>
@@ -164,21 +181,18 @@
 <h3 class="hasAnchor">
 <a href="#general" class="anchor"></a>General</h3>
 <ul>
-<li>
-<code><a href="reference/detect_temporalchanges.html">detect_temporalchanges()</a></code> should flag everything from start until the decay is insignificant.</li>
 <li>Complete <code>Development</code> vignette.</li>
 <li>Caching of algorithm results.</li>
 <li>Use travis-ci for website building and build testing.</li>
 <li>Add date field in DESCRIPTION.</li>
 </ul>
 </div>
-<div id="diagnostic-plots" class="section level3">
+<div id="diagnostic-plots-1" class="section level3">
 <h3 class="hasAnchor">
-<a href="#diagnostic-plots" class="anchor"></a>Diagnostic plots</h3>
+<a href="#diagnostic-plots-1" class="anchor"></a>Diagnostic plots</h3>
 <ul>
 <li>Margin of diagnostic plots y-axis should be the same.</li>
 <li>Show tresholds on diagnostic plots for differences(x)</li>
-<li>Hydrostatic pressure x-axis label ‘sequence’ instead of ‘timestamps’.</li>
 </ul>
 </div>
 </div>
