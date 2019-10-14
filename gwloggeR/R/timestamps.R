@@ -6,10 +6,12 @@ aggregate <- function(x, ts, by = c('days', 'hours')) {
   stats::aggregate(x, by = list(as.POSIXct(trunc(ts, units = by))), FUN = mean)$x
 }
 
+#' @keywords internal
 is.timestamp <- function(timestamps) {
   inherits(timestamps, "POSIXct") | inherits(timestamps, "Date")
 }
 
+#' @keywords internal
 validate.timestamp <- function(timestamps) {
   nr.na <- sum(is.na(timestamps))
   if (nr.na > 0L)
