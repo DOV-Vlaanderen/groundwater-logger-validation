@@ -12,7 +12,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
 
-<meta name="date" content="2019-10-11" />
+<meta name="date" content="2019-10-14" />
 
 <title>Hydrostatic pressure</title>
 
@@ -94,7 +94,7 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 
 
 <h1 class="title toc-ignore">Hydrostatic pressure</h1>
-<h4 class="date">2019-10-11</h4>
+<h4 class="date">2019-10-14</h4>
 
 
 <div id="TOC">
@@ -237,13 +237,14 @@ L(\mathbf{\theta} ; \mathbf{x}) = p(\mathbf{x} | \mathbf{\theta}) = \prod_{t=2}^
 <h2>Future work</h2>
 <ul>
 <li>Adjust model for tidal effects.</li>
-<li>Better <span class="math inline">\(\epsilon (\Delta t)\)</span> treshold estimation than current +10 % of min/max value.</li>
+<li>Better <span class="math inline">\(\epsilon (\Delta t)\)</span> treshold estimation than current +20 % of min/max value.</li>
 <li>Revise LR test threshold.</li>
 <li>Use <em>a-priori</em> data more as a prior and estimate <span class="math inline">\(\epsilon(\Delta t)\)</span> with data at hand.</li>
 <li>Extract AO, LS and TC if <code>verbose = TRUE</code>.</li>
 <li>Revise the 25 observations window.</li>
 <li>Revise parameter significance test.</li>
 <li>Lower threshold based on air pressure for <code>detect_outliers()</code>?</li>
+<li><code>detect_temporalchanges()</code> should flag everything until the decay is insignificant.</li>
 </ul>
 </div>
 <div id="references" class="section level2 unnumbered">

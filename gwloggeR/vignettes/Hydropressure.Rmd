@@ -233,13 +233,14 @@ The last three outlier (AO) events are obvious. But the first event is a double 
 ## Future work
 
 * Adjust model for tidal effects.
-* Better $\epsilon (\Delta t)$ treshold estimation than current +10 % of min/max value.
+* Better $\epsilon (\Delta t)$ treshold estimation than current +20 % of min/max value.
 * Revise LR test threshold.
 * Use _a-priori_ data more as a prior and estimate $\epsilon(\Delta t)$ with data at hand.
 * Extract AO, LS and TC if `verbose = TRUE`.
 * Revise the 25 observations window.
 * Revise parameter significance test.
 * Lower threshold based on air pressure for `detect_outliers()`?
+* `detect_temporalchanges()` should flag everything until the decay is insignificant.
 
 ## References
 
