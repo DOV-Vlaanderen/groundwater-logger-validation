@@ -5,7 +5,7 @@ plot.base <- function(data) {
 
   ggplot2::ggplot(data = data, mapping = ggplot2::aes_string(x = "x", y = "y")) +
     ggplot2::geom_line(alpha = .4) +
-    ggplot2::ylab('x') + ggplot2::xlab(if (is.timestamp(data$x)) 'sequence' else 'timestamp') +
+    ggplot2::ylab('x') + ggplot2::xlab(if (is.timestamp(data$x)) 'timestamp' else 'sequence') +
     ggplot2::theme_light()
 }
 
