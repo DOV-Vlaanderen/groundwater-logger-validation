@@ -5,10 +5,17 @@
 * Getting started tutorial: https://dov-vlaanderen.github.io/groundwater-logger-validation/gwloggeR/docs/articles/gwloggeR.html 
 * Hydrostatic pressure model explanation: https://dov-vlaanderen.github.io/groundwater-logger-validation/gwloggeR/docs/articles/Hydropressure.html
 
+## Interface
+* Hydrostatic pressure detect functions assert timestamps to be ordered.
+* Hydrostatic pressure detect functions assert no duplicate timestamps.
+* `detect_temporalchanges()` glags everything from start until the decay is below 5.
+
+### Diagnostic plots
+* Hydrostatic pressure x-axis label now shows correctly 'timestamps' instead of 'sequence'.
+
 ## TODO
 
 ### General
-* `detect_temporalchanges()` should flag everything from start until the decay is insignificant.
 * Complete `Development` vignette.
 * Caching of algorithm results.
 * Use travis-ci for website building and build testing.
@@ -17,7 +24,6 @@
 ### Diagnostic plots
 * Margin of diagnostic plots y-axis should be the same.
 * Show tresholds on diagnostic plots for differences(x)
-* Hydrostatic pressure x-axis label 'sequence' instead of 'timestamps'.
 
 # gwloggeR 0.1.4
 
