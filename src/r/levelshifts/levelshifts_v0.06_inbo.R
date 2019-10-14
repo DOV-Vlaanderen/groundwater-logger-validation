@@ -9,6 +9,7 @@ local({
 
     df <- gwloggeR.data::read(f)$df
     df <- df[!is.na(TIMESTAMP_UTC),]
+    df <- df[order(TIMESTAMP_UTC),]
 
     point_sample_type <- substr(basename(f), 4L, 4L)
     ap <- switch (point_sample_type,

@@ -5,6 +5,8 @@ hydropressure.timestamp.validation <- function(timestamps, x) {
   if (length(timestamps) != length(x)) stop('ERROR: x and timestamps must have same length.')
   assert.timestamp(timestamps)
   assert.notna.timestamp(timestamps)
+  assert.noduplicates.timestamp(timestamps)
+  assert.ordered.timestamps(timestamps)
 }
 
 
@@ -393,9 +395,7 @@ Events <- function(results, index.offsets, n) {
 #'
 detect <- function(x, timestamps, types = c('AO', 'LS', 'TC'), nr.tail = 25) {
   stopifnot(length(x) == length(timestamps))
-  idx <- order(timestamps)
-  x <- x[idx]
-  timestamps <- timestamps[idx]
+  stopifnot(identical(sort(timestamps), timestamps))
 
   dif <- data.table::data.table('dt' = as.numeric(diff(timestamps), units = 'secs'),
                                 'dx' = diff(x))
@@ -432,7 +432,6 @@ detect <- function(x, timestamps, types = c('AO', 'LS', 'TC'), nr.tail = 25) {
   }, SIMPLIFY = FALSE)
 
   events <- Events(results, drle[, start], n = length(x))
-  if (nrow(events) != 0L) events[, index := idx[index]] # back to original idx
 
   set.version(events, Version('0.06'))
 
