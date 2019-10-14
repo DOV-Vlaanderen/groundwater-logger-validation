@@ -66,6 +66,6 @@ cars \%>\% dplyr::mutate("outlier" = detect_outliers(dist))
 
 }
 \references{
-Chen, C. e.a., Joint Estimation of Model Parameters and Outlier Effects in Time Series, 1993.
-Leys, C. e.a., Detecting outliers, 2013.
+\href{https://dov-vlaanderen.github.io/groundwater-logger-validation/gwloggeR/docs/articles/Airpressure.html}{Air pressure vignette}
+\href{https://dov-vlaanderen.github.io/groundwater-logger-validation/gwloggeR/docs/articles/Hydropressure.html}{Hydrostatic pressure vignette}
 }

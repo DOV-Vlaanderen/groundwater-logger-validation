@@ -54,8 +54,8 @@ Outliers.Events <- function(events) {
 #' are NA or duplicates.
 #' @return Logical vector with same length as x, specifying TRUE for an outlier.
 #' @references
-#' Chen, C. e.a., Joint Estimation of Model Parameters and Outlier Effects in Time Series, 1993.
-#' Leys, C. e.a., Detecting outliers, 2013.
+#' \href{https://dov-vlaanderen.github.io/groundwater-logger-validation/gwloggeR/docs/articles/Airpressure.html}{Air pressure vignette}
+#' \href{https://dov-vlaanderen.github.io/groundwater-logger-validation/gwloggeR/docs/articles/Hydropressure.html}{Hydrostatic pressure vignette}
 #' @examples
 #' # In case of a vector:
 #' x <- c(1:10, 100)

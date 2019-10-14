@@ -36,6 +36,8 @@ Levelshifts.Events <- function(events) {
 #' @param verbose prints comprehensive information
 #' @param title adds title to the plot
 #' @return Logical vector with same length as x, specifying TRUE for an levelshift start.
+#' @references
+#' \href{https://dov-vlaanderen.github.io/groundwater-logger-validation/gwloggeR/docs/articles/Hydropressure.html}{Hydrostatic pressure vignette}
 #' @importFrom methods setGeneric
 #' @export
 #' @rdname detect_levelshifts

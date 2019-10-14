@@ -38,3 +38,6 @@ This function marks temporalchanges in the input vector.
 \item \code{x = numeric,apriori = apriori}: 
 }}
 
+\references{
+\href{https://dov-vlaanderen.github.io/groundwater-logger-validation/gwloggeR/docs/articles/Hydropressure.html}{Hydrostatic pressure vignette}
+}
