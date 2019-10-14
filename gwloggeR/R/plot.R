@@ -62,14 +62,10 @@ plot.data <- function(x, timestamps = NULL, events) {
   n <- length(x)
   timestamps.invalid <- is.null(timestamps) | all(is.na(timestamps))
   x.axis <- if (timestamps.invalid) 1:n else timestamps
-  data <- data.table::data.table(x = x.axis, y = x, outliers = FALSE, levelshifts = FALSE,
-                                 tempchanges = FALSE)
-  data[events[type == 'AO', index], outliers := TRUE]
-  data[events[type == 'LS', index], levelshifts := TRUE]
-
-  df.decay <- events[type == 'TC', .('decay' = alpha*delta^(0:1000)), by = index][abs(decay) > 5, .(decay, .N), by = index]
-  if (nrow(df.decay) > 0L) data[df.decay[, .('idx' =index:(index + N - 1L)), by = .(index, N)][, idx], tempchanges := TRUE]
-
+  data <- data.table::data.table(x = x.axis, y = x,
+                                 outliers = Outliers(events),
+                                 levelshifts = Levelshifts(events),
+                                 tempchanges = Temporalchanges(events))
   data <- data[!is.na(x),]
   data.table::setkey(data, x)
 
