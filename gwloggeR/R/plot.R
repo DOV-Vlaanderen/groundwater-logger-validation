@@ -49,15 +49,6 @@ plot.add.tempchanges <- function(plot) {
                        color = 'red', alpha = .6)
 }
 
-# plot.data <- function(x, timestamps = NULL, outliers = NULL, levelshifts = NULL) {
-#   n <- length(x)
-#   timestamps.invalid <- is.null(timestamps) | all(is.na(timestamps))
-#   x.axis <- if (timestamps.invalid) 1:n else timestamps
-#   data <- data.frame(x = x.axis, y = x, levelshifts, outliers)[order(x.axis),]
-#   data <- data[!is.na(data$x),]
-#   data
-# }
-
 plot.data <- function(x, timestamps = NULL, events) {
   n <- length(x)
   timestamps.invalid <- is.null(timestamps) | all(is.na(timestamps))
