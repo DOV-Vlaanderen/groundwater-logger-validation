@@ -26,9 +26,9 @@ x[100L] <- x[100L] - 190
 x[200L:300L] <- x[200L:300L] - 150*0.9^(0:100)
 x[600L:length(x)] <- x[600L:length(x)] - 100
 
-df.types <- gwloggeR:::detect(x = x, timestamps = timestamps, types = c('AO', 'LS', 'TC'))
+events <- gwloggeR:::detect(x = x, timestamps = timestamps, types = c('AO', 'LS', 'TC'))
 
-df.plot <- gwloggeR:::plot.data(x = x, timestamps = timestamps, df.types = df.types)
+df.plot <- gwloggeR:::plot.data(x = x, timestamps = timestamps, events = events)
 plt <- gwloggeR:::plot.base(data = df.plot)
 plt <- gwloggeR:::plot.add.levelshifts(plt)
 plt <- gwloggeR:::plot.add.tempchanges(plt)
