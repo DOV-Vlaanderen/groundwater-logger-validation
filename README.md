@@ -8,7 +8,7 @@ Het OIS grondwater heeft als doel om meer en betere grondwatergegevens sneller t
 
 Bij de datastroom tussen ruwe data en gekalibreerd peil zijn er validatiestappen op het level van (1) de ruwe data zelf, (2) de waterpeilen en (3) vergelijking met referentiewaarden, ook wel kalibratie genoemd:
 
-![](/docs/static/workflow_data_validation.png)
+![](docs/static/workflow_data_validation.png)
 
 De methodes/algoritmes die in dit project getest en ontwikkeld worden hebben als doel om validatieprocedures te voorzien die operationeel kunnen worden ingezet door instanties die grondwaterpeilen aan DOV aanleveren. Meer achtergrond over het voortraject is te vinden op [confluence](https://www.milieuinfo.be/confluence/display/GWM/Compilatie+workshop+validatie+diver+metingen+2018-09-14) (login required).
 
@@ -25,7 +25,7 @@ For the package related to this project, see subfolder [gwloggeR](https://github
 
 ## Workflow
 
-...
+For development, consult the [development guide](https://dov-vlaanderen.github.io/groundwater-logger-validation/gwloggeR/docs/articles/Development.html)
 
 ## Repo structure
 
@@ -46,9 +46,9 @@ The repository structure is based on [Cookiecutter Data Science](http://drivenda
 ├── docs                       : Documentation of the algorithms, flagging,...
 │
 ├── gwloggeR                   : gwloggeR package root folder
-|
-├── gwloggeR.data              : gwloggeR.daya package root folder
-|
+│
+├── gwloggeR.data              : gwloggeR.data package root folder
+│
 ├── src                        : Source code for the analysis 
 │   ├── r                  
 │   │   ├── groundwater.rproj  : Rstudio project file for data analysis.
