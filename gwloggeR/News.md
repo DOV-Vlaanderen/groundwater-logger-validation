@@ -1,3 +1,12 @@
+# TODO
+
+## General
+* Caching of algorithm results.
+* Use travis-ci for website building and build testing.
+
+## Diagnostic plots
+* Show tresholds on diagnostic plots for differences(x).
+
 # Development version
 
 ## Website
@@ -12,20 +21,13 @@
 
 ### Diagnostic plots
 * Hydrostatic pressure x-axis label now shows correctly 'timestamps' instead of 'sequence'.
-
-### General
-* Add date field in DESCRIPTION.
-
-## TODO
-
-### General
-* Complete `Development` vignette.
-* Caching of algorithm results.
-* Use travis-ci for website building and build testing.
-
-### Diagnostic plots
 * Margin of diagnostic plots y-axis should be the same.
-* Show tresholds on diagnostic plots for differences(x).
+* TC events are now red dots and match the output vector TRUE values.
+* LS events are now red dots and match the output vector TRUE values.
+
+### General
+* Completed `Development` vignette.
+* Add date field in DESCRIPTION.
 
 # gwloggeR 0.1.4
 
