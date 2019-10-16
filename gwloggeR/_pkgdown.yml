@@ -27,3 +27,22 @@ toc:
 
 development:
   mode: auto
+
+navbar:
+  components:
+    articles:
+      text: Articles
+      menu:
+      - text: 'Algorithms'
+      - text: 'Air pressure'
+        href: articles/Airpressure.html
+      - text: 'Hydrostatic pressure'
+        href: articles/Hydropressure.html
+    news:
+      text: Development
+      menu:
+      - text: 'Guide'
+        href: articles/Development.html
+      - text: "------------------"
+      - text: "Change log"
+        href: News.html
