@@ -101,7 +101,7 @@
     <div class="page-header toc-ignore">
       <h1>Development guide</h1>
             
-            <h4 class="date">2019-10-14</h4>
+            <h4 class="date">2019-10-16</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/DOV-Vlaanderen/groundwater-logger-validation/blob/master/vignettes/Development.Rmd"><code>vignettes/Development.Rmd</code></a></small>
       <div class="hidden name"><code>Development.Rmd</code></div>
@@ -129,6 +129,13 @@
 </ul>
 <p>Note that cross-linking of files between projects based on relative paths is allowed since all projects reside in the same repository.</p>
 </div>
+</div>
+<div id="testing" class="section level2">
+<h2 class="hasAnchor">
+<a href="#testing" class="anchor"></a>Testing</h2>
+<p>There are a couple of unit tests in the <code>tests</code> directory. These tests are based on <a href="http://r-pkgs.had.co.nz/tests.html"><code>testthat</code></a> and can be executed from Rstudio with <code>Ctrl</code> + <code>Shift</code> + <code>T</code>.</p>
+<p>Mainly the hydrostatic pressure tests are important since they test the detection function based on a predefined small timeseries that has clear AO, LS and TC events.</p>
+<p>Whenever you are tempted to type something into a print statement or a debugger expression, write it as a test instead.</p>
 </div>
 <div id="documentation" class="section level2">
 <h2 class="hasAnchor">
@@ -169,6 +176,7 @@ pkgdown<span class="op">::</span><span class="kw"><a href="https://pkgdown.r-lib
 <li><a href="#projects">Projects</a></li>
       </ul>
 </li>
+      <li><a href="#testing">Testing</a></li>
       <li>
 <a href="#documentation">Documentation</a><ul class="nav nav-pills nav-stacked">
 <li><a href="#readme-rmd">README.Rmd</a></li>

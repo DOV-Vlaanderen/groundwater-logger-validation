@@ -219,27 +219,24 @@ median and MAD as described in Leys, 2013.</p></li>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'><span class='co'># In case of a vector:</span>
-<span class='no'>x</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fl'>1</span>:<span class='fl'>10</span>, <span class='fl'>100</span>)
-<span class='fu'>detect_outliers</span>(<span class='no'>x</span>)</div><div class='output co'>#&gt;  [1] FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE  TRUE</div><div class='input'>
+<span class='no'>x</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fl'>1</span>:<span class='fl'>9</span>, <span class='fl'>100</span>)
+<span class='fu'>detect_outliers</span>(<span class='no'>x</span>)</div><div class='output co'>#&gt;  [1] FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE  TRUE</div><div class='input'>
 <span class='co'># In case of a dataframe, select the column:</span>
-<span class='fu'>detect_outliers</span>(<span class='no'>cars</span>$<span class='no'>dist</span>)</div><div class='output co'>#&gt;  [1] FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE
-#&gt; [13] FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE
-#&gt; [25] FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE
-#&gt; [37] FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE
-#&gt; [49] FALSE FALSE</div><div class='input'>
+<span class='no'>df</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/data.frame.html'>data.frame</a></span>(<span class='st'>'x'</span> <span class='kw'>=</span> <span class='no'>x</span>)
+<span class='fu'>detect_outliers</span>(<span class='no'>df</span>$<span class='no'>x</span>)</div><div class='output co'>#&gt;  [1] FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE  TRUE</div><div class='input'>
 <span class='co'># Or use the tidyverse approach:</span>
 <span class='fu'><a href='https://rdrr.io/r/base/library.html'>library</a></span>(<span class='no'>magrittr</span>)
-<span class='no'>cars</span>[<span class='fl'>1</span>:<span class='fl'>10</span>,] <span class='kw'>%&gt;%</span> <span class='kw pkg'>dplyr</span><span class='kw ns'>::</span><span class='fu'><a href='https://dplyr.tidyverse.org/reference/mutate.html'>mutate</a></span>(<span class='st'>"outlier"</span> <span class='kw'>=</span> <span class='fu'>detect_outliers</span>(<span class='no'>dist</span>))</div><div class='output co'>#&gt;    speed dist outlier
-#&gt; 1      4    2   FALSE
-#&gt; 2      4   10   FALSE
-#&gt; 3      7    4   FALSE
-#&gt; 4      7   22   FALSE
-#&gt; 5      8   16   FALSE
-#&gt; 6      9   10   FALSE
-#&gt; 7     10   18   FALSE
-#&gt; 8     10   26   FALSE
-#&gt; 9     10   34   FALSE
-#&gt; 10    11   17   FALSE</div><div class='input'>
+<span class='no'>df</span> <span class='kw'>%&gt;%</span> <span class='kw pkg'>dplyr</span><span class='kw ns'>::</span><span class='fu'><a href='https://dplyr.tidyverse.org/reference/mutate.html'>mutate</a></span>(<span class='st'>"outlier"</span> <span class='kw'>=</span> <span class='fu'>detect_outliers</span>(<span class='no'>x</span>))</div><div class='output co'>#&gt;      x outlier
+#&gt; 1    1   FALSE
+#&gt; 2    2   FALSE
+#&gt; 3    3   FALSE
+#&gt; 4    4   FALSE
+#&gt; 5    5   FALSE
+#&gt; 6    6   FALSE
+#&gt; 7    7   FALSE
+#&gt; 8    8   FALSE
+#&gt; 9    9   FALSE
+#&gt; 10 100    TRUE</div><div class='input'>
 </div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
