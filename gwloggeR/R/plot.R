@@ -11,16 +11,17 @@ plot.base <- function(data) {
 
 plot.add.levelshifts <- function(plot) {
   data <- plot$data
-  start.idx <- unique(c(1L, which(data$levelshifts)))
-  end.idx <- c(start.idx[-1L], nrow(data))
-  col <- c('green', ifelse(data[start.idx[-1L] - 1L, y] < data[start.idx[-1L], y], 'red', 'blue'))
-  idx <- unique(c(start.idx[-1L], start.idx[-1L]-1L))
+  idx.start <- unique(c(1L, which(data$levelshifts)))
+  idx.end <- c(idx.start[-1L], nrow(data))
+  col <- c('green', ifelse(data[idx.start[-1L] - 1L, y] < data[idx.start[-1L], y], 'red', 'blue'))
+  idx.black <- setdiff(idx.start[-1L]-1L, idx.start[-1L])
 
   plot +
-    ggplot2::geom_point(data = data[idx,]) +
-    ggplot2::annotate("rect", xmin = data[start.idx, x], xmax = data[end.idx, x],
+    ggplot2::geom_point(data = data[idx.black,]) +
+    ggplot2::geom_point(data = data[idx.start[-1L],], color = 'red') +
+    ggplot2::annotate("rect", xmin = data[idx.start, x], xmax = data[idx.end, x],
                       ymin = -Inf, ymax = Inf, alpha = 0.1, fill = col) +
-    ggplot2::geom_vline(xintercept = data[start.idx[-1L], x], linetype = 'dashed')
+    ggplot2::geom_vline(xintercept = data[idx.start[-1L], x], linetype = 'dashed')
 }
 
 plot.add.outliers <- function(plot) {
@@ -31,22 +32,26 @@ plot.add.outliers <- function(plot) {
 
   plot +
     ggplot2::geom_point(data = data[idx, ],
-                        mapping = ggplot2::aes_string(color = "outliers"), show.legend = FALSE) +
-    ggplot2::scale_color_manual(name = "OUTLIER", values = c("FALSE" = "black", "TRUE" = "red"))
+                        mapping = ggplot2::aes_string(color = "outliers"),
+                        show.legend = FALSE) +
+    ggplot2::scale_color_manual(name = "OUTLIER",
+                                values = c("FALSE" = "black", "TRUE" = "red"))
 }
 
 plot.add.tempchanges <- function(plot) {
   data <- data.table::copy(plot$data)
-  idx <- which(data$tempchanges)
-  idx <- sort(unique(pmax(c(idx, idx - 1L), 1L)))
+  idx.red <- which(data$tempchanges)
+  idx.black <- setdiff(unique(pmax(idx.red - 1L, 1L)), idx.red)
 
-  data[idx, group := TRUE]
+  data[c(idx.red, idx.black), group := TRUE]
   data[, group := data.table::rleid(group)]
 
   plot +
-    ggplot2::geom_point(data = data[idx,], color = 'blue') +
-    ggplot2::geom_line(data = data[idx,], mapping = ggplot2::aes(group = group),
-                       color = 'red', alpha = .6)
+    ggplot2::geom_line(data = data[c(idx.red, idx.black),],
+                       mapping = ggplot2::aes(group = group),
+                       color = 'red') +
+    ggplot2::geom_point(data = data[idx.red,], color = 'red') +
+    ggplot2::geom_point(data = data[idx.black,], color = 'black')
 }
 
 plot.data <- function(x, timestamps = NULL, events) {
@@ -69,8 +74,12 @@ plot.generic <- function(x, timestamps, events, title) {
   g <- plot.add.levelshifts(g)
   g <- plot.add.tempchanges(g)
   g <- plot.add.outliers(g)
+  g <- g + ggplot2::theme(axis.title.x = ggplot2::element_blank(),
+                          axis.text.x = ggplot2::element_blank(),
+                          axis.text.y = ggplot2::element_text(angle = 90, hjust = 0.5))
 
-  d <- differenceplot(x = x, timestamps = timestamps, outliers = df.plot[J(timestamps), outliers | levelshifts | tempchanges])
+  d <- differenceplot(x = x, timestamps = timestamps, outliers = df.plot[J(timestamps), outliers | levelshifts | tempchanges]) +
+    ggplot2::theme(axis.text.y = ggplot2::element_text(angle = 90, hjust = 0.5))
 
   layout_matrix <- rbind(c(1),
                          c(2))
