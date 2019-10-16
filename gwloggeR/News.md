@@ -13,17 +13,19 @@
 ### Diagnostic plots
 * Hydrostatic pressure x-axis label now shows correctly 'timestamps' instead of 'sequence'.
 
+### General
+* Add date field in DESCRIPTION.
+
 ## TODO
 
 ### General
 * Complete `Development` vignette.
 * Caching of algorithm results.
 * Use travis-ci for website building and build testing.
-* Add date field in DESCRIPTION.
 
 ### Diagnostic plots
 * Margin of diagnostic plots y-axis should be the same.
-* Show tresholds on diagnostic plots for differences(x)
+* Show tresholds on diagnostic plots for differences(x).
 
 # gwloggeR 0.1.4
 
