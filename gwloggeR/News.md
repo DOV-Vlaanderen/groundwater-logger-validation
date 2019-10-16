@@ -1,8 +1,9 @@
-# TODO
+# Future version
 
 ## General
 * Caching of algorithm results.
 * Use travis-ci for website building and build testing.
+* Code documentation
 
 ## Diagnostic plots
 * Show tresholds on diagnostic plots for differences(x).
@@ -19,13 +20,13 @@
 * Hydrostatic pressure detect functions assert no duplicate timestamps.
 * `detect_temporalchanges()` glags everything from start until the decay is below 5.
 
-### Diagnostic plots
+## Diagnostic plots
 * Hydrostatic pressure x-axis label now shows correctly 'timestamps' instead of 'sequence'.
 * Margin of diagnostic plots y-axis should be the same.
 * TC events are now red dots and match the output vector TRUE values.
 * LS events are now red dots and match the output vector TRUE values.
 
-### General
+## General
 * Completed `Development` vignette.
 * Add date field in DESCRIPTION.
 
