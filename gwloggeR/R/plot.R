@@ -78,19 +78,3 @@ plot.generic <- function(x, timestamps, events, title) {
   gridExtra::grid.arrange(g, d, layout_matrix = layout_matrix,
                           top = grob.title)
 }
-
-
-
-#' df <- plot.data('timestamps' = c(seq(Sys.time(), Sys.time() - 60*60*24*7, length.out = 99), NA), # wrong timestamp order + NA
-#'                 'x' = rnorm(100),
-#'                 'events' = data.table::data.table('type' = c('AO', 'LS', 'AO'), 'index' = c(10, 20, 71))
-#'                 #'outliers' = rep(c(FALSE, TRUE, FALSE, TRUE, FALSE), c(9, 1, 60, 1, 29)),
-#'                 #'levelshifts' = rep(c(FALSE, TRUE, FALSE), c(20, 1, 79))
-#'                 )
-#' df
-#' tmp <- plot.base(df)
-#' print(tmp)
-#' tmp <- plot.add.levelshifts(tmp)
-#' print(tmp)
-#' tmp <- plot.add.outliers(tmp)
-#' print(tmp)
