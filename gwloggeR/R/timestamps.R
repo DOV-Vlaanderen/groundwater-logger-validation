@@ -1,4 +1,5 @@
 #' @keywords internal
+#'
 aggregate <- function(x, ts, by = c('days', 'hours')) {
   assert.timestamp(ts)
   by <- match.arg(by)
@@ -7,11 +8,13 @@ aggregate <- function(x, ts, by = c('days', 'hours')) {
 }
 
 #' @keywords internal
+#'
 is.timestamp <- function(timestamps) {
   inherits(timestamps, "POSIXct") | inherits(timestamps, "Date")
 }
 
 #' @keywords internal
+#'
 validate.timestamp <- function(timestamps) {
   nr.na <- sum(is.na(timestamps))
   if (nr.na > 0L)

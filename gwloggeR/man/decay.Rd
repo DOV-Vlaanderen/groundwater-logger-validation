@@ -2,7 +2,7 @@
 % Please edit documentation in R/hydorpressure.R
 \name{decay}
 \alias{decay}
-\title{Decay function for x}
+\title{Decay function}
 \usage{
 decay(index, decay, n)
 }

@@ -1,3 +1,6 @@
+#' @title Apiori hydrostatic pressure samples based on time-delta
+#' @description This function extracts samples from apriori hydrostatic pressure data.
+#' These samples can then be used as estimates of \eqn{\epsilon(\Delta t)}.
 #' @importFrom data.table :=
 #' @keywords internal
 #'
@@ -56,7 +59,7 @@ indicator <- function(type = c('AO', 'LS', 'TC'), index, n) {
 }
 
 
-#' @title Decay function for x
+#' @title Decay function
 #' @description Decay function for TC exponential decay when the model is written
 #' in function of x only.
 #' @keywords internal
@@ -73,6 +76,11 @@ logL.base <- function(dz, mu, sigma2) {
 }
 
 
+
+#' @title Hydrostatic pressure model optimizer result
+#' @description This is the object that is returned by the \link{Optimizer} object.
+#' @keywords internal
+#'
 Optimizer.Result <- function(logLval, par, types, types.significant, indexes, optim) {
   opt <- structure(round(logLval, digits = 4),
                    'par' = round(par, digits = 3),
@@ -82,7 +90,10 @@ Optimizer.Result <- function(logLval, par, types, types.significant, indexes, op
   opt
 }
 
-
+#' @title Hydrostatic pressure model optimizer.
+#' @description Object for optimizing the hydrostatic pressure model. One needs to
+#' initialize the object, and subsequently call the optimize() member-function.
+#' @return Returns an \link{Optimizer.Result} object.
 #' @keywords internal
 #'
 Optimizer <- function(dx, types, indexes, mu, sigma2, par.init = NULL) {
@@ -174,7 +185,9 @@ Optimizer <- function(dx, types, indexes, mu, sigma2, par.init = NULL) {
        'set.par.init' = set.par.init)
 }
 
-
+#' @title Hydrostatic pressure model selection table
+#' @description ProgressTable is an object that keeps track of the different models
+#' during the model selection procedure.
 #' @keywords internal
 #'
 ProgressTable <- function() {
@@ -241,7 +254,10 @@ ProgressTable <- function() {
   interface
 }
 
-
+#' @title Hydrostatic pressure model selection step
+#' @description Based on base model events (and corresponding indexes),
+#' this function evaluates all possible configurations of a new event, computes
+#' the likelihoods using \link{Optimizer} and updates the \link{ProgressTable}.
 #' @keywords internal
 #'
 sweep <- function(dx, base.types = NULL, base.indexes = NULL, base.par = NULL,
@@ -302,7 +318,11 @@ lrtest <- function(logL0, logL, df.diff) {
   as.vector(1-pchisq(q = -2*(logL0 - logL), df = df.diff))
 }
 
-
+#' @title Selects best model based on degrees of freedom.
+#' @description This function starts with a baseline model, and calls
+#' \link{sweep} subsequenty to increase the model complexity.
+#' Once a more complex model fails a likelihood ratio (LR) test, the function
+#' stops and returns the most likely model.
 #' @keywords internal
 #'
 seeker <- function(dx, mu, sigma2, outlier, types){
@@ -379,6 +399,11 @@ Events <- function(results, index.offsets, n) {
 }
 
 
+#' @title Hydrostatic pressure event detection function
+#' @description This function will take the hydrostatic pressure data x, and the
+#' corresponding timestamps, and will use \link{seeker} function to select the
+#' best model within a window. It will repreat until all x is processed.
+#' @return Returns an \link{Events} object.
 #' @keywords internal
 #'
 detect <- function(x, timestamps, types = c('AO', 'LS', 'TC'), nr.tail = 25) {
