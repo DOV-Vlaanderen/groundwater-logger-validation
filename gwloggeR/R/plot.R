@@ -1,3 +1,4 @@
+#' @title Base functions for plotting hydrostatic pressure data
 #' @keywords internal
 #'
 plot.base <- function(data) {
@@ -9,6 +10,9 @@ plot.base <- function(data) {
     ggplot2::theme_light()
 }
 
+
+#' @keywords internal
+#'
 plot.add.levelshifts <- function(plot) {
   data <- plot$data
   idx.start <- unique(c(1L, which(data$levelshifts)))
@@ -24,6 +28,9 @@ plot.add.levelshifts <- function(plot) {
     ggplot2::geom_vline(xintercept = data[idx.start[-1L], x], linetype = 'dashed')
 }
 
+
+#' @keywords internal
+#'
 plot.add.outliers <- function(plot) {
   data <- plot$data
   idx <- which(data$outliers)
@@ -38,6 +45,9 @@ plot.add.outliers <- function(plot) {
                                 values = c("FALSE" = "black", "TRUE" = "red"))
 }
 
+
+#' @keywords internal
+#'
 plot.add.tempchanges <- function(plot) {
   data <- data.table::copy(plot$data)
   idx.red <- which(data$tempchanges)
@@ -54,6 +64,9 @@ plot.add.tempchanges <- function(plot) {
     ggplot2::geom_point(data = data[idx.black,], color = 'black')
 }
 
+
+#' @keywords internal
+#'
 plot.data <- function(x, timestamps = NULL, events) {
   n <- length(x)
   timestamps.invalid <- is.null(timestamps) | all(is.na(timestamps))
@@ -68,6 +81,9 @@ plot.data <- function(x, timestamps = NULL, events) {
   data
 }
 
+
+#' @keywords internal
+#'
 plot.generic <- function(x, timestamps, events, title) {
   df.plot <- plot.data(x = x, timestamps = timestamps, events = events)
   g <- plot.base(data = df.plot)
