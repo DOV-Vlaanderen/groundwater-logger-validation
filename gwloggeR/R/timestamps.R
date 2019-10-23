@@ -28,3 +28,15 @@ validate.timestamp <- function(timestamps) {
 
   is.timestamp(timestamps)
 }
+
+#' @keywords internal
+#'
+validate.hydropressure.timestamp <- function(timestamps, x) {
+  if (is.null(timestamps)) stop('ERROR: for hydrostatic pressure one needs to supply timestamps.')
+  if (length(timestamps) != length(x)) stop('ERROR: x and timestamps must have same length.')
+  assert.timestamp(timestamps)
+  assert.nonas(timestamps)
+  assert.noduplicates(timestamps)
+  assert.ordered(timestamps)
+}
+

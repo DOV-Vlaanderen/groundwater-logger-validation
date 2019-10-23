@@ -67,7 +67,7 @@ setMethod(
 
     if (apriori$data_type == "hydrostatic pressure") return ({
 
-      hydropressure.timestamp.validation(timestamps, x)
+      validate.hydropressure.timestamp(timestamps, x)
 
       events <- detect(x = x, timestamps = timestamps)
       levelshifts <- Levelshifts(events)
