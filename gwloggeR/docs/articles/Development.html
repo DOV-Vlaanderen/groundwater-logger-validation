@@ -134,7 +134,7 @@
 <p>The repository consists of 2 project roots:</p>
 <ul>
 <li>
-<a href="https://github.com/DOV-Vlaanderen/groundwater-logger-validation/blob/master/src/r/groundwater.rproj"><code>src/r/groundwater.rproj</code></a> which is mainly used for data analysis with R. This project, when opened in Rstudio, will also load <a href="https://github.com/DOV-Vlaanderen/groundwater-logger-validation/blob/master/src/r/.Rprofile"><code>src/r/.Rprofile</code></a> which will setup the environment for data analysis. Note that here one can also find test-cases for specific versions of <code>gwloggeR</code>. For example, <a href="https://github.com/DOV-Vlaanderen/groundwater-logger-validation/tree/master/src/r/outliers/outliers_v0.06_inbo"><code>src/r/outliers/outliers_v0.06_inbo</code></a> contains all the results based on v0.06 (cf. <a href="https://github.com/DOV-Vlaanderen/groundwater-logger-validation/issues/35">#35</a>) of the algorithm, which can be used as regression test for new versions of <code>gwloggeR</code>.</li>
+<a href="https://github.com/DOV-Vlaanderen/groundwater-logger-validation/blob/master/src/r/groundwater.rproj"><code>src/r/groundwater.rproj</code></a> which is mainly used for data analysis with R. This project, when opened in Rstudio, will also load <a href="https://github.com/DOV-Vlaanderen/groundwater-logger-validation/blob/master/src/r/.Rprofile"><code>src/r/.Rprofile</code></a> which will setup the environment for data analysis. Note that here one can also find test-cases for specific versions of <code>gwloggeR</code>. For example, <a href="https://github.com/DOV-Vlaanderen/groundwater-logger-validation/tree/master/src/r/outliers/outliers_v0.06_inbo"><code>src/r/outliers/outliers_v0.06_inbo</code></a> contains all the results based on v0.06 (cf. <a href="https://github.com/DOV-Vlaanderen/groundwater-logger-validation/issues/35">#35</a>) of the algorithm, which can be used as a manual regression test for new versions of <code>gwloggeR</code>.</li>
 <li>
 <a href="https://github.com/DOV-Vlaanderen/groundwater-logger-validation/blob/master/gwloggeR/gwloggeR.Rproj"><code>gwloggeR/gwloggeR.rproj</code></a> used for <code>gwloggeR</code> package development and testing.</li>
 </ul>
@@ -168,11 +168,28 @@
 <div id="website" class="section level2">
 <h2 class="hasAnchor">
 <a href="#website" class="anchor"></a>Website</h2>
-<p>For <code>gwloggeR</code> <a href="https://dov-vlaanderen.github.io/groundwater-logger-validation/gwloggeR">website</a> we use <code>pkggdown</code>.</p>
+<p>For <code>gwloggeR</code> <a href="https://dov-vlaanderen.github.io/groundwater-logger-validation/gwloggeR">website</a> we use <code>pkgdown</code>.</p>
 <p>We do not use <a href="https://pkgdown.r-lib.org/reference/deploy_site_github.html"><code>travis</code></a> for automatic website deployment. Each time one updates files that have an impact on the website, one should manualy execute the following commands:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">pkgdown<span class="op">::</span><span class="kw"><a href="https://pkgdown.r-lib.org/reference/clean_site.html">clean_site</a></span>()
 pkgdown<span class="op">::</span><span class="kw"><a href="https://pkgdown.r-lib.org/reference/build_site.html">build_site</a></span>()</code></pre></div>
 <p>On each update of <code>gwloggeR</code> source files, make sure to run these commands before commiting.</p>
+</div>
+<div id="deployment" class="section level2">
+<h2 class="hasAnchor">
+<a href="#deployment" class="anchor"></a>Deployment</h2>
+<p>Before deployment of a new version, certain steps need to be taken.</p>
+<ul>
+<li>Update the <a href="#documentation">Documentation</a>.</li>
+<li>Make sure you complete <a href="#testing">Testing</a>, and also re-run the more elaborate analysis as described in <a href="#projects">Projects</a>.</li>
+<li>Update the <a href="https://github.com/DOV-Vlaanderen/groundwater-logger-validation/blob/master/gwloggeR/News.md">News.md</a> file. Each new version should be a top level section, besides the <em>Development version</em> and <em>Future version</em> sections.</li>
+<li>Update the <a href="https://github.com/DOV-Vlaanderen/groundwater-logger-validation/blob/master/gwloggeR/DESCRIPTION">DESCRIPTION</a> file, mainly the <code>Version</code> and <code>Date</code> tags.</li>
+<li>Rebuild the <a href="#website">Website</a> and deploy it on the <code>gh-pages</code> branch.</li>
+<li>Push both <code>master</code> and <code>gh-pages</code> branch to github.</li>
+<li>Final step is to set the tag for the current version from the shell and push it to github.</li>
+</ul>
+<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="co"># Note that git-shell can be opened from Rstudio.</span>
+<span class="fu">git</span> tag x.x.x <span class="co"># make sure to adjust the version.</span>
+<span class="fu">git</span> push --tags</code></pre></div>
 </div>
   </div>
 
@@ -194,6 +211,7 @@ pkgdown<span class="op">::</span><span class="kw"><a href="https://pkgdown.r-lib
       </ul>
 </li>
       <li><a href="#website">Website</a></li>
+      <li><a href="#deployment">Deployment</a></li>
       </ul>
 </div>
       </div>
