@@ -73,7 +73,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">gwloggeR</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.4</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.5</span>
       </span>
     </div>
 
@@ -154,6 +154,50 @@
       <small>Source: <a href='https://github.com/DOV-Vlaanderen/groundwater-logger-validation/blob/master/NEWS.md'><code>NEWS.md</code></a></small>
     </div>
 
+    <div id="gwlogger-0-1-5" class="section level1">
+<h1 class="page-header">
+<a href="#gwlogger-0-1-5" class="anchor"></a>gwloggeR 0.1.5</h1>
+<div id="website" class="section level2">
+<h2 class="hasAnchor">
+<a href="#website" class="anchor"></a>Website</h2>
+<ul>
+<li>gwloggeR website: <a href="https://dov-vlaanderen.github.io/groundwater-logger-validation/gwloggeR" class="uri">https://dov-vlaanderen.github.io/groundwater-logger-validation/gwloggeR</a>
+</li>
+<li>Getting started tutorial: <a href="https://dov-vlaanderen.github.io/groundwater-logger-validation/gwloggeR/docs/articles/gwloggeR.html" class="uri">https://dov-vlaanderen.github.io/groundwater-logger-validation/gwloggeR/docs/articles/gwloggeR.html</a>
+</li>
+<li>Hydrostatic pressure model explanation: <a href="https://dov-vlaanderen.github.io/groundwater-logger-validation/gwloggeR/docs/articles/Hydropressure.html" class="uri">https://dov-vlaanderen.github.io/groundwater-logger-validation/gwloggeR/docs/articles/Hydropressure.html</a>
+</li>
+</ul>
+</div>
+<div id="interface" class="section level2">
+<h2 class="hasAnchor">
+<a href="#interface" class="anchor"></a>Interface</h2>
+<ul>
+<li>Hydrostatic pressure detect functions assert timestamps to be ordered.</li>
+<li>Hydrostatic pressure detect functions assert no duplicate timestamps.</li>
+<li>
+<code><a href="../reference/detect_temporalchanges.html">detect_temporalchanges()</a></code> glags everything from start until the decay is below 5.</li>
+</ul>
+</div>
+<div id="diagnostic-plots-1" class="section level2">
+<h2 class="hasAnchor">
+<a href="#diagnostic-plots-1" class="anchor"></a>Diagnostic plots</h2>
+<ul>
+<li>Hydrostatic pressure x-axis label now shows correctly ‘timestamps’ instead of ‘sequence’.</li>
+<li>Margin of diagnostic plots y-axis is now the same.</li>
+<li>TC events are now red dots and match the output vector TRUE values.</li>
+<li>LS events are now red dots and match the output vector TRUE values.</li>
+</ul>
+</div>
+<div id="general-1" class="section level2">
+<h2 class="hasAnchor">
+<a href="#general-1" class="anchor"></a>General</h2>
+<ul>
+<li>Completed <a href="https://dov-vlaanderen.github.io/groundwater-logger-validation/gwloggeR/docs/articles/Development.html">Development</a> vignette.</li>
+<li>Add date field in DESCRIPTION.</li>
+</ul>
+</div>
+</div>
     <div id="gwlogger-0-1-4" class="section level1">
 <h1 class="page-header">
 <a href="#gwlogger-0-1-4" class="anchor"></a>gwloggeR 0.1.4</h1>
@@ -184,6 +228,7 @@
     <div id="tocnav">
       <h2>Contents</h2>
       <ul class="nav nav-pills nav-stacked">
+        <li><a href="#gwlogger-0-1-5">0.1.5</a></li>
         <li><a href="#gwlogger-0-1-4">0.1.4</a></li>
         <li><a href="#gwlogger-0-1-3">0.1.3</a></li>
         <li><a href="#gwlogger-0-1-0">0.1.0</a></li>

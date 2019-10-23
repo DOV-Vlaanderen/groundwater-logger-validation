@@ -10,6 +10,8 @@
 
 # Development version
 
+# gwloggeR 0.1.5
+
 ## Website
 * gwloggeR website: https://dov-vlaanderen.github.io/groundwater-logger-validation/gwloggeR
 * Getting started tutorial: https://dov-vlaanderen.github.io/groundwater-logger-validation/gwloggeR/docs/articles/gwloggeR.html 
@@ -22,12 +24,12 @@
 
 ## Diagnostic plots
 * Hydrostatic pressure x-axis label now shows correctly 'timestamps' instead of 'sequence'.
-* Margin of diagnostic plots y-axis should be the same.
+* Margin of diagnostic plots y-axis is now the same.
 * TC events are now red dots and match the output vector TRUE values.
 * LS events are now red dots and match the output vector TRUE values.
 
 ## General
-* Completed `Development` vignette.
+* Completed [Development](https://dov-vlaanderen.github.io/groundwater-logger-validation/gwloggeR/docs/articles/Development.html) vignette.
 * Add date field in DESCRIPTION.
 
 # gwloggeR 0.1.4

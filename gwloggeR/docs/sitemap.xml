@@ -4,6 +4,9 @@
     <loc>https://dov-vlaanderen.github.io/groundwater-logger-validation/gwloggeR/docs/index.html</loc>
   </url>
   <url>
+    <loc>https://dov-vlaanderen.github.io/groundwater-logger-validation/gwloggeR/docs/reference/apriori.hydropressure.difference.samples.html</loc>
+  </url>
+  <url>
     <loc>https://dov-vlaanderen.github.io/groundwater-logger-validation/gwloggeR/docs/reference/apriori.html</loc>
   </url>
   <url>
@@ -11,6 +14,9 @@
   </url>
   <url>
     <loc>https://dov-vlaanderen.github.io/groundwater-logger-validation/gwloggeR/docs/reference/decay.html</loc>
+  </url>
+  <url>
+    <loc>https://dov-vlaanderen.github.io/groundwater-logger-validation/gwloggeR/docs/reference/detect.html</loc>
   </url>
   <url>
     <loc>https://dov-vlaanderen.github.io/groundwater-logger-validation/gwloggeR/docs/reference/detect_duplicates.html</loc>
@@ -40,7 +46,25 @@
     <loc>https://dov-vlaanderen.github.io/groundwater-logger-validation/gwloggeR/docs/reference/Levelshifts.html</loc>
   </url>
   <url>
+    <loc>https://dov-vlaanderen.github.io/groundwater-logger-validation/gwloggeR/docs/reference/Optimizer.html</loc>
+  </url>
+  <url>
+    <loc>https://dov-vlaanderen.github.io/groundwater-logger-validation/gwloggeR/docs/reference/Optimizer.Result.html</loc>
+  </url>
+  <url>
     <loc>https://dov-vlaanderen.github.io/groundwater-logger-validation/gwloggeR/docs/reference/Outliers.html</loc>
+  </url>
+  <url>
+    <loc>https://dov-vlaanderen.github.io/groundwater-logger-validation/gwloggeR/docs/reference/plot.base.html</loc>
+  </url>
+  <url>
+    <loc>https://dov-vlaanderen.github.io/groundwater-logger-validation/gwloggeR/docs/reference/ProgressTable.html</loc>
+  </url>
+  <url>
+    <loc>https://dov-vlaanderen.github.io/groundwater-logger-validation/gwloggeR/docs/reference/seeker.html</loc>
+  </url>
+  <url>
+    <loc>https://dov-vlaanderen.github.io/groundwater-logger-validation/gwloggeR/docs/reference/sweep.html</loc>
   </url>
   <url>
     <loc>https://dov-vlaanderen.github.io/groundwater-logger-validation/gwloggeR/docs/reference/Temporalchanges.html</loc>
