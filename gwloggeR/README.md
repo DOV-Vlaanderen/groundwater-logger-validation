@@ -23,11 +23,11 @@ Note the `ref = "x.x.x"` option. Replace it with the version you want to install
 Usage
 -----
 
-For general use, consult the [getting started](articles/gwloggeR.html) tutorial.
+For general use, consult the [getting started](https://dov-vlaanderen.github.io/groundwater-logger-validation/gwloggeR/docs/articles/gwloggeR.html) tutorial.
 
 For advanced understanding, consult the specific vignettes in the Articles section.
 
 Development
 -----------
 
-Developers and maintainers of this package can find some general guidelines in the [Development guide](articles/Development.html).
+Developers and maintainers of this package can find some general guidelines in the [Development guide](https://dov-vlaanderen.github.io/groundwater-logger-validation/gwloggeR/docs/articles/Development.html).
