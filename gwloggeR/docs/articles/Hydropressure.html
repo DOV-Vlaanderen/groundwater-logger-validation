@@ -112,7 +112,7 @@
     <div class="page-header toc-ignore">
       <h1>Hydrostatic pressure</h1>
             
-            <h4 class="date">2019-10-23</h4>
+            <h4 class="date">2019-11-23</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/DOV-Vlaanderen/groundwater-logger-validation/blob/master/vignettes/Hydropressure.Rmd"><code>vignettes/Hydropressure.Rmd</code></a></small>
       <div class="hidden name"><code>Hydropressure.Rmd</code></div>
@@ -181,7 +181,14 @@ x_t = x_{t-1} + \epsilon(\Delta t) + \omega I(t=t_{LS})
 <p>A temporal change (TC) is an event that decays exponentially with factor <span class="math inline">\(\delta\)</span>.</p>
 <p><span class="math display">\[
 x_t = z_t + \frac{\omega I(t = t_{TC})}{1-\delta B}
-\]</span> We can see this exponential decay more clearly once we rewrite <span class="math inline">\((1-\delta B)^{-1}\)</span> as <span class="math inline">\(1 + \delta B + \delta^2B^2 + \delta^3B^3 + \dots\)</span>. Removing the latent <span class="math inline">\(z_t\)</span> from the equation we end up with:</p>
+\]</span></p>
+<p>We can see this exponential decay more clearly once we rewrite <span class="math inline">\((1-\delta B)^{-1}\)</span> as <span class="math inline">\(1 + \delta B + \delta^2B^2 + \delta^3B^3 + \dots\)</span>. For example, if <span class="math inline">\(\omega\)</span> = 10, this is how it decays in function of time <span class="math inline">\(t\)</span> for <span class="math inline">\(\delta\)</span> = 0.5 and 0.9:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="dv">10</span><span class="op">*</span><span class="fl">0.5</span><span class="op">^</span>(<span class="dv">0</span><span class="op">:</span><span class="dv">5</span>)
+<span class="co">#&gt; [1] 10.0000  5.0000  2.5000  1.2500  0.6250  0.3125</span>
+<span class="dv">10</span><span class="op">*</span><span class="fl">0.9</span><span class="op">^</span>(<span class="dv">0</span><span class="op">:</span><span class="dv">5</span>)
+<span class="co">#&gt; [1] 10.0000  9.0000  8.1000  7.2900  6.5610  5.9049</span></code></pre></div>
+<p>Note how at each step, respectively 50 % and 90 % of the effect remains from the previous step.</p>
+<p>Removing the latent <span class="math inline">\(z_t\)</span> from the equation we end up with:</p>
 <p><span class="math display">\[
 x_t = x_{t-1} + \epsilon(\Delta t) + \omega \left[ I(t=t_{TC}) - \frac{(1-\delta)I(t = t_{TC} + 1)}{1 - \delta B} \right]
 \]</span></p>
@@ -244,12 +251,12 @@ L(\mathbf{\theta} ; \mathbf{x}) = p(\mathbf{x} | \mathbf{\theta}) = \prod_{t=2}^
 <h3 class="hasAnchor">
 <a href="#examples" class="anchor"></a>Examples</h3>
 <p>The following case shows nicely the “creativity” of the algorithm in selecting the events.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">df &lt;-<span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/base/readRDS.html">readRDS</a></span>(<span class="st">'./hydropressure/pp09-1_120829130801_F5474.rds'</span>)<span class="op">$</span>df
-<span class="kw"><a href="https://rdrr.io/r/base/invisible.html">invisible</a></span>(gwloggeR<span class="op">::</span><span class="kw"><a href="https://dov-vlaanderen.github.io/groundwater-logger-validation/gwloggeR/docs/reference/detect_outliers.html">detect_outliers</a></span>(<span class="dt">x =</span> df<span class="op">$</span>PRESSURE_VALUE, <span class="dt">timestamps =</span> df<span class="op">$</span>TIMESTAMP_UTC, 
-                                    <span class="dt">apriori =</span> gwloggeR<span class="op">::</span><span class="kw"><a href="https://dov-vlaanderen.github.io/groundwater-logger-validation/gwloggeR/docs/reference/apriori.html">apriori</a></span>(<span class="st">'hydrostatic pressure'</span>), 
-                                    <span class="dt">plot =</span> <span class="ot">TRUE</span>))</code></pre></div>
 <p><img src="Hydropressure_files/figure-html/hydropressure-interesting-example-1.png" width="700"></p>
 <p>The last three outlier (AO) events are obvious. But the first event is a double event: at the same time we have a level shift (LS) and a temporal change (TC). The level shift causes the drop, and then a temporal change jumps and decays back to the new level. It is the best way the model has found to explain what happened there using the AO, LS and TC events.</p>
+<p><img src="Hydropressure_files/figure-html/hydropressure-interesting-example-2-1.png" width="700"></p>
+<p>There were some major <a href="https://nl.wikipedia.org/wiki/Overstromingen_in_Belgie_2010">floods in Flanders in november 2010</a>. DYLP006X_80773 lies in the ‘flooding Dijle’, so this is a typical example of a flood event. It is not detected as an event because the differences <span class="math inline">\(x_t - x_{t-1}\)</span> are within the expected <span class="math inline">\(\epsilon (\Delta t)\)</span> range.</p>
+<p><img src="Hydropressure_files/figure-html/hydropressure-interesting-example-3-1.png" width="700"></p>
+<p>In this case, a LS event is detected, but not a TC event as one might expect. The reason why is because after the drop, it stays low for several points (LS), and then gradually starts decaying back (TC). Exponential decay is strongest at the start, so TC doesn’t fit well for the first couple of points where the decay effect should be the strongest. Eventually, the algorithm chooses a TC or a LS event based on the likelihood, and in this case a LS event has won.</p>
 </div>
 </div>
 <div id="future-work" class="section level2">
