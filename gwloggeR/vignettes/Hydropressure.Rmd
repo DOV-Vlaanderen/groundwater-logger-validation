@@ -156,7 +156,17 @@ A temporal change (TC) is an event that decays exponentially with factor $\delta
 $$
 x_t = z_t + \frac{\omega I(t = t_{TC})}{1-\delta B}
 $$
-We can see this exponential decay more clearly once we rewrite $(1-\delta B)^{-1}$ as $1 + \delta B + \delta^2B^2 + \delta^3B^3 + \dots$. Removing the latent $z_t$ from the equation we end up with:
+
+We can see this exponential decay more clearly once we rewrite $(1-\delta B)^{-1}$ as $1 + \delta B + \delta^2B^2 + \delta^3B^3 + \dots$. For example, if $\omega$ = 10, this is how it decays in function of time $t$ for $\delta$ = 0.5 and 0.9:
+
+```{r}
+10*0.5^(0:5)
+10*0.9^(0:5)
+```
+
+Note how at each step, respectively 50 % and 90 % of the effect remains from the previous step.
+
+Removing the latent $z_t$ from the equation we end up with:
 
 $$
 x_t = x_{t-1} + \epsilon(\Delta t) + \omega \left[ I(t=t_{TC}) - \frac{(1-\delta)I(t = t_{TC} + 1)}{1 - \delta B} \right]
@@ -213,22 +223,43 @@ Algorithm for hydrostatic pressure AO, LS and TC detection can be summarized in 
 
 The following case shows nicely the "creativity" of the algorithm in selecting the events.
 
-```{r, eval=FALSE, echo=FALSE}
+```{r, echo=FALSE}
 options(logger.root.data.path = './../../data/raw/')
-devtools::load_all('./../../gwloggeR.data', export_all = FALSE)
+devtools::load_all('./../../gwloggeR.data', export_all = FALSE, quiet = TRUE)
 detach('package:gwloggeR.data')
-saveRDS(file = './hydropressure/pp09-1_120829130801_F5474.rds', 
-        object = gwloggeR.data::read('pp09-1_120829130801_F5474'))
 ```
 
-```{r hydropressure-interesting-example}
-df <- readRDS('./hydropressure/pp09-1_120829130801_F5474.rds')$df
+```{r hydropressure-interesting-example, echo=FALSE}
+df <- gwloggeR.data::read('pp09-1_120829130801_F5474')$df
+data.table::setkey(df, TIMESTAMP_UTC)
 invisible(gwloggeR::detect_outliers(x = df$PRESSURE_VALUE, timestamps = df$TIMESTAMP_UTC, 
                                     apriori = gwloggeR::apriori('hydrostatic pressure'), 
-                                    plot = TRUE))
+                                    plot = TRUE, title = 'pp09-1_120829130801_F5474'))
 ```
 
 The last three outlier (AO) events are obvious. But the first event is a double event: at the same time we have a level shift (LS) and a temporal change (TC). The level shift causes the drop, and then a temporal change jumps and decays back to the new level. It is the best way the model has found to explain what happened there using the AO, LS and TC events.
+
+```{r hydropressure-interesting-example-2, echo=FALSE}
+df <- gwloggeR.data::read('DYLP006X_80773')$df
+data.table::setkey(df, TIMESTAMP_UTC)
+df <- df[TIMESTAMP_UTC > '2010-10-01' & TIMESTAMP_UTC < '2011-01-01',]
+invisible(gwloggeR::detect_outliers(x = df$PRESSURE_VALUE, timestamps = df$TIMESTAMP_UTC, 
+                                    apriori = gwloggeR::apriori('hydrostatic pressure'), 
+                                    plot = TRUE, title = 'DYLP006X_80773'))
+```
+
+There were some major [floods in Flanders in november 2010](https://nl.wikipedia.org/wiki/Overstromingen_in_Belgie_2010). DYLP006X_80773 lies in the 'flooding Dijle', so this is a typical example of a flood event. It is not detected as an event because the differences $x_t - x_{t-1}$ are within the expected $\epsilon (\Delta t)$ range.
+
+```{r hydropressure-interesting-example-3, echo=FALSE}
+df <- gwloggeR.data::read('DYLP222A_G4201')$df
+data.table::setkey(df, TIMESTAMP_UTC)
+df <- df[TIMESTAMP_UTC > '2017-01-01' & TIMESTAMP_UTC < '2017-03-01',]
+invisible(gwloggeR::detect_outliers(x = df$PRESSURE_VALUE, timestamps = df$TIMESTAMP_UTC, 
+                                    apriori = gwloggeR::apriori('hydrostatic pressure'), 
+                                    plot = TRUE, title = 'DYLP222A_G4201'))
+```
+
+In this case, a LS event is detected, but not a TC event as one might expect. The reason why is because after the drop, it stays low for several points (LS), and then gradually starts decaying back (TC). Exponential decay is strongest at the start, so TC doesn't fit well for the first couple of points where the decay effect should be the strongest. Eventually, the algorithm chooses a TC or a LS event based on the likelihood, and in this case a LS event has won.
 
 ## Future work
 
