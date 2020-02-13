@@ -25,12 +25,16 @@ df.time_year <- df[, .(Q.025 = quantile(PRESSURE_VALUE, 0.025),
 
 ggplot2::ggplot(data = df, mapping = ggplot2::aes(x = TIME, y = PRESSURE_VALUE)) +
   #ggplot2::geom_point(pch = '.', alpha = 0.5) +
+  ggplot2::geom_line(data = df.time, mapping = ggplot2::aes(y = Q.025), col = 'red', alpha = 0.4, size = 1.2) +
   ggplot2::geom_line(data = df.time, mapping = ggplot2::aes(y = Q.5), col = 'red', alpha = 0.8, size = 1.5) +
+  ggplot2::geom_line(data = df.time, mapping = ggplot2::aes(y = Q.975), col = 'red', alpha = 0.4, size = 1.2) +
   ggplot2::coord_cartesian(ylim = quantile(df$PRESSURE_VALUE, probs = c(0.025, 0.975))) +
   ggplot2::scale_x_datetime(date_breaks = '1 hour', date_labels = '%H') +
   ggplot2::ggtitle(sprintf('Air pressure seasonality (day): %i observations, truncated to hour', nrow(df))) +
   ggplot2::xlab('HOUR') +
   ggplot2::theme_light()
+
+ggplot2::ggsave('./drifts/analysis_03/air_pressure_seasonality_day.png', width = 1280/96, height = 720/96, dpi = 96)
 
 ggplot2::ggplot(data = df, mapping = ggplot2::aes(x = TIME_YEAR, y = PRESSURE_VALUE)) +
   ggplot2::geom_point(pch = '.', alpha = 0.5) +
@@ -43,4 +47,4 @@ ggplot2::ggplot(data = df, mapping = ggplot2::aes(x = TIME_YEAR, y = PRESSURE_VA
   ggplot2::xlab('MONTH') +
   ggplot2::theme_light()
 
-ggplot2::ggsave('./drifts/analysis_03/air_pressure_seasonality_year.png', width = 1280, height = 720, dpi = 1, limitsize = FALSE)
+ggplot2::ggsave('./drifts/analysis_03/air_pressure_seasonality_year.png', width = 1280/96, height = 720/96, dpi = 96)
