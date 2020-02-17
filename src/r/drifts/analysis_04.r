@@ -1,6 +1,7 @@
 # Analysis of differences between one barometer and many others in its neighbourhood.
+# This one is the same as v02, but uses better matching of timestamps.
 
-locations <- read.csv('./../../data/raw/inbo/barodata/aaa_Baro_Position_Lambert72.csv',
+locations <- read.csv('./../../data/meta/inbo/Baro_Position_Lambert72.csv',
                       dec = ',', sep = ';', na.strings = 'NULL', stringsAsFactors = FALSE)
 data.table::setDT(locations)
 data.table::setkey(locations, ppnt_cde)
@@ -69,7 +70,7 @@ compute <- function(logger.loc, nr_surrounding_barros = length(distances)) {
     ggplot2::ggtitle(sprintf('%s (%s) #%s', logger.loc, paste0(attr(logger.df, 'loggers'), collapse = ', '), nrow(df.diff))) +
     ggplot2::theme_light()
 
-  filename <- sprintf('./drifts/analysis_02/%s.png', logger.loc)
+  filename <- sprintf('./drifts/analysis_04/%s.png', logger.loc)
 
   local({
     png(filename, width = 1280, height = 720)

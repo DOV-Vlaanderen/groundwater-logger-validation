@@ -1,6 +1,6 @@
 # Analysis of differences between two barometers: mainly their variance.
 
-locations <- read.csv('./../../data/raw/inbo/barodata/aaa_Baro_Position_Lambert72.csv',
+locations <- read.csv('./../../data/meta/inbo/Baro_Position_Lambert72.csv',
                       dec = ',', sep = ';', na.strings = 'NULL', stringsAsFactors = FALSE)
 data.table::setDT(locations)
 data.table::setkey(locations, ppnt_cde)
