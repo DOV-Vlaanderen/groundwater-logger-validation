@@ -25,7 +25,8 @@ df.quant <- df[
       N = .N),
   by = .(TEMPERATURE_VALUE = round(TEMPERATURE_VALUE))][N > 200, ]
 
-summary(lm(data = df, formula = PRESSURE_VALUE ~ TEMPERATURE_VALUE))
+summary((fit.lm <- lm(data = df, formula = PRESSURE_VALUE ~ TEMPERATURE_VALUE)))
+summary((fit.rq <- quantreg::rq(data = df, formula = PRESSURE_VALUE ~ TEMPERATURE_VALUE)))
 # fit <- bayesQR::bayesQR(data = df, formula = PRESSURE_VALUE ~ TEMPERATURE_VALUE, ndraw = 10)
 
 ggplot2::ggplot(data = df, mapping = ggplot2::aes(x = TEMPERATURE_VALUE, y = PRESSURE_VALUE)) +
