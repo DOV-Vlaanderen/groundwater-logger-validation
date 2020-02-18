@@ -52,6 +52,8 @@ Logger <- function(name) {
                                      tz = 'UTC')]
     df[, PRESSURE_VALUE := V3]
     df[, PRESSURE_UNIT := "cmH2O"]
+    df[, TEMPERATURE_VALUE := V4]
+    df[, TEMPERATURE_UNIT := "°C"]
     df[, c("V1","V2","V3","V4") := NULL]
 
     data.table::setkey(df, MEASUREMENT_ID)
@@ -60,13 +62,15 @@ Logger <- function(name) {
   }
 
   readfile.inbo <- function(csv.file) {
-    cols.selected <- c('DRME_ID', 'DRME_OCR_UTC_DTE', 'DRME_DRU')
+    cols.selected <- c('DRME_ID', 'DRME_OCR_UTC_DTE', 'DRME_DRU', 'DRME_TPU')
     df <- data.table::fread(csv.file, dec = ",", select = cols.selected)
     df[, MEASUREMENT_ID := DRME_ID]
     df[, TIMESTAMP_UTC := as.POSIXct(gsub("(.*):", "\\1", DRME_OCR_UTC_DTE),
                                      format = "%d/%m/%Y %H:%M:%S %z", tz = 'UTC')]
     df[, PRESSURE_VALUE := DRME_DRU]
     df[, PRESSURE_UNIT := "cmH2O"]
+    df[, TEMPERATURE_VALUE := DRME_TPU]
+    df[, TEMPERATURE_UNIT := "°C"]
     df[, (cols.selected) := NULL]
 
     data.table::setkey(df, MEASUREMENT_ID)
