@@ -19,5 +19,9 @@ options(logger.root.data.path = './../../data/raw')
 try(devtools::load_all('./../../gwloggeR.data', export_all = FALSE))
 try(detach('package:gwloggeR.data'))
 
+# Might be dangerous in some cases, but improves portability of code.
+# Sys.timezone(): default is usualy "Europe/Paris" or similar.
+Sys.setenv(TZ = "UTC")
+
 cat(".Rprofile file loaded for project.\n")
 cat("#########################################################\n")
