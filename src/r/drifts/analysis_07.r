@@ -51,7 +51,7 @@ P.Pa_to_cmH2O(P.lr(100))
 # Conclusion here is that the drop in air pressure is expected to drop per 100 m:
 P.Pa_to_cmH2O(P.lr(0)) - P.Pa_to_cmH2O(P.lr(100))
 
-curve(P.Pa_to_cmH2O(P.lr(x)), xlim = c(0, 11000))
+curve(P.Pa_to_cmH2O(P.lr(x)), xlim = c(0, 11000), xlab = 'Altitude (m)', ylab = 'Air pressure (cmH2O)')
 
 # DENSITY
 # This is the same as P.lr, but for the density.
