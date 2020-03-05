@@ -8,6 +8,7 @@
 g0 <- 9.80665 # m/s2 -- gravitational acceleration
 R <- 8.3144598 # J/(mol·K) -- universal gas constant
 M <- 0.0289644 # kg/mol -- molar mass of Earth's air
+M_v <- 0.018016 # kg/mol -- molar mass of water vapor
 
 # Constants taken from Barometric formula
 # https://en.wikipedia.org/wiki/Barometric_formula
@@ -114,8 +115,6 @@ P_sat.Pa(T_b, type = 'Tetens')
 # humid air.
 
 rho_ha <- function(temp.K, humidity.perc) {
-  M_v <- 0.018016 # Molar mass of water vapor (kg/mol)
-
   P_v <- humidity.perc/100 * P_sat.Pa(temp.K)
   P_d <- P_b - P_v
 
@@ -133,4 +132,3 @@ P.Pa_to_cmH2O(rho_ha(T_b + 1, 90)*R/M*(T_b + 1) - rho_ha(T_b, 90)*R/M*T_b)
 # The bulge during non-summer can not be explained by drop in air pressure density.
 # https://nl.wikipedia.org/wiki/Relatieve_luchtvochtigheid#Relatieve_luchtvochtigheid_en_klimaat
 P.Pa_to_cmH2O(rho_ha(T_b, 75)*R/M*T_b - rho_ha(T_b, 90)*R/M*T_b)
-
