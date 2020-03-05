@@ -88,3 +88,16 @@ results <- results[dist != 0, ]
 with(results, plot(x = dist, y = sd))
 
 results[order(sd, decreasing = TRUE),][1:10]
+
+summary((fit.rq.5 <- quantreg::rq(data = results, formula = sd ~ dist)))
+summary((fit.rq.1 <- quantreg::rq(data = results, formula = sd ~ dist, tau = 0.1)))
+
+ggplot2::ggplot(data = results, mapping = ggplot2::aes(x = dist, y = sd)) +
+  ggplot2::geom_point() +
+  # ggplot2::geom_smooth(method = 'lm', formula = y ~ x, col = 'yellow', size = 1.2, alpha = 0.9) +
+  ggplot2::geom_quantile(quantiles = c(0.1, 0.5), formula = y ~ x, size = 1.2, alpha = 0.9) +
+  ggplot2::coord_cartesian(ylim = quantile(results$sd, probs = c(0.01, 0.99)),
+                           xlim = quantile(results$dist, probs = c(0.01, 0.99))) +
+  ggplot2::xlab('Distance (km)') + ggplot2::ylab('Standard deviation (MAD, cmH2O)') +
+  ggplot2::ggtitle('Air pressure difference SD in function of barometer distance') +
+  ggplot2::theme_light()
