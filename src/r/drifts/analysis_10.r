@@ -10,7 +10,7 @@ list.quant <- lapply(results, function(df) {
   df.Q <- df[, .(Q.5 = quantile(PRESSURE_DIFF, 0.5), N.GROUP = .N), by = TIMESTAMP_UTC]
   df.Q <- df.Q[N.GROUP >= 10, ]
   wiskers <- boxplot.stats(df.Q[, Q.5])$stats[c(1, 5)]
-  df.Q[, Q.5.scaled := Q.5 - mean(wiskers)]
+  df.Q[, Q.5.centered := Q.5 - mean(wiskers)]
   df.Q[, FILE := basename(attr(df, 'logger.name'))]
   df.Q[, N := .N]
   df.Q[, IQR := IQR(Q.5)]
@@ -39,7 +39,7 @@ df.quant[, LABEL := sprintf('%s (#%i) [%.2f WISK]', FILE, N, WISK)]
 df.quant <- df.quant[order(WISK, LABEL), ]
 df.quant[, LABEL := factor(LABEL, levels = unique(LABEL))]
 
-ggplot2::ggplot(data = df.quant, mapping = ggplot2::aes(y = Q.5.scaled, x = LABEL)) +
+ggplot2::ggplot(data = df.quant, mapping = ggplot2::aes(y = Q.5.centered, x = LABEL)) +
   ggplot2::geom_boxplot() +
   ggplot2::coord_flip(ylim = c(-25, 25)) +
   ggplot2::ggtitle(label = 'Centered distrbiution of median curve (red) from analysis 04',
