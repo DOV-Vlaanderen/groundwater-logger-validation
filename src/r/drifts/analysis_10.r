@@ -16,6 +16,7 @@ list.quant <- lapply(results, function(df) {
   df.Q[, IQR := IQR(Q.5)]
   df.Q[, WISK := wiskers[2L] - wiskers[1L]]
   df.Q[, PERC.95 := quantile(Q.5, 0.975) - quantile(Q.5, 0.025)]
+  df.Q[, SD := sd(Q.5)]
   df.Q
 })
 
@@ -48,4 +49,4 @@ ggplot2::ggplot(data = df.quant, mapping = ggplot2::aes(y = Q.5.scaled, x = LABE
 
 ggplot2::ggsave('./drifts/analysis_10/baro_median_errors_uhd-1.png', width = 2160/96, height = 3840/96, dpi = 96)
 
-write.csv(unique(df.quant[,.(FILE, N, IQR, WISK, PERC.95)]), file = './drifts/analysis_10/baro_median_errors.csv', row.names = FALSE)
+write.csv(unique(df.quant[,.(FILE, N, IQR, WISK, PERC.95, SD)]), file = './drifts/analysis_10/baro_median_errors.csv', row.names = FALSE)
