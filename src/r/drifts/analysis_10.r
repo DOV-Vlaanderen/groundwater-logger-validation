@@ -15,10 +15,11 @@ list.quant <- lapply(results, function(df) {
   df.Q[, N := .N]
   df.Q[, IQR := IQR(Q.5)]
   df.Q[, WISK := wiskers[2L] - wiskers[1L]]
+  df.Q[, PERC.95 := quantile(Q.5, 0.975) - quantile(Q.5, 0.025)]
   df.Q
 })
 
-local(with(list.quant[[1L]], {
+local(with(list.quant[['barodata/BAOL016X_77551.csv']], {
   print(ggplot2::ggplot(mapping = ggplot2::aes(x = TIMESTAMP_UTC)) +
           ggplot2::geom_line(mapping = ggplot2::aes(y = Q.5), col = 'red', alpha = 0.5) +
           ggplot2::theme_light() +
@@ -47,4 +48,4 @@ ggplot2::ggplot(data = df.quant, mapping = ggplot2::aes(y = Q.5.scaled, x = LABE
 
 ggplot2::ggsave('./drifts/analysis_10/baro_median_errors_uhd-1.png', width = 2160/96, height = 3840/96, dpi = 96)
 
-write.csv(unique(df.quant[,.(FILE, N, IQR, WISK)]), file = './drifts/analysis_10/baro_median_errors.csv', row.names = FALSE)
+write.csv(unique(df.quant[,.(FILE, N, IQR, WISK, PERC.95)]), file = './drifts/analysis_10/baro_median_errors.csv', row.names = FALSE)
