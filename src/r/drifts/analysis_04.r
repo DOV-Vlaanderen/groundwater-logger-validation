@@ -15,11 +15,14 @@ read.baro <- function(logger.name) {
   df <- df[!duplicated(TIMESTAMP_UTC), ]
   df <- df[, .('PRESSURE_VALUE' = mean(PRESSURE_VALUE)),
            by = .('TIMESTAMP_UTC' = round_timestamp(TIMESTAMP_UTC))]
+  df[, 'FILE' := basename(logger.name)]
+  df[, 'N' := .N]
   data.table::setkey(df, TIMESTAMP_UTC)
   structure(df, 'logger.name' = logger.name)
 }
 
 # read.baro('barodata/BAOL553X_B_004BA.csv')
+data <- sapply(logger.names, read.baro, simplify = FALSE, USE.NAMES = TRUE)
 
 compare <- function(df1, df2) {
   if (nrow(df1) == 0L || nrow(df2) == 0L) return(data.table::data.table())
@@ -29,13 +32,12 @@ compare <- function(df1, df2) {
   diff.df
 }
 
-
-compute <- function(logger.name) {
+compute <- function(logger.name, make.plot = TRUE) {
   logger.names <- setdiff(logger.names, logger.name)
-  logger.df <- read.baro(logger.name)
+  logger.df <- data[[logger.name]]
 
   df.diff <- lapply(logger.names, function(other.name) {
-    other.df <- read.baro(other.name)
+    other.df <- data[[other.name]]
     compare(logger.df, other.df)
   })
   df.diff <- data.table::rbindlist(df.diff, use.names = TRUE, fill = TRUE)
@@ -75,6 +77,7 @@ compute <- function(logger.name) {
   filename <- sprintf('./drifts/analysis_04/%s.png', tools::file_path_sans_ext(basename(logger.name)))
 
   local({
+    if (!make.plot) return()
     png(filename, width = 1280, height = 720)
     on.exit(dev.off())
     print(gridExtra::grid.arrange(plt.logger, plt.diff,
@@ -82,13 +85,15 @@ compute <- function(logger.name) {
                                   top = grob.title))
   })
 
+  structure(df.diff, 'logger.name' = logger.name)
 }
 
 # compute(logger.names[1])
 # lapply(logger.names, compute)
 
 parallel::setDefaultCluster(parallel::makeCluster(spec = 7L))
-parallel::clusterExport(varlist = c('logger.names', 'round_timestamp', 'read.baro', 'compare'))
-invisible(parallel::clusterApplyLB(x = logger.names, fun = compute))
+parallel::clusterExport(varlist = c('logger.names', 'round_timestamp', 'data', 'compare'))
+results <- parallel::parSapplyLB(X = logger.names, FUN = compute, simplify = FALSE, USE.NAMES = TRUE,
+                                 chunk.size = 1, make.plot = TRUE)
 parallel::stopCluster(cl = parallel::getDefaultCluster())
 
