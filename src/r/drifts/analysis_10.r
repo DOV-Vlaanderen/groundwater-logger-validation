@@ -47,4 +47,4 @@ ggplot2::ggplot(data = df.quant, mapping = ggplot2::aes(y = Q.5.scaled, x = LABE
 
 ggplot2::ggsave('./drifts/analysis_10/baro_median_errors_uhd-1.png', width = 2160/96, height = 3840/96, dpi = 96)
 
-write.csv(unique(df.quant[,.(FILE, N, IQR, WISK)]), file = './drifts/analysis_10/baro_median_errors.csv')
+write.csv(unique(df.quant[,.(FILE, N, IQR, WISK)]), file = './drifts/analysis_10/baro_median_errors.csv', row.names = FALSE)
