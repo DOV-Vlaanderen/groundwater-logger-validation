@@ -37,14 +37,9 @@ P.lr(10)
 # PRESSURE
 # Here I define a few pressure conversion functions.
 
-P.cmH2O_to_Pa <- function(P.cmH2O) {
-  # https://en.wikipedia.org/wiki/Centimetre_of_water
-  P.cmH2O * 98.063754138
-}
+P.cmH2O_to_Pa <- gwloggeR.data:::P.cmH2O_to_Pa
 
-P.Pa_to_cmH2O <- function(P.Pa) {
-  P.Pa * 1/P.cmH2O_to_Pa(1)
-}
+P.Pa_to_cmH2O <- gwloggeR.data:::P.Pa_to_cmH2O
 
 P.Pa_to_cmH2O(P.lr(0))
 P.Pa_to_cmH2O(P.lr(100))

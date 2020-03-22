@@ -9,7 +9,7 @@ validate.logger.root.path <- function() {
 
 #' @title Enumerate logger files
 #' @export
-enumerate <- function(partner = c('all', 'inbo', 'geotech'), full.path = FALSE) {
+enumerate <- function(partner = c('all', 'inbo', 'geotech', 'knmi'), full.path = FALSE) {
   partner <- match.arg(partner)
   validate.logger.root.path()
 
@@ -25,9 +25,16 @@ enumerate <- function(partner = c('all', 'inbo', 'geotech'), full.path = FALSE) 
                pattern = ".*\\.mon", ignore.case = TRUE)
   }
 
+  knmi <- function() {
+    list.files(paste0(getOption("logger.root.data.path"), '/knmi/'),
+               recursive = TRUE, full.names = full.path,
+               pattern = ".*\\.txt", ignore.case = TRUE)
+  }
+
   switch(partner,
          "inbo" = inbo(),
          "geotech" = geotech(),
+         "knmi" = knmi(),
          c(inbo(), geotech()))
 }
 
@@ -61,6 +68,25 @@ Logger <- function(name) {
     df
   }
 
+  readfile.knmi <- function(txt.file) {
+    header <- readLines(con = txt.file, n = 100)
+    nrowskip <- max(grep("^#.*$", header))
+    df <- data.table::fread(txt.file, dec = ".", skip = nrowskip + 1L, sep = ",")
+    df[, MEASUREMENT_ID := 1:.N]
+    df[, TIMESTAMP_UTC := as.POSIXct(paste(V2, V3),
+                                     tryFormats = c("%Y%m%d %H"),
+                                     tz = 'UTC')]
+    df[, PRESSURE_VALUE := P.Pa_to_cmH2O(V5*10)] # hPa = 100Pa, but data is in 0.1hPa
+    df[, PRESSURE_UNIT := "cmH2O"]
+    df[, TEMPERATURE_VALUE := V4]
+    df[, TEMPERATURE_UNIT := "°C"]
+    df[, c("V1","V2","V3","V4","V5") := NULL]
+
+    data.table::setkey(df, MEASUREMENT_ID)
+
+    df
+  }
+
   readfile.inbo <- function(csv.file) {
     cols.selected <- c('DRME_ID', 'DRME_OCR_UTC_DTE', 'DRME_DRU', 'DRME_TPU')
     df <- data.table::fread(csv.file, dec = ",", select = cols.selected)
@@ -81,6 +107,7 @@ Logger <- function(name) {
   readfile <- function(filepath) {
     if (grepl(pattern = '/inbo', files)) return(readfile.inbo(filepath))
     if (grepl(pattern = '/geotechniek', files)) return(readfile.geotech(filepath))
+    if (grepl(pattern = '/knmi', files)) return(readfile.knmi(filepath))
   }
 
   files <- list.files(getOption("logger.root.data.path"), recursive = TRUE, full.names = TRUE)
