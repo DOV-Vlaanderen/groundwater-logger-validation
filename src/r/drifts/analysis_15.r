@@ -39,6 +39,8 @@ boot <- function(n.obs, n.samples.min = 1000L) {
   unlist(samples)
 }
 
+hist(boot(100), breaks = 100)
+
 n.obs <- seq(from = 10, to = 3500, by = 10)
 parallel::setDefaultCluster(parallel::makeCluster(spec = 7L))
 parallel::clusterExport(varlist = c('boot.sample', 'df.knmi'))
