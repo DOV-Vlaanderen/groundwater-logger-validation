@@ -62,12 +62,12 @@ h.lr(P.lr(50)) # Test, should be the same as input: 50
 
 medians.Pa <- sapply(medians, P.cmH2O_to_Pa, simplify = TRUE, USE.NAMES = TRUE)
 
-altitude.m <- sapply(medians.Pa, h.lr, simplify = TRUE, USE.NAMES = TRUE)
+altitude.m.bf <- sapply(medians.Pa, h.lr, simplify = TRUE, USE.NAMES = TRUE)
 
-hist(altitude.m, breaks = 50, main = 'Altitudes (m) based on barometric formula', xlab = 'Altitude (m)')
+hist(altitude.m.bf, breaks = 50, main = 'Altitudes (m) based on barometric formula', xlab = 'Altitude (m)')
 
 df <- merge(x = df,
-            y = data.frame(FILE = basename(names(altitude.m)), ALTITUDE = as.vector(altitude.m)),
+            y = data.frame(FILE = basename(names(altitude.m.bf)), ALTITUDE = as.vector(altitude.m.bf)),
             all.x = TRUE, by = 'FILE')
 
 data.table::setkey(df, FILE, TIMESTAMP_UTC)
@@ -94,4 +94,4 @@ ggplot2::ggplot(data = df, mapping = ggplot2::aes(y = PRESSURE_VALUE, x = sprint
 
 ggplot2::ggsave('./drifts/analysis_08/baro_hist_altitudes_uhd-1.png', width = 2160/96, height = 3840/96, dpi = 96)
 
-write.csv(as.data.frame(altitude.m), file = './drifts/analysis_08/baro_barometric_formula_altitudes.csv')
+write.csv(as.data.frame(altitude.m.bf), file = './drifts/analysis_08/baro_barometric_formula_altitudes.csv')
