@@ -40,10 +40,8 @@ timestamps <- seq(as.POSIXct('2000-01-01'), length.out = length(x), by = '15 min
 # plot(x)
 
 testthat::test_that('Hydrostatic pressure detect function finds all the events.', {
-  #saveRDS(detect(x = x, timestamps = timestamps)[order(index, type)], file = './tests/testthat/test-hydropressure-detect.rds', version = 2)
-  res.expected <- readRDS('test-hydropressure-detect.rds')
   res <- detect(x = x, timestamps = timestamps)[order(index, type)]
-  testthat::expect_equal(object = res, expected = res.expected)
+  testthat::expect_known_value(object = res, file = './test-hydropressure-detect.rds')
 })
 
 testthat::test_that('Hydrostatic pressure LS is detected.', {
