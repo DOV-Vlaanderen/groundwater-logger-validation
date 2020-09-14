@@ -46,6 +46,8 @@ The repository consists of 2 project roots:
 
 Note that cross-linking of files between projects based on relative paths is allowed since all projects reside in the same repository.
 
+Always double-check the `.Rprofile` file and adjust the paths accordingly.
+
 ## Testing
 
 There are a couple of unit tests in the `tests` directory. These tests are based on [`testthat`](http://r-pkgs.had.co.nz/tests.html) and can be executed from Rstudio with `Ctrl` + `Shift` + `T`.
