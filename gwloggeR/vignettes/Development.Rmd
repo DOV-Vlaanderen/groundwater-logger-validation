@@ -31,7 +31,7 @@ Here we describe some  general guidelines for maintenance and development of `gw
 
 `gwloggeR` is developed as part of a larger git-repository: https://github.com/DOV-Vlaanderen/groundwater-logger-validation.
 
-So first we need to checkout this repository somewhere localy.
+So first we need to checkout this repository somewhere locally.
 
 ```{}
 git checkout https://github.com/DOV-Vlaanderen/groundwater-logger-validation.git
