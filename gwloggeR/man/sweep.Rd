@@ -4,8 +4,17 @@
 \alias{sweep}
 \title{Hydrostatic pressure model selection step}
 \usage{
-sweep(dx, base.types = NULL, base.indexes = NULL, base.par = NULL,
-  sweep.indexes, types, mu, sigma2, pt)
+sweep(
+  dx,
+  base.types = NULL,
+  base.indexes = NULL,
+  base.par = NULL,
+  sweep.indexes,
+  types,
+  mu,
+  sigma2,
+  pt
+)
 }
 \description{
 Based on base model events (and corresponding indexes),

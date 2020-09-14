@@ -4,7 +4,9 @@
 \name{CONST.ALPHA}
 \alias{CONST.ALPHA}
 \title{Type I error rate constant}
-\format{An object of class \code{numeric} of length 1.}
+\format{
+An object of class \code{numeric} of length 1.
+}
 \usage{
 CONST.ALPHA
 }
