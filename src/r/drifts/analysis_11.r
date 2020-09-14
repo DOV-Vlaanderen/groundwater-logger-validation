@@ -1,9 +1,9 @@
 # KNMI series analysis similar to v04 en v10.
 
-logger.names <- grep('barodata/', gwloggeR.data::enumerate(), value = TRUE)
+logger.names <- grep('barometer/', gwloggeR.data::enumerate(), value = TRUE)
 logger.names <- c(logger.names, 'KNMI_20200312_hourly')
-logger.names <- setdiff(logger.names, 'barodata/BAOL016X_W1666.csv')
-logger.names <- setdiff(logger.names, 'barodata/BAOL050X_56819.csv') # high freq manu in range of 80 cmH2O
+logger.names <- setdiff(logger.names, 'barometer/BAOL016X_W1666.csv')
+logger.names <- setdiff(logger.names, 'barometer/BAOL050X_56819.csv') # high freq manu in range of 80 cmH2O
 
 round_timestamp <- function(ts, scalefactor.sec = 3600*12) {
   as.POSIXct(round(as.numeric(ts)/scalefactor.sec) * scalefactor.sec, origin = '1970-01-01', tz = 'UTC')
@@ -23,7 +23,7 @@ read.baro <- function(logger.name) {
   structure(df, 'logger.name' = logger.name)
 }
 
-# read.baro('barodata/BAOL553X_B_004BA.csv')
+# read.baro('barometer/BAOL553X_B_004BA.csv')
 data <- sapply(logger.names, read.baro, simplify = FALSE, USE.NAMES = TRUE)
 
 with(data[['KNMI_20200312_hourly']], plot(x = TIMESTAMP_UTC, y = PRESSURE_VALUE, type = 'l'))

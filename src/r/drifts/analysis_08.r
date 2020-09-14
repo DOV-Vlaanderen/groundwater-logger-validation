@@ -6,10 +6,10 @@ round_timestamp <- function(ts, scalefactor.sec = 3600*12) {
   as.POSIXct(round(as.numeric(ts)/scalefactor.sec) * scalefactor.sec, origin = '1970-01-01', tz = 'UTC')
 }
 
-logger.names <- grep('barodata/', gwloggeR.data::enumerate(), value = TRUE)
+logger.names <- grep('barometer/', gwloggeR.data::enumerate(), value = TRUE)
 
-logger.names <- setdiff(logger.names, 'barodata/BAOL016X_W1666.csv')
-logger.names <- setdiff(logger.names, 'barodata/BAOL050X_56819.csv') # high freq manu in range of 80 cmH2O
+logger.names <- setdiff(logger.names, 'barometer/BAOL016X_W1666.csv')
+logger.names <- setdiff(logger.names, 'barometer/BAOL050X_56819.csv') # high freq manu in range of 80 cmH2O
 
 df.list <- sapply(logger.names, function(name) {
   df <- gwloggeR.data::read(name)$df

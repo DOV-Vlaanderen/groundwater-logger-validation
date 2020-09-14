@@ -20,7 +20,7 @@ list.quant <- lapply(results, function(df) {
   df.Q
 })
 
-local(with(list.quant[['barodata/BAOL016X_77551.csv']], {
+local(with(list.quant[['barometer/BAOL016X_77551.csv']], {
   print(ggplot2::ggplot(mapping = ggplot2::aes(x = TIMESTAMP_UTC)) +
           ggplot2::geom_line(mapping = ggplot2::aes(y = Q.5), col = 'red', alpha = 0.5) +
           ggplot2::theme_light() +

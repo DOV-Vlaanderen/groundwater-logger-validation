@@ -1,6 +1,6 @@
 # Seasonality analysis
 
-loggers <- grep('barodata/', gwloggeR.data::enumerate('inbo'), value = TRUE)
+loggers <- grep('barometer/', gwloggeR.data::enumerate('inbo'), value = TRUE)
 
 df <- lapply(loggers, function(logger) {
   gwloggeR.data::read(logger)$df

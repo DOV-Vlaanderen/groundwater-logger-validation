@@ -1,9 +1,9 @@
 # Effect of temperature on air pressure.
 
-logger.names <- grep('barodata/', gwloggeR.data::enumerate(), value = TRUE)
+logger.names <- grep('barometer/', gwloggeR.data::enumerate(), value = TRUE)
 
-logger.names <- setdiff(logger.names, 'barodata/BAOL016X_W1666.csv')
-logger.names <- setdiff(logger.names, 'barodata/BAOL050X_56819.csv') # high freq manu in range of 80 cmH2O
+logger.names <- setdiff(logger.names, 'barometer/BAOL016X_W1666.csv')
+logger.names <- setdiff(logger.names, 'barometer/BAOL050X_56819.csv') # high freq manu in range of 80 cmH2O
 
 df <- lapply(logger.names, function(name) gwloggeR.data::read(name)$df)
 df <- data.table::rbindlist(df, use.names = TRUE, fill = TRUE)

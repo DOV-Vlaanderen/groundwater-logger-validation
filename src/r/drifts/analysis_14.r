@@ -26,7 +26,7 @@ plot.location <- function(location, df.list) {
       ggplot2::annotate("text", vjust = -0.25, hjust = 0,
                         x = min(df$TIMESTAMP_UTC), y = med,
                         label = sprintf('Median: %0.2f cmH2O @ %.2fm (MSL)', med,
-                                        altitude.m.bf[sprintf('barodata/%s', unique(df$FILE))])) +
+                                        altitude.m.bf[sprintf('barometer/%s', unique(df$FILE))])) +
       ggplot2::theme_light() +
       ggplot2::theme(axis.text.y = ggplot2::element_text(angle = 90, hjust = 0.5),
                      plot.title = ggplot2::element_text(size = 10)) +
