@@ -1,3 +1,5 @@
+# Before running this file, make sure to build and install the package. (Ctrl + Shift + B)
+
 # Load gwloggeR.data package ----------------------------------------------
 
 options(logger.root.data.path = './../data/raw')
@@ -38,6 +40,7 @@ test_detect_function <- function(fun, ..., RESULT.PATH, ATTRIB.PATH = NULL, IMG.
   invisible(TRUE)
 }
 
+# Note that this may take some 30 minutes to complete. So run only before releasing.
 lapply(
   list.files(path = './tests/analytics/', pattern = 'detect_.*\\.r', recursive = FALSE, full.names = TRUE),
   source
