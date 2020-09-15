@@ -4,10 +4,13 @@ There are various testing procedures of `gwloggeR`. Each testing type is placed 
 
 ## Strict
 
-These are classical test that are enforced by the `testthat` package. See [here](https://r-pkgs.org/tests.html) for a full description.
+These are classical test that are enforced by the [`testthat`](http://r-pkgs.had.co.nz/tests.html) package. See [here](https://r-pkgs.org/tests.html) for a full user manual. These test can be executed from Rstudio with `Ctrl` + `Shift` + `T`.
+
+Mainly the hydrostatic pressure tests are important since they test the detection function based on a predefined small timeseries that has clear AO, LS and TC events.
 
 Some takeaways:
 
+* Whenever you are tempted to type something into a print statement or a debugger expression, write it as a test instead.
 * Test files live in `tests/testthat/` and their file names must start with `test`.
 * Start each file with `testthat::context()` that describes what is tested in the file.
 * Group various expected results into one unit testing `testhat::test_that()` function. These units have a name, so when something goes wrong, you know where to look at. Each test is run in its own environment and is self-contained, but the global options are not reset.
