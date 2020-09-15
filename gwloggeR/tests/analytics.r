@@ -23,7 +23,7 @@ test_detect_function <- function(fun, ..., RESULT.PATH, ATTRIB.PATH = NULL, IMG.
   if (!is.null(ATTRIB.PATH)) {
     dir.create(dirname(ATTRIB.PATH), showWarnings = FALSE, recursive = TRUE)
     attribs <- attributes(result)
-    attribs[sapply(attribs, is.function)] <- NULL # print.function() prints evnir and bytecode
+    attribs[sapply(attribs, is.function)] <- NULL # print.function() prints envir and bytecode
     capture.output(attribs, file = ATTRIB.PATH)
   }
 
