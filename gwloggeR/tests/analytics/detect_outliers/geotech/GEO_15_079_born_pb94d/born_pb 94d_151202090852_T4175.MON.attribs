@@ -1,0 +1,9 @@
+$version
+[1] "0.06"
+
+$class
+[1] "Outliers" "logical" 
+
+$type
+[1] "two.sided"
+
