@@ -9,6 +9,7 @@
 * Show tresholds on diagnostic plots for differences(x).
 
 # Development version
+* Fixed issue #47.
 
 # gwloggeR 0.1.5
 
