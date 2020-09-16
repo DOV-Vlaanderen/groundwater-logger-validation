@@ -5,10 +5,11 @@
 #' @keywords internal
 #'
 apriori.hydropressure.difference.samples <- function(interval.sec) {
+
   # interval.sec adjustment: if > 24h, then adjust so it is divisible by 15min
   if (interval.sec > 60*60*24)
     interval.sec <- round(interval.sec/(60*15))*60*15
-  else if (interval.sec > 60*60*1) # if > 1h, then divisible by 5 min
+  else if (interval.sec > 60*5*1) # if > 5 min, then divisible by 5 min
     interval.sec <- round(interval.sec/(60*5))*60*5
   else # else divisible by 1min
     interval.sec <- round(interval.sec/(60))*60
