@@ -1,6 +1,5 @@
 #' @title Levelshifts object
 #' @description Levelshifts object holds all the necessary information about detected levelshifts.
-#' @rdname Levelshifts
 #' @keywords internal
 #' @rdname Levelshifts
 #'

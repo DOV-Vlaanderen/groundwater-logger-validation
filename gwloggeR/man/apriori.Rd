@@ -4,8 +4,10 @@
 \alias{apriori}
 \title{A-priori data information class}
 \usage{
-apriori(data_type = c("air pressure", "hydrostatic pressure"),
-  units = c("cmH2O"))
+apriori(
+  data_type = c("air pressure", "hydrostatic pressure"),
+  units = c("cmH2O")
+)
 }
 \arguments{
 \item{data_type}{character, specifying type of data}

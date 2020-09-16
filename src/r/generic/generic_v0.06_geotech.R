@@ -11,8 +11,8 @@ local({
     df <- df[!is.na(TIMESTAMP_UTC),]
     data.table::setkey(df, TIMESTAMP_UTC)
 
-    df.types <- gwloggeR:::detect(x = df$PRESSURE_VALUE, timestamps = df$TIMESTAMP_UTC, types = c('AO', 'LS', 'TC'))
-    df.plot <- gwloggeR:::plot.data(x = df$PRESSURE_VALUE, timestamps = df$TIMESTAMP_UTC, df.types = df.types)
+    events <- gwloggeR:::detect(x = df$PRESSURE_VALUE, timestamps = df$TIMESTAMP_UTC, types = c('AO', 'LS', 'TC'))
+    df.plot <- gwloggeR:::plot.data(x = df$PRESSURE_VALUE, timestamps = df$TIMESTAMP_UTC, events = events)
     plt <- gwloggeR:::plot.base(data = df.plot)
     plt <- gwloggeR:::plot.add.levelshifts(plt)
     plt <- gwloggeR:::plot.add.tempchanges(plt)

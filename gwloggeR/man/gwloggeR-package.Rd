@@ -29,7 +29,7 @@ Useful links:
 
 }
 \author{
-\strong{Maintainer}: Davor Josipovic \email{davor.josipovic@inbo.be} (0000-0003-1204-8637)
+\strong{Maintainer}: Davor Josipovic \email{davor.josipovic@inbo.be} (\href{https://orcid.org/0000-0003-1204-8637}{ORCID})
 
 }
 \keyword{internal}

@@ -1,6 +1,6 @@
 # Analysis of barometers based on the KNMI series v01.
 
-logger.names <- grep('barodata/', gwloggeR.data::enumerate(), value = TRUE)
+logger.names <- grep('barometer/', gwloggeR.data::enumerate(), value = TRUE)
 
 round_timestamp <- function(ts, scalefactor.sec = 3600*12) {
   as.POSIXct(round(as.numeric(ts)/scalefactor.sec) * scalefactor.sec, origin = '1970-01-01', tz = 'UTC')

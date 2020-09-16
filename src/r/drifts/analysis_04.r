@@ -1,7 +1,7 @@
 # Analysis of differences between one barometer and many others in its neighbourhood.
 # This one is the same as v02, but uses better matching of timestamps.
 
-logger.names <- grep('barodata/', gwloggeR.data::enumerate(), value = TRUE)
+logger.names <- grep('barometer/', gwloggeR.data::enumerate(), value = TRUE)
 
 round_timestamp <- function(ts, scalefactor.sec = 3600*12) {
   as.POSIXct(round(as.numeric(ts)/scalefactor.sec) * scalefactor.sec, origin = '1970-01-01', tz = 'UTC')
@@ -21,7 +21,7 @@ read.baro <- function(logger.name) {
   structure(df, 'logger.name' = logger.name)
 }
 
-# read.baro('barodata/BAOL553X_B_004BA.csv')
+# read.baro('barometer/BAOL553X_B_004BA.csv')
 data <- sapply(logger.names, read.baro, simplify = FALSE, USE.NAMES = TRUE)
 
 compare <- function(df1, df2) {

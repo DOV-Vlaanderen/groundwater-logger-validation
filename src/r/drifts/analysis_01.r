@@ -14,7 +14,7 @@ d.vec <- function(xy.from, xy.to.df) {
 }
 
 read.full <- function(location) {
-  loggers <- grep(paste0('barodata/', location), gwloggeR.data::enumerate(), value = TRUE)
+  loggers <- grep(paste0('barometer/', location), gwloggeR.data::enumerate(), value = TRUE)
   df <- data.table::rbindlist(lapply(loggers, function(logger) gwloggeR.data::read(logger)$df), use.names = TRUE)
   if (nrow(df) == 0L) return(df)
   df <- df[!duplicated(TIMESTAMP_UTC), ]

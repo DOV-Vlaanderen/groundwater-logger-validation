@@ -31,7 +31,7 @@ Here we describe some  general guidelines for maintenance and development of `gw
 
 `gwloggeR` is developed as part of a larger git-repository: https://github.com/DOV-Vlaanderen/groundwater-logger-validation.
 
-So first we need to checkout this repository somewhere localy.
+So first we need to checkout this repository somewhere locally.
 
 ```{}
 git checkout https://github.com/DOV-Vlaanderen/groundwater-logger-validation.git
@@ -45,6 +45,8 @@ The repository consists of 2 project roots:
 * [`gwloggeR/gwloggeR.rproj`](https://github.com/DOV-Vlaanderen/groundwater-logger-validation/blob/master/gwloggeR/gwloggeR.Rproj) used for `gwloggeR` package development and testing.
 
 Note that cross-linking of files between projects based on relative paths is allowed since all projects reside in the same repository.
+
+Always double-check the `.Rprofile` file and adjust the paths accordingly.
 
 ## Testing
 
