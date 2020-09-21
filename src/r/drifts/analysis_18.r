@@ -1,4 +1,4 @@
-# Autocorrelation
+# Autocorrelation and ARIMA fit on KNMI data
 
 round_timestamp <- function(ts, scalefactor.sec = 3600*12) {
   as.POSIXct(round(as.numeric(ts)/scalefactor.sec) * scalefactor.sec, origin = '1970-01-01', tz = 'UTC')
@@ -25,6 +25,6 @@ acf(data.ref$PRESSURE_VALUE, lag.max = 180)
 spectrum(data.ref$PRESSURE_VALUE)
 plot(x = data.ref[-(.N:(.N-124)), PRESSURE_VALUE], y = data.ref[-(1:125), PRESSURE_VALUE])
 
-fit.arima <- forecast::auto.arima(data.ref$PRESSURE_VALUE)
+fit.arima <- forecast::auto.arima(data.ref$PRESSURE_VALUE, trace = TRUE)
 plot(forecast:::simulate.Arima(fit.arima, 100))
 arima.sim(model = fit.arima, n = 10, n.start = 5)

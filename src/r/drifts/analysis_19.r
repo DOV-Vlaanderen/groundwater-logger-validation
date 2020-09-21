@@ -65,3 +65,9 @@ plot(forecast:::simulate.Arima(fit.arima, 10000))
 # Random walk model: fits well on data, but is completely wrong
 fit.arima <- arima(df$PRESSURE_VALUE, order = c(0, 1, 0))
 plot(forecast:::simulate.Arima(fit.arima, 10000))
+
+# See also analysis v18 for a similar study on KNMI data.
+# In that case, and if we go down o 1h intervals, then
+# there are more AR components needed to simulate it correctly.
+# Concretely: there are 2-3 components needed for 1h intervals.
+# AR(1) model is too close to a random walk.
