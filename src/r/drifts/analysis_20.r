@@ -123,12 +123,12 @@ plt.fspec <- function(periods.sec, intensity) {
                    axis.text.y = ggplot2::element_text(angle = 90, hjust = 0.5))
 }
 
-plt.yearly <- function(TIMESTAMP_UTC, y) {
+plt.yearly <- function(TIMESTAMP_UTC, y, ylim = quantile(y, probs = c(0.001, 0.999))) {
   force(TIMESTAMP_UTC); force(y)
   ggplot2::ggplot() +
     ggplot2::geom_point(mapping = ggplot2::aes(x = data.table::yday(TIMESTAMP_UTC), y = y)) +
     ggplot2::xlab('Day') +
-    ggplot2::coord_cartesian(ylim = quantile(y, probs = c(0.001, 0.999)),
+    ggplot2::coord_cartesian(ylim = ylim,
                              xlim = c(1, 366)) +
     ggplot2::theme_light() +
     ggplot2::theme(axis.title.y = ggplot2::element_blank(),
@@ -146,6 +146,28 @@ plt.hist <- function(x, xlim = quantile(x, probs = c(0.001, 0.999))) {
     ggplot2::theme(#axis.title.x = ggplot2::element_blank(),
                    axis.title.y = ggplot2::element_blank(),
                    axis.text.y = ggplot2::element_blank())
+}
+
+plt.comp <- function(TIMESTAMP_UTC, Y, Y_FIT_OPT, Y_FIT_1SE, Y_FIT_1SE_LABEL,
+                     front_layer = NULL, ylim, xlim, Y.col = 'red', Y.lab = 'PRESSURE_DIFF') {
+  force(TIMESTAMP_UTC); force(Y)
+  force(Y_FIT_OPT); force(Y_FIT_1SE); force(Y_FIT_1SE_LABEL)
+  force(ylim); force(xlim)
+  ggplot2::ggplot(mapping = ggplot2::aes(x = TIMESTAMP_UTC, y = Y)) +
+    front_layer +
+    ggplot2::geom_line(col = Y.col, alpha = 0.9) +
+    ggplot2::geom_line(mapping = ggplot2::aes(y = Y_FIT_OPT), col = 'blue', size = 1.3) +
+    ggplot2::geom_line(mapping = ggplot2::aes(y = Y_FIT_1SE), col = 'green', size = 1.3) +
+    ggplot2::coord_cartesian(ylim = ylim,
+                             xlim = xlim) +
+    ggplot2::annotate(
+      "label", x = as.POSIXct(-Inf, origin = '1970-01-01'), y = Inf,
+      size = 4, col = 'green', hjust = 0, vjust = 1, fill = 'grey', label.size = NA,
+      label = Y_FIT_1SE_LABEL
+    ) +
+    ggplot2::ylab(Y.lab) +
+    ggplot2::theme_light() +
+    ggplot2::theme(axis.text.y = ggplot2::element_text(angle = 90, hjust = 0.5))
 }
 
 periods.label <- function(coefs) {
@@ -170,6 +192,8 @@ report <- function(logger.name, ref.logger.names, parallel = FALSE) {
 
   fbase <- data.matrix(fbasis(df.logger$TIMESTAMP_UTC, trend = TRUE, frequencies = 1/periods))
 
+
+
   # Logger analysis ------------------------------------------------------------
 
   fd.single <- sapply(1/periods, FUN = dtft,
@@ -178,8 +202,6 @@ report <- function(logger.name, ref.logger.names, parallel = FALSE) {
 
   p.single.fspec <- plt.fspec(periods.sec = periods, intensity = Mod(fd.single)/nrow(df.logger))
 
-  p.single.yearly <- plt.yearly(TIMESTAMP_UTC = df.logger$TIMESTAMP_UTC, y = df.logger$PRESSURE_VALUE)
-
   fit.single <- fit.glmnet(y = df.logger$PRESSURE_VALUE, x = fbase, parallel = parallel)
   #plot(fit.single)
   #coef.periods(coefs(fit.single, lambda = fit.single$lambda.min))
@@ -187,19 +209,7 @@ report <- function(logger.name, ref.logger.names, parallel = FALSE) {
   df.logger[, PRESSURE_VALUE_GLMNET_MIN := glmnet::predict.glmnet(fit.single$glmnet.fit, newx = fbase, s = fit.single$lambda.min)]
   df.logger[, PRESSURE_VALUE_GLMNET_1SE := glmnet::predict.glmnet(fit.single$glmnet.fit, newx = fbase, s = fit.single$lambda.1se)]
 
-  p.single <- ggplot2::ggplot(data = df.logger, mapping = ggplot2::aes(x = TIMESTAMP_UTC)) +
-    ggplot2::geom_line(mapping = ggplot2::aes(y = PRESSURE_VALUE), col = 'black') +
-    ggplot2::geom_line(mapping = ggplot2::aes(y = df.logger$PRESSURE_VALUE_GLMNET_MIN), col = 'blue', size = 1.3) +
-    ggplot2::geom_line(mapping = ggplot2::aes(y = df.logger$PRESSURE_VALUE_GLMNET_1SE), col = 'green', size = 1.3) +
-    ggplot2::coord_cartesian(ylim = quantile(with(df.logger, PRESSURE_VALUE), probs = c(0.001, 0.999)),
-                             xlim = range(df.logger$TIMESTAMP_UTC)) +
-    ggplot2::annotate(
-      "label", x = as.POSIXct(-Inf, origin = '1970-01-01'), y = Inf,
-      size = 4, col = 'green', hjust = 0, vjust = 1, fill = 'grey', label.size = NA,
-      label = periods.label(coefs(fit.single, lambda = fit.single$lambda.1se))
-    ) +
-    ggplot2::theme_light() +
-    ggplot2::theme(axis.text.y = ggplot2::element_text(angle = 90, hjust = 0.5))
+
 
   # Multi comparison -----------------------------------------------------------
 
@@ -223,28 +233,13 @@ report <- function(logger.name, ref.logger.names, parallel = FALSE) {
   df.multi[, Q.5_GLMNET_MIN := glmnet::predict.glmnet(fit.multi$glmnet.fit, newx = fbase, s = fit.multi$lambda.min)]
   df.multi[, Q.5_GLMNET_1SE := glmnet::predict.glmnet(fit.multi$glmnet.fit, newx = fbase, s = fit.multi$lambda.1se)]
 
-  p.multi <- ggplot2::ggplot(data = df.diff, mapping = ggplot2::aes(x = TIMESTAMP_UTC, y = PRESSURE_DIFF)) +
-    ggplot2::geom_point(pch = '.') +
-    ggplot2::geom_line(data = df.multi, mapping = ggplot2::aes(y = Q.5), col = 'red', alpha = 0.9) +
-    ggplot2::geom_line(data = df.multi, mapping = ggplot2::aes(y = Q.5_GLMNET_MIN), col = 'blue', size = 1.3) +
-    ggplot2::geom_line(data = df.multi, mapping = ggplot2::aes(y = Q.5_GLMNET_1SE), col = 'green', size = 1.3) +
-    ggplot2::coord_cartesian(ylim = quantile(df.multi$Q.5, probs = c(0.005, 0.995)),
-                             xlim = range(df.logger$TIMESTAMP_UTC)) +
-    ggplot2::annotate(
-      "label", x = as.POSIXct(-Inf, origin = '1970-01-01'), y = Inf,
-      size = 4, col = 'green', hjust = 0, vjust = 1, fill = 'grey', label.size = NA,
-      label = periods.label(coefs(fit.multi, lambda = fit.multi$lambda.1se))
-    ) +
-    ggplot2::theme_light() +
-    ggplot2::theme(axis.text.y = ggplot2::element_text(angle = 90, hjust = 0.5))
-
   fd.multi <- sapply(1/periods, FUN = dtft,
                      x = df.multi$Q.5 - median(df.multi$Q.5), timestamps = df.multi$TIMESTAMP_UTC)
   #plot(Mod(fd.multi), type = 'l', x = periods/3600/24, xlab = 'days')
 
   p.multi.fspec <- plt.fspec(periods.sec = periods, intensity = Mod(fd.multi)/nrow(df.multi))
 
-  p.multi.yearly <- plt.yearly(TIMESTAMP_UTC = df.multi$TIMESTAMP_UTC, y = df.multi$Q.5)
+
 
   # Reference comparison -------------------------------------------------------
 
@@ -258,28 +253,55 @@ report <- function(logger.name, ref.logger.names, parallel = FALSE) {
   df.ref[, PRESSURE_DIFF_GLMNET_MIN := glmnet::predict.glmnet(fit.ref$glmnet.fit, newx = fbase, s = fit.ref$lambda.min)]
   df.ref[, PRESSURE_DIFF_GLMNET_1SE := glmnet::predict.glmnet(fit.ref$glmnet.fit, newx = fbase, s = fit.ref$lambda.1se)]
 
-  p.ref <- ggplot2::ggplot(data = df.ref, mapping = ggplot2::aes(x = TIMESTAMP_UTC, y = PRESSURE_DIFF)) +
-    ggplot2::geom_point(pch = '.') +
-    ggplot2::geom_line(col = 'red', alpha = 0.8) +
-    ggplot2::geom_line(data = df.ref, mapping = ggplot2::aes(y = PRESSURE_DIFF_GLMNET_MIN), col = 'blue', size = 1.3) +
-    ggplot2::geom_line(data = df.ref, mapping = ggplot2::aes(y = PRESSURE_DIFF_GLMNET_1SE), col = 'green', size = 1.3) +
-    ggplot2::coord_cartesian(ylim = quantile(df.ref$PRESSURE_DIFF, probs = c(0.005, 0.995)),
-                             xlim = range(df.logger$TIMESTAMP_UTC)) +
-    ggplot2::annotate(
-      "label", x = as.POSIXct(-Inf, origin = '1970-01-01'), y = Inf,
-      size = 4, col = 'green', hjust = 0, vjust = 1, fill = 'grey', label.size = NA,
-      label = periods.label(coefs(fit.ref, lambda = fit.ref$lambda.1se))
-    ) +
-    ggplot2::theme_light() +
-    ggplot2::theme(axis.text.y = ggplot2::element_text(angle = 90, hjust = 0.5))
-
   fd.ref <- sapply(1/periods, FUN = dtft,
                    x = df.ref$PRESSURE_DIFF - median(df.ref$PRESSURE_DIFF), timestamps = df.ref$TIMESTAMP_UTC)
   #plot(Mod(fd.ref), type = 'l', x = periods/3600/24, xlab = 'days')
 
   p.ref.fspec <- plt.fspec(periods.sec = periods, intensity = Mod(fd.ref)/nrow(df.ref))
 
-  p.ref.yearly <- plt.yearly(TIMESTAMP_UTC = df.ref$TIMESTAMP_UTC, y = df.ref$PRESSURE_DIFF)
+
+
+  # Comparison plots -----------------------------------------------------------
+
+  p.single <- plt.comp(
+    TIMESTAMP_UTC = df.logger$TIMESTAMP_UTC, Y = df.logger$PRESSURE_VALUE,
+    Y_FIT_OPT = df.logger$PRESSURE_VALUE_GLMNET_MIN, Y_FIT_1SE = df.logger$PRESSURE_VALUE_GLMNET_1SE,
+    Y_FIT_1SE_LABEL = periods.label(coefs(fit.single, lambda = fit.single$lambda.1se)),
+    ylim = quantile(df.logger$PRESSURE_VALUE, probs = c(0.001, 0.999)),
+    xlim = range(df.logger$TIMESTAMP_UTC), Y.col = 'black', Y.lab = 'PRESSURE_VALUE'
+  )
+
+  ylim.multi <- quantile(df.multi$Q.5, probs = c(0.005, 0.995))
+  ylim.ref <- quantile(df.ref$PRESSURE_DIFF, probs = c(0.005, 0.995))
+  ylim.comp.range <- max(diff(ylim.multi), diff(ylim.ref))
+
+  p.multi <- plt.comp(
+    TIMESTAMP_UTC = df.multi$TIMESTAMP_UTC, Y = df.multi$Q.5,
+    Y_FIT_OPT = df.multi$Q.5_GLMNET_MIN, Y_FIT_1SE = df.multi$Q.5_GLMNET_1SE,
+    Y_FIT_1SE_LABEL = periods.label(coefs(fit.multi, lambda = fit.multi$lambda.1se)),
+    front_layer = ggplot2::geom_point(data = df.diff, mapping = ggplot2::aes(x = TIMESTAMP_UTC, y = PRESSURE_DIFF), pch = '.'),
+    ylim = mean(ylim.multi) + c(-1, +1)*ylim.comp.range/2, xlim = range(df.logger$TIMESTAMP_UTC)
+  )
+
+  p.ref <- plt.comp(
+    TIMESTAMP_UTC = df.ref$TIMESTAMP_UTC, Y = df.ref$PRESSURE_DIFF,
+    Y_FIT_OPT = df.ref$PRESSURE_DIFF_GLMNET_MIN, Y_FIT_1SE = df.ref$PRESSURE_DIFF_GLMNET_1SE,
+    Y_FIT_1SE_LABEL = periods.label(coefs(fit.ref, lambda = fit.ref$lambda.1se)),
+    ylim = mean(ylim.ref) + c(-1, +1)*ylim.comp.range/2, xlim = range(df.logger$TIMESTAMP_UTC))
+
+
+
+  # Yearly plots ---------------------------------------------------------------
+
+  p.single.yearly <- plt.yearly(TIMESTAMP_UTC = df.logger$TIMESTAMP_UTC, y = df.logger$PRESSURE_VALUE)
+
+  p.multi.yearly <- plt.yearly(TIMESTAMP_UTC = df.multi$TIMESTAMP_UTC, y = df.multi$Q.5,
+                               ylim = mean(ylim.multi) + c(-1, +1)*ylim.comp.range/2)
+
+  p.ref.yearly <- plt.yearly(TIMESTAMP_UTC = df.ref$TIMESTAMP_UTC, y = df.ref$PRESSURE_DIFF,
+                             ylim = mean(ylim.ref) + c(-1, +1)*ylim.comp.range/2)
+
+
 
   # Density plots --------------------------------------------------------------
 
@@ -291,6 +313,8 @@ report <- function(logger.name, ref.logger.names, parallel = FALSE) {
   p.ref.hist <- plt.hist(df.ref$PRESSURE_DIFF, mean(xlim.hist.ref) + c(-1, +1)*xlim.hist.range/2)
 
   p.empty <- ggplot2::ggplot() + ggplot2::theme_void()
+
+
 
   # File export ----------------------------------------------------------------
 
