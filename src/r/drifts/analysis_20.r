@@ -110,15 +110,17 @@ fit.glmnet <- function(y, x, parallel = FALSE) {
   fit
 }
 
-plt.fspec <- function(periods.sec, fd) {
-  force(periods.sec); force(fd)
-  ggplot2::ggplot(mapping = ggplot2::aes(x = periods.sec/3600/24, y = Mod(fd))) +
+plt.fspec <- function(periods.sec, intensity) {
+  force(periods.sec); force(intensity)
+  ggplot2::ggplot(mapping = ggplot2::aes(x = periods.sec/3600/24, y = intensity)) +
     ggplot2::geom_line(col = 'black') +
     ggplot2::geom_vline(xintercept = 365.25, col = 'red') +
-    ggplot2::ylab('Intensity') + ggplot2::xlab('Period (days)') +
+    #ggplot2::ylab('Intensity') +
+    ggplot2::xlab('Period (days)') +
     #ggplot2::ggtitle('Discrete-Time Fourier Transform') +
     ggplot2::theme_light() +
-    ggplot2::theme(axis.text.y = ggplot2::element_text(angle = 90, hjust = 0.5))
+    ggplot2::theme(axis.title.y = ggplot2::element_blank(),
+                   axis.text.y = ggplot2::element_text(angle = 90, hjust = 0.5))
 }
 
 plt.yearly <- function(TIMESTAMP_UTC, y) {
@@ -133,10 +135,23 @@ plt.yearly <- function(TIMESTAMP_UTC, y) {
                    axis.text.y = ggplot2::element_text(angle = 90, hjust = 0.5))
 }
 
+plt.hist <- function(x, xlim = quantile(x, probs = c(0.001, 0.999))) {
+  force(x)
+  binwidth <- 1.5 * IQR(x) / length(x) ^ (1/3)
+  ggplot2::ggplot(mapping = ggplot2::aes(x = x)) +
+    ggplot2::geom_histogram(binwidth = binwidth, fill = 'black') +
+    ggplot2::xlab('PRESSURE_DIFF') +
+    ggplot2::coord_cartesian(xlim = xlim) +
+    ggplot2::theme_light() +
+    ggplot2::theme(#axis.title.x = ggplot2::element_blank(),
+                   axis.title.y = ggplot2::element_blank(),
+                   axis.text.y = ggplot2::element_blank())
+}
+
 periods.label <- function(coefs) {
   p <- coef.periods(coefs)
   has.trend <- any(grepl(pattern = 'trend', x = rownames(coefs), ignore.case = TRUE))
-  str <- if (length(p) == 0L) 'Seasonality: /' else sprintf('Seasonality: %s days', paste0(p, collapse = ', '))
+  str <- if (length(p) == 0L) 'Periods: /' else sprintf('Periods: %s days', paste0(p, collapse = ', '))
   if (has.trend) str <- paste0(str, ' + LinTrend')
   str
 }
@@ -161,7 +176,7 @@ report <- function(logger.name, ref.logger.names, parallel = FALSE) {
                       x = df.logger$PRESSURE_VALUE - median(df.logger$PRESSURE_VALUE), timestamps = df.logger$TIMESTAMP_UTC)
   #plot(Mod(fd.single), type = 'l', x = periods/3600/24, xlab = 'days')
 
-  p.single.fspec <- plt.fspec(periods.sec = periods, fd = fd.single)
+  p.single.fspec <- plt.fspec(periods.sec = periods, intensity = Mod(fd.single)/nrow(df.logger))
 
   p.single.yearly <- plt.yearly(TIMESTAMP_UTC = df.logger$TIMESTAMP_UTC, y = df.logger$PRESSURE_VALUE)
 
@@ -227,7 +242,7 @@ report <- function(logger.name, ref.logger.names, parallel = FALSE) {
                      x = df.multi$Q.5 - median(df.multi$Q.5), timestamps = df.multi$TIMESTAMP_UTC)
   #plot(Mod(fd.multi), type = 'l', x = periods/3600/24, xlab = 'days')
 
-  p.multi.fspec <- plt.fspec(periods.sec = periods, fd = fd.multi)
+  p.multi.fspec <- plt.fspec(periods.sec = periods, intensity = Mod(fd.multi)/nrow(df.multi))
 
   p.multi.yearly <- plt.yearly(TIMESTAMP_UTC = df.multi$TIMESTAMP_UTC, y = df.multi$Q.5)
 
@@ -262,18 +277,29 @@ report <- function(logger.name, ref.logger.names, parallel = FALSE) {
                    x = df.ref$PRESSURE_DIFF - median(df.ref$PRESSURE_DIFF), timestamps = df.ref$TIMESTAMP_UTC)
   #plot(Mod(fd.ref), type = 'l', x = periods/3600/24, xlab = 'days')
 
-  p.ref.fspec <- plt.fspec(periods.sec = periods, fd = fd.ref)
+  p.ref.fspec <- plt.fspec(periods.sec = periods, intensity = Mod(fd.ref)/nrow(df.ref))
 
   p.ref.yearly <- plt.yearly(TIMESTAMP_UTC = df.ref$TIMESTAMP_UTC, y = df.ref$PRESSURE_DIFF)
+
+  # Density plots --------------------------------------------------------------
+
+  xlim.hist.multi <- quantile(df.multi$Q.5, probs = c(0.001, 0.999))
+  xlim.hist.ref <- quantile(df.ref$PRESSURE_DIFF, probs = c(0.001, 0.999))
+  xlim.hist.range <- max(diff(xlim.hist.multi), diff(xlim.hist.ref))
+
+  p.multi.hist <- plt.hist(df.multi$Q.5, mean(xlim.hist.multi) + c(-1, +1)*xlim.hist.range/2)
+  p.ref.hist <- plt.hist(df.ref$PRESSURE_DIFF, mean(xlim.hist.ref) + c(-1, +1)*xlim.hist.range/2)
+
+  p.empty <- ggplot2::ggplot() + ggplot2::theme_void()
 
   # File export ----------------------------------------------------------------
 
   filename <- sprintf('./drifts/analysis_20/%s.png', tools::file_path_sans_ext(basename(logger.name)))
   dir.create(dirname(filename), showWarnings = FALSE, recursive = TRUE)
 
-  layout_matrix <- rbind(c(1, 1, 1, 4, 5),
-                         c(2, 2, 2, 6, 7),
-                         c(3, 3, 3, 8, 9))
+  layout_matrix <- rbind(c(1, 1, 1,  4,  5,  6),
+                         c(2, 2, 2,  7,  8,  9),
+                         c(3, 3, 3, 10, 11, 12))
 
   grob.title <- grid::textGrob(sprintf('%s (#%s observations from %s to %s)',
                                        basename(logger.name), nrow(df.logger),
@@ -284,9 +310,9 @@ report <- function(logger.name, ref.logger.names, parallel = FALSE) {
     png(filename, width = 1280, height = 720)
     on.exit(dev.off())
     print(gridExtra::grid.arrange(p.single, p.multi, p.ref,
-                                  p.single.fspec, p.single.yearly,
-                                  p.multi.fspec, p.multi.yearly,
-                                  p.ref.fspec, p.ref.yearly,
+                                  p.single.fspec, p.single.yearly, p.empty,
+                                  p.multi.fspec, p.multi.yearly, p.multi.hist,
+                                  p.ref.fspec, p.ref.yearly, p.ref.hist,
                                   layout_matrix = layout_matrix,
                                   top = grob.title))
   })
