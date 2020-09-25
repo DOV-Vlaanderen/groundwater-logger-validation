@@ -31,13 +31,24 @@ dft <- function(h, x) {
 #'
 #' @keywords internal
 #'
-dtft <- function(frequency, x, timestamps) {
+dtft <- function(frequency, x, timestamps, plot = FALSE) {
   stopifnot(length(x) == length(timestamps))
   stopifnot(any(!is.na(x)))
   stopifnot(any(!is.na(timestamps)))
   stopifnot(inherits(timestamps, 'POSIXct'))
 
-  sum(x*exp(-2*pi*1i*as.numeric(timestamps)*frequency))
+  projections <- x*exp(-2*pi*1i*as.numeric(timestamps)*frequency)
+  psum <- sum(projections)
+
+  if (plot) {
+    graphics::plot(projections)
+    arrow_size.inch <- gr_vectorsize.inch(Re(psum)/length(x), Im(psum)/length(x))
+    if (arrow_size.inch > 0.001)
+      arrows(0, 0, x1 = Re(psum)/length(x), y1 = Im(psum)/length(x), length = 0.1, lwd = 2)
+    title(sprintf("%0.3g +%0.3gi",  Re(psum)/length(x), Im(psum)/length(x)))
+  }
+
+  psum
 }
 
 #' Fourier Basis
