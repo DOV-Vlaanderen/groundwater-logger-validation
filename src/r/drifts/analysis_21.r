@@ -37,7 +37,7 @@ ggplot2::ggplot() +
   ) +
   ggplot2::scale_x_datetime(breaks = scales::breaks_pretty(n = 20)) +
   ggplot2::xlab('TIMESTAMP_UTC (grouped per 12h)') +
-  ggplot2::ggtitle('Number of barometers available at 24h intervals') +
+  ggplot2::ggtitle('Number of barometers available at 12h intervals') +
   ggplot2::theme_light()
 
 ggplot2::ggsave('./drifts/analysis_21/baro_counts_12hinterval.png', width = 1280/96, height = 720/96, dpi = 96)
