@@ -180,6 +180,8 @@ periods.label <- function(coefs) {
 
 report <- function(logger.name, ref.logger.names, parallel = FALSE) {
 
+  print(logger.name)
+
   on.exit(gc(TRUE))
 
   df.logger <- read.baro(logger.name = logger.name)
