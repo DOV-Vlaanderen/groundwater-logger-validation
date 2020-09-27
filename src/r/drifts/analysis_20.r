@@ -248,14 +248,19 @@ report <- function(logger.name, ref.logger.names, parallel = FALSE) {
   # Reference comparison -------------------------------------------------------
 
   df.ref <- compare(df.logger, read.baro('KNMI_20200312_hourly'))
+  data.table::setkey(df.ref, TIMESTAMP_UTC)
   #plot(df.ref$PRESSURE_DIFF, type = 'l', x = df.ref$TIMESTAMP_UTC)
 
-  fit.ref <- fit.glmnet(y = df.ref$PRESSURE_DIFF, x = fbase, parallel = parallel)
+  # fbase is made on logger timestamps. we need to filter that one to get only the ref timestamps
+  ridx.ref <- df.logger[, .(TIMESTAMP_UTC, I = 1:.N)][J(df.ref$TIMESTAMP_UTC), I]
+  fbase.ref <- fbase[ridx.ref,,drop=FALSE]
+
+  fit.ref <- fit.glmnet(y = df.ref$PRESSURE_DIFF, x = fbase.ref, parallel = parallel)
   #plot(fit.ref)
   #coef.periods(coefs(fit.ref, lambda = fit.ref$lambda.1se))
 
-  df.ref[, PRESSURE_DIFF_GLMNET_MIN := glmnet::predict.glmnet(fit.ref$glmnet.fit, newx = fbase, s = fit.ref$lambda.min)]
-  df.ref[, PRESSURE_DIFF_GLMNET_1SE := glmnet::predict.glmnet(fit.ref$glmnet.fit, newx = fbase, s = fit.ref$lambda.1se)]
+  df.ref[, PRESSURE_DIFF_GLMNET_MIN := glmnet::predict.glmnet(fit.ref$glmnet.fit, newx = fbase.ref, s = fit.ref$lambda.min)]
+  df.ref[, PRESSURE_DIFF_GLMNET_1SE := glmnet::predict.glmnet(fit.ref$glmnet.fit, newx = fbase.ref, s = fit.ref$lambda.1se)]
 
   fd.ref <- sapply(1/periods, FUN = dtft,
                    x = df.ref$PRESSURE_DIFF - median(df.ref$PRESSURE_DIFF), timestamps = df.ref$TIMESTAMP_UTC)
