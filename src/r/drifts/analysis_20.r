@@ -56,7 +56,7 @@ coef.periods <- function(coefs) {
   periods.sec <- as.numeric(periods.sec)
   periods.day <- periods.sec/3600/24
   if (length(periods.day) < 2L) return(round(periods.day))
-  idx <- cutree(hclust(dist(periods.day)), h = 5)
+  idx <- cutree(hclust(dist(periods.day)), h = 10)
   round(aggregate(periods.day, by = list(idx), FUN = mean)$x)
 }
 
