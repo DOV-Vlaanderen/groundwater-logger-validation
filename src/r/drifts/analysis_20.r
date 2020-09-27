@@ -355,8 +355,9 @@ report <- function(logger.name, ref.logger.names, parallel = FALSE) {
   invisible(TRUE)
 }
 
-# report('BAOL828X_P2_15705.csv', ref.logger.names = basename(logger.names), parallel = TRUE)
-# report('BAOL040X_555351', ref.logger.names = basename(logger.names), parallel = TRUE)
+# report('BAOL828X_P2_15705.csv', ref.logger.names = logger.names, parallel = TRUE)
+# report('BAOL018X_42112.csv', ref.logger.names = logger.names, parallel = TRUE)
+# invisible(lapply(logger.names, report, ref.logger.names = logger.names))
 
 parallel::setDefaultCluster(parallel::makeCluster(spec = 4L))
 parallel::clusterExport(varlist = ls())
