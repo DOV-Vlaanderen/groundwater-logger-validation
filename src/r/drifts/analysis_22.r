@@ -60,31 +60,6 @@ coef.periods <- function(coefs) {
   round(aggregate(periods.day, by = list(idx), FUN = mean)$x)
 }
 
-# # DTFT analysis
-#
-# dtft(frequency = 1/(365.25*24*3600), x = df.diff$PRESSURE_DIFF, timestamps = df.diff$TIMESTAMP_UTC)
-# dtft(frequency = 4/diff(as.numeric(range(df.diff$TIMESTAMP_UTC))), x = df.diff$PRESSURE_DIFF, timestamps = df.diff$TIMESTAMP_UTC)
-#
-# period <- seq(from = 12*3600*4, to = diff(as.numeric(range(df.diff$TIMESTAMP_UTC))), length.out = 10000)
-# fd <- sapply(1/period, FUN = dtft,
-#              x = df.diff$PRESSURE_DIFF, timestamps = df.diff$TIMESTAMP_UTC)
-# plot(Mod(fd), type = 'l', x = period/3600/24)
-# period[which.max(Mod(fd))]/3600/24
-# table(diff(df.diff$TIMESTAMP_UTC))
-
-# # FFT analysis
-#
-# z <- fft(df.diff$PRESSURE_DIFF)
-# P <- diff(as.numeric(range(df.diff$TIMESTAMP_UTC)))
-# P1 <- P/(length(z) - 1)
-# fft.periods <- 1/((0:(length(z) - 1))*P1/P)
-# plot(Mod(z), type = 'l',
-#      x = fft.periods,
-#      xlab = 'days')
-# fft.periods[order(Mod(z), decreasing = TRUE)][1:5]
-# spectrum(df.diff$PRESSURE_DIFF)
-# dft(1L, df.diff$PRESSURE_DIFF)
-
 fit.glmnet <- function(y, x, parallel = FALSE) {
 
   # alist stores symbols (i.e. doesn't evaluate the arguments.)
