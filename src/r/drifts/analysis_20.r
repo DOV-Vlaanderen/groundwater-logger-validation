@@ -187,6 +187,8 @@ report <- function(logger.name, ref.logger.names, parallel = FALSE) {
   df.logger <- read.baro(logger.name = logger.name)
   data.table::setkey(df.logger, TIMESTAMP_UTC)
 
+  if (nrow(df.logger) < 10L) return(invisible(FALSE))
+
   periods <- seq(from = 2*24*3600,
                  # take minimum a year for the periods
                  to = max(diff(as.numeric(range(df.logger$TIMESTAMP_UTC))), 1.1*365.25*24*3600),
@@ -356,10 +358,10 @@ report <- function(logger.name, ref.logger.names, parallel = FALSE) {
 }
 
 # report('BAOL828X_P2_15705.csv', ref.logger.names = logger.names, parallel = TRUE)
-# report('BAOL018X_42112.csv', ref.logger.names = logger.names, parallel = TRUE)
+# report('BAOL528X_B_B2152.csv', ref.logger.names = logger.names, parallel = TRUE)
 # invisible(lapply(logger.names, report, ref.logger.names = logger.names))
 
-parallel::setDefaultCluster(parallel::makeCluster(spec = 4L))
+parallel::setDefaultCluster(parallel::makeCluster(spec = 4L, outfile=''))
 parallel::clusterExport(varlist = ls())
 results <- parallel::parSapplyLB(X = logger.names, FUN = report, chunk.size = 1,
                                  ref.logger.names = logger.names)
