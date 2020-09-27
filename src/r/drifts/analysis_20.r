@@ -223,7 +223,7 @@ report <- function(logger.name, ref.logger.names, parallel = FALSE) {
     , .(Q.025 = quantile(PRESSURE_DIFF, 0.025),
         Q.5 = quantile(PRESSURE_DIFF, 0.5),
         Q.975 = quantile(PRESSURE_DIFF, 0.975)),
-    by = TIMESTAMP_UTC]
+    keyby = TIMESTAMP_UTC]
 
   fit.multi <- fit.glmnet(y = df.multi$Q.5, x = fbase, parallel = parallel)
   #plot(fit.multi)
