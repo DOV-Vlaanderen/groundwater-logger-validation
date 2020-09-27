@@ -225,13 +225,17 @@ report <- function(logger.name, ref.logger.names, parallel = FALSE) {
         Q.975 = quantile(PRESSURE_DIFF, 0.975)),
     keyby = TIMESTAMP_UTC]
 
-  fit.multi <- fit.glmnet(y = df.multi$Q.5, x = fbase, parallel = parallel)
+  # fbase is made on logger timestamps. we need to filter that one to get only the multi timestamps
+  ridx.multi <- df.logger[, .(TIMESTAMP_UTC, I = 1:.N)][J(df.multi$TIMESTAMP_UTC), I]
+  fbase.multi <- fbase[ridx.multi,,drop=FALSE]
+
+  fit.multi <- fit.glmnet(y = df.multi$Q.5, x = fbase.multi, parallel = parallel)
   #plot(fit.multi)
   #coefs(fit.multi, lambda = fit.multi$lambda.1se)
   #coef.periods(coefs(fit.multi, lambda = fit.multi$lambda.1se))
 
-  df.multi[, Q.5_GLMNET_MIN := glmnet::predict.glmnet(fit.multi$glmnet.fit, newx = fbase, s = fit.multi$lambda.min)]
-  df.multi[, Q.5_GLMNET_1SE := glmnet::predict.glmnet(fit.multi$glmnet.fit, newx = fbase, s = fit.multi$lambda.1se)]
+  df.multi[, Q.5_GLMNET_MIN := glmnet::predict.glmnet(fit.multi$glmnet.fit, newx = fbase.multi, s = fit.multi$lambda.min)]
+  df.multi[, Q.5_GLMNET_1SE := glmnet::predict.glmnet(fit.multi$glmnet.fit, newx = fbase.multi, s = fit.multi$lambda.1se)]
 
   fd.multi <- sapply(1/periods, FUN = dtft,
                      x = df.multi$Q.5 - median(df.multi$Q.5), timestamps = df.multi$TIMESTAMP_UTC)
