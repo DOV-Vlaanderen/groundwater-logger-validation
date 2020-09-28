@@ -67,7 +67,7 @@ fit.glmnet <- function(y, x, parallel = FALSE) {
     y = y, x = x,
     alpha = 1,
     parallel = parallel,
-    nlambda = 500L,
+    nlambda = 100L,
     foldid = rep(1:10, each = nrow(x)/10, length.out = nrow(x))
   )
 
@@ -77,7 +77,7 @@ fit.glmnet <- function(y, x, parallel = FALSE) {
     fun = 'cv.glmnet', # this way glmnet stores only "glmnet()" call in fit
     args = glmnet.args,
     prefix = 'glmnet',
-    cache.dir = './drifts/analysis_20'
+    cache.dir = './drifts/analysis_22'
   )
 
   fit$lambda.2se <- fit$lambda.min + 2*(fit$lambda.1se - fit$lambda.min)
@@ -143,6 +143,20 @@ plt.comp <- function(TIMESTAMP_UTC, Y, Y_FIT_OPT, Y_FIT_1SE, Y_FIT_1SE_LABEL,
     ggplot2::ylab(Y.lab) +
     ggplot2::theme_light() +
     ggplot2::theme(axis.text.y = ggplot2::element_text(angle = 90, hjust = 0.5))
+}
+
+# See: https://stackoverflow.com/a/40911787/1548942
+plt.acf <- function(x, lag.max) {
+  significance_level <- qnorm((1 + 0.95)/2)/sqrt(sum(!is.na(x)))
+  res <- acf(x, lag.max = lag.max, plot = FALSE)
+  df.acf <- with(res, data.frame(LAG = lag, ACF = acf))
+  ggplot2::ggplot(df.acf[-1,], ggplot2::aes(x = LAG, y = ACF)) +
+    ggplot2::geom_bar(stat = "identity", position = "identity", width = 1, col = 'black') +
+    ggplot2::geom_hline(yintercept = c(1, -1)*significance_level, linetype = 'dashed', size = 1, col = 'blue') +
+    ggplot2::xlab('Lag') +
+    ggplot2::theme_light() +
+    ggplot2::theme(axis.title.y = ggplot2::element_blank(),
+                   axis.text.y = ggplot2::element_text(angle = 90, hjust = 0.5))
 }
 
 periods.label <- function(coefs) {
@@ -300,33 +314,46 @@ report <- function(logger.name, ref.logger.names, parallel = FALSE) {
   p.multi.hist <- plt.hist(df.multi$Q.5, mean(xlim.hist.multi) + c(-1, +1)*xlim.hist.range/2)
   p.ref.hist <- plt.hist(df.ref$PRESSURE_DIFF, mean(xlim.hist.ref) + c(-1, +1)*xlim.hist.range/2)
 
-  p.empty <- ggplot2::ggplot() + ggplot2::theme_void()
+
+
+
+  # Autocorrelation plots ------------------------------------------------------
+
+  p.logger.acf <- plt.acf(df.logger$PRESSURE_VALUE, lag.max = 365.25*2)
+  p.multi.acf <- plt.acf(df.multi$Q.5, lag.max = 365.25*2)
+  p.ref.acf <- plt.acf(df.ref$PRESSURE_DIFF, lag.max = 365.25*2)
+
+  p.arima.acf <- plt.acf(residuals(arima(df.logger$PRESSURE_VALUE, order = c(1, 0, 0))), lag.max = 100)
+
 
 
 
   # File export ----------------------------------------------------------------
 
-  filename <- sprintf('./drifts/analysis_20/%s.png', tools::file_path_sans_ext(basename(logger.name)))
+  filename <- sprintf('./drifts/analysis_22/%s.png', tools::file_path_sans_ext(basename(logger.name)))
   dir.create(dirname(filename), showWarnings = FALSE, recursive = TRUE)
 
-  layout_matrix <- rbind(c(1, 1, 1,  4,  5,  6),
-                         c(2, 2, 2,  7,  8,  9),
-                         c(3, 3, 3, 10, 11, 12))
+  layout_matrix <- rbind(c(1, 1, 1,  4,  5,  6, 13),
+                         c(2, 2, 2,  7,  8,  9, 14),
+                         c(3, 3, 3, 10, 11, 12, 15))
 
   grob.title <- grid::textGrob(sprintf('%s (#%s observations from %s to %s)',
                                        basename(logger.name), nrow(df.logger),
                                        min(df.logger$TIMESTAMP_UTC), max(df.logger$TIMESTAMP_UTC)),
                                x = 0.05, hjust = 0)
 
+  p.empty <- ggplot2::ggplot() + ggplot2::theme_void()
+
   local({
     png(filename, width = 1280, height = 720)
     on.exit(dev.off())
-    print(gridExtra::grid.arrange(p.single, p.multi, p.ref,
-                                  p.single.fspec, p.single.yearly, p.empty,
-                                  p.multi.fspec, p.multi.yearly, p.multi.hist,
-                                  p.ref.fspec, p.ref.yearly, p.ref.hist,
-                                  layout_matrix = layout_matrix,
-                                  top = grob.title))
+    gridExtra::grid.arrange(p.single, p.multi, p.ref,
+                            p.single.fspec, p.single.yearly, p.arima.acf,
+                            p.multi.fspec, p.multi.yearly, p.multi.hist,
+                            p.ref.fspec, p.ref.yearly, p.ref.hist,
+                            p.logger.acf, p.multi.acf, p.ref.acf,
+                            layout_matrix = layout_matrix,
+                            top = grob.title)
   })
 
   invisible(TRUE)
