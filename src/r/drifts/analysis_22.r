@@ -1,4 +1,4 @@
-# Seasonality analysis
+# Seasonality analysis (copy of v20) + auto correlation plots
 
 source('./../../gwloggeR/R/graphics.R')
 source('./../../gwloggeR/R/fourier.R')
