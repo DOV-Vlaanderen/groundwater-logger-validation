@@ -41,6 +41,10 @@ sim <- function(n, mu, sigma, phi1, d, dsi,
 x.sim <- sim(10000, mu = 1032, sigma = sqrt(23), phi1 = 0.9, d = 0, dsi = 1)
 plot(x.sim, type = 'l')
 
+x.sim.trend <- sim(10000, mu = 1032, sigma = sqrt(23), phi1 = 0.9, d = 0.005, dsi = 1)
+plot(x.sim.trend, type = 'l')
+
+
 #' Fit the custom drift detection model
 #'
 #' If specific parameters are supplied, then they will be fixed.
@@ -94,6 +98,8 @@ fit <- function(x, mu = NULL, sigma = NULL, phi1 = NULL, d = NULL, dsi = NULL) {
   opt
 }
 
+# Here specification of likelihood is tested with general arima model.
+## x.sim
 fit(x = x.sim) # -29826.68
 fit(x = x.sim, dsi = 1)
 fit(x = x.sim, d = 0, dsi = 1) # -29827.19
@@ -102,6 +108,10 @@ fit(x = x.sim, d = 0, dsi = 1) # -29827.19
 fit.arima <- arima(x = x.sim, order = c(1, 0, 0))
 fit.arima # -29830.47
 
-
+## x.sim.trend
+fit(x = x.sim.trend, dsi = 1) # -29876.3
+fit.arima <- arima(x = x.sim.trend, order = c(1, 0, 0),
+                   xreg = matrix(data = 1:length(x.sim.trend), dimnames = list(NULL, 'trend')))
+fit.arima # -29879.61
 
 
