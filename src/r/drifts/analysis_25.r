@@ -72,7 +72,7 @@ fit <- function(x, mu = NULL, sigma = NULL, phi1 = NULL, d = NULL, dsi = NULL) {
   fixed <- unlist(mget(all.param.names)[!sapply(mget(all.param.names), is.null)])
   param.names <- setdiff(all.param.names, names(fixed))
 
-  optim(
+  opt <- optim(
     par = inits[param.names],
     fn = logL.fn,
     method = 'L-BFGS-B',
@@ -82,6 +82,10 @@ fit <- function(x, mu = NULL, sigma = NULL, phi1 = NULL, d = NULL, dsi = NULL) {
     fixed = fixed,
     control = list('fnscale' = -1, trace = 0)
   )
+
+  opt <- append(x = opt, values = list('par.fixed' = fixed), after = 1)
+
+  opt
 }
 
 fit(x = x.sim) # -29936.48
