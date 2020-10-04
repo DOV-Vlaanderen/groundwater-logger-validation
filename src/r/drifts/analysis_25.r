@@ -26,12 +26,14 @@ logL.fn <- function(par, x, fixed) {
 
 
 
-sim <- function(n, mu, sigma, phi1, init = mu) {
+sim <- function(n, mu, sigma, phi1, d, dsi, init = if (dsi == 1) mu + d else mu) {
   a <- rnorm(n, 0, sd = sigma)
-  Reduce(f = function(x1, a) phi1*x1 + mu*(1-phi1) + a, x = a, init = init, accumulate = TRUE)[-1]
+  dt <- c(rep(0, dsi - 1), 1:(n - dsi + 1))
+  # xp is the previous x: x_{t-1}
+  Reduce(f = function(xp, t) phi1*xp + mu*(1-phi1) + d*(dt[t] - phi1*dt[t-1]) + a[t], x = 2:n, init = init, accumulate = TRUE)
 }
 
-x.sim <- sim(10000, mu = 1032, sigma = 23, phi1 = 0.9)
+x.sim <- sim(10000, mu = 1032, sigma = sqrt(23), phi1 = 0.9, d = 0, dsi = 1)
 plot(x.sim, type = 'l')
 
 #' Fit the custom drift detection model
@@ -62,7 +64,7 @@ fit <- function(x, mu = NULL, sigma = NULL, phi1 = NULL, d = NULL, dsi = NULL) {
   upper.bound <- c(
     'mu' = Inf,
     'sigma' = Inf,
-    'phi1' = Inf,
+    'phi1' = 1 - 1e-7,
     'd' = Inf,
     'dsi' = length(x)
   )
@@ -78,16 +80,17 @@ fit <- function(x, mu = NULL, sigma = NULL, phi1 = NULL, d = NULL, dsi = NULL) {
     lower = lower.bound[param.names],
     upper = upper.bound[param.names],
     fixed = fixed,
-    control = list('fnscale' = -1)
+    control = list('fnscale' = -1, trace = 0)
   )
 }
 
-fit(x = x.sim)
-fit(x = x.sim, mu = 0)
+fit(x = x.sim) # -29936.48
+fit(x = x.sim, dsi = 1)
+fit(x = x.sim, d = 0, dsi = 1) # -29827.18
 
 
 
 
 #forecast::auto.arima(y = x.sim, trace = TRUE)
 fit.arima <- arima(x = x.sim, order = c(1, 0, 0))
-fit.arima
+fit.arima # -29830.47
