@@ -46,8 +46,8 @@ fit <- function(x, mu = NULL, sigma = NULL, phi1 = NULL, d = NULL, dsi = NULL) {
   all.param.names <- c('mu', 'sigma', 'phi1', 'd', 'dsi')
 
   inits <- c(
-    'mu'= 1013,
-    'sigma' = 1,
+    'mu'= median(x),
+    'sigma' = var(x),
     'phi1' = 0,
     'd' = 0,
     'dsi' = 1
@@ -76,13 +76,14 @@ fit <- function(x, mu = NULL, sigma = NULL, phi1 = NULL, d = NULL, dsi = NULL) {
     par = inits[param.names],
     fn = logL.fn,
     method = 'L-BFGS-B',
-    x = x.sim,
+    x = x,
     lower = lower.bound[param.names],
     upper = upper.bound[param.names],
     fixed = fixed,
     control = list('fnscale' = -1, trace = 0)
   )
 
+  # Add fixed parameters
   opt <- append(x = opt, values = list('par.fixed' = fixed), after = 1)
 
   opt
@@ -91,9 +92,6 @@ fit <- function(x, mu = NULL, sigma = NULL, phi1 = NULL, d = NULL, dsi = NULL) {
 fit(x = x.sim) # -29936.48
 fit(x = x.sim, dsi = 1)
 fit(x = x.sim, d = 0, dsi = 1) # -29827.18
-
-
-
 
 #forecast::auto.arima(y = x.sim, trace = TRUE)
 fit.arima <- arima(x = x.sim, order = c(1, 0, 0))
