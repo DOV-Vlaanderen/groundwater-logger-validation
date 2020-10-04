@@ -72,7 +72,7 @@ plt.comp <- function(TIMESTAMP_UTC, Y, M = NULL, significant = NULL, front_layer
     )
   }
 
-  if (!is.null(M[['btrend']]) && coef.pvals(M)['btrend'] < 0.001)
+  if (!is.null(M[['btrend']]) && coef.pvals(M)['btrend'] < 0.0001)
     p <- p + ggplot2::geom_vline(xintercept = TIMESTAMP_UTC[which.max(M$btrend > 0)],
                                  col = 'blue', linetype = 'dotted', size = 1.2)
 
