@@ -94,11 +94,14 @@ fit <- function(x, mu = NULL, sigma = NULL, phi1 = NULL, d = NULL, dsi = NULL) {
   opt
 }
 
-fit(x = x.sim) # -29936.48
+fit(x = x.sim) # -29826.68
 fit(x = x.sim, dsi = 1)
-fit(x = x.sim, d = 0, dsi = 1) # -29827.18
+fit(x = x.sim, d = 0, dsi = 1) # -29827.19
 
 #forecast::auto.arima(y = x.sim, trace = TRUE)
 fit.arima <- arima(x = x.sim, order = c(1, 0, 0))
 fit.arima # -29830.47
+
+
+
 
