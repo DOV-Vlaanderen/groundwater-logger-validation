@@ -104,11 +104,11 @@ report <- function(logger.name) {
   df.diff[, M.AR.pred := fitted(M.AR)]
 
   trend <- c(0, cumsum(diff(as.numeric(df.diff$TIMESTAMP_UTC))/3600/24))
-  breakpoints <- seq(from = 1, to = nrow(df.diff), by = 10)
+  breakpoints <- seq(from = 1, to = nrow(df.diff) - 1, by = 10)
 
   M.ARD <- M.AR
   for (bp in breakpoints) {
-    btrend <- c(rep(0, bp), trend[-(1:bp)] - bp/2)
+    btrend <- c(rep(0, bp), trend[-(1:bp)] - (bp/2 - 0.5))
     .M <- arima(x = df.diff$PRESSURE_DIFF, order = c(1, 0, 0), xreg = btrend)
     .M[['btrend']] <- btrend
     if (logLik(.M) > logLik(M.ARD)) M.ARD <- .M
@@ -122,13 +122,14 @@ report <- function(logger.name) {
 
   M.ARDS <- M.ARS
   for (bp in breakpoints) {
-    btrend <- c(rep(0, bp), trend[-(1:bp)] - bp/2)
+    btrend <- c(rep(0, bp), trend[-(1:bp)] - (bp/2 - 0.5))
     .M <- arima(x = df.diff$PRESSURE_DIFF, order = c(1, 0, 0), xreg = cbind(sbasis, btrend))
     .M[['btrend']] <- btrend
     if (logLik(.M) > logLik(M.ARDS)) M.ARDS <- .M
   }
 
-  M.AUTO <- forecast::auto.arima(df.diff$PRESSURE_DIFF, trace = TRUE, stationary = TRUE, ic = 'bic',
+  M.AUTO <- forecast::auto.arima(df.diff$PRESSURE_DIFF, trace = TRUE,
+                                 stationary = TRUE, ic = 'bic',
                                  xreg = data.matrix(cbind(sbasis, 'btrend' = M.ARDS[['btrend']])))
   M.AUTO[['btrend']] <- M.ARDS[['btrend']]
 
