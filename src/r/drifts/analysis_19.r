@@ -62,6 +62,20 @@ plot(forecast:::simulate.Arima(fit.arima, 10000))
 fit.arima <- arima(df$PRESSURE_VALUE, order = c(1, 0, 0))
 plot(forecast:::simulate.Arima(fit.arima, 10000))
 
+# Distribution of AR(1) model
+# Seems to be normal given a timestamp.
+# So according to this approximation, a height-compensated barometer should be
+# within a normal distribution with mu = 1033 and sd = 11.137
+# Note that assumption is that the barometers are height-compensated.
+df.sim <- data.table::rbindlist(lapply(1:10000, function(x) data.frame(t = 1:1000, x = forecast:::simulate.Arima(fit.arima, 1000))))
+data.table::setkey(df.sim, t, verbose = TRUE)
+# plot(x = df.sim$t, y = df.sim$x, pch = '.')
+df.sim.stats <- df.sim[, .(sd = sd(x)), by = t]
+plot(x = df.sim.stats$t, y = df.sim.stats$sd, type = 'l')
+hist(df.sim[t == 500, x], breaks = 100)
+qqnorm(df.sim[t == 500, x])
+qqline(df.sim[t == 500, x])
+
 # Random walk model: fits well on data, but is completely wrong
 fit.arima <- arima(df$PRESSURE_VALUE, order = c(0, 1, 0))
 plot(forecast:::simulate.Arima(fit.arima, 10000))
