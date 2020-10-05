@@ -129,9 +129,14 @@ report <- function(logger.name) {
   }
 
   M.AUTO <- forecast::auto.arima(df.diff$PRESSURE_DIFF, trace = TRUE,
-                                 stationary = TRUE, ic = 'bic',
+                                 stationary = TRUE, ic = 'aicc',
                                  xreg = data.matrix(cbind(sbasis, 'btrend' = M.ARDS[['btrend']])))
   M.AUTO[['btrend']] <- M.ARDS[['btrend']]
+
+  M.AUTOF <- forecast::auto.arima(df.diff$PRESSURE_DIFF, trace = TRUE,
+                                  stationary = FALSE, ic = 'aicc',
+                                  xreg = data.matrix(cbind(sbasis, 'btrend' = M.ARDS[['btrend']])))
+  M.AUTOF[['btrend']] <- M.ARDS[['btrend']]
 
   p.comp <- plt.comp(df.diff$TIMESTAMP_UTC, df.diff$PRESSURE_DIFF)
 
@@ -147,6 +152,8 @@ report <- function(logger.name) {
 
   p.M.AUTO <- plt.comp(df.diff$TIMESTAMP_UTC, df.diff$PRESSURE_DIFF, M.AUTO)
 
+  p.M.AUTOF <- plt.comp(df.diff$TIMESTAMP_UTC, df.diff$PRESSURE_DIFF, M.AUTOF)
+
   # File export ----------------------------------------------------------------
 
   filename <- sprintf('./drifts/analysis_26/%s.png', tools::file_path_sans_ext(basename(logger.name)))
@@ -156,10 +163,10 @@ report <- function(logger.name) {
                          c(3, 4),
                          c(5, 6))
 
-  grob.title <- grid::textGrob(sprintf('%s (#%s differences with KNMI data from %s to %s) - %s',
+  grob.title <- grid::textGrob(sprintf('%s (#%s differences with KNMI data from %s to %s) -> %s | %s',
                                        basename(logger.name), nrow(df.diff),
                                        min(df.diff$TIMESTAMP_UTC), max(df.diff$TIMESTAMP_UTC),
-                                       forecast:::arima.string(M.AUTO)),
+                                       forecast:::arima.string(M.AUTO), forecast:::arima.string(M.AUTOF)),
                                x = 0.05, hjust = 0)
 
   p.empty <- ggplot2::ggplot() + ggplot2::theme_void()
@@ -167,7 +174,7 @@ report <- function(logger.name) {
   local({
     png(filename, width = 1280, height = 720)
     on.exit(dev.off())
-    gridExtra::grid.arrange(p.comp, p.M.AUTO,
+    gridExtra::grid.arrange(p.M.AUTO, p.M.AUTOF,
                             p.M.AR, p.M.ARS,
                             p.M.ARD, p.M.ARDS,
                             layout_matrix = layout_matrix,
