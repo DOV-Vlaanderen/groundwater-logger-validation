@@ -26,6 +26,9 @@ read.baro <- function(logger.name) {
   df[, 'FILE' := basename(logger.name)]
   df[, 'N' := .N]
 
+  # Normalize barometer so the mu is the same for every barometer
+  # df[, 'PRESSURE_VALUE' := PRESSURE_VALUE - median(PRESSURE_VALUE)]
+
   data.table::setkey(df, TIMESTAMP_UTC)
   structure(df, 'logger.name' = logger.name)
 }
@@ -112,3 +115,8 @@ ggplot2::ggplot(data = dfw, ggplot2::aes(x = TIMESTAMP_UTC, y = PRESSURE_VALUE, 
 arima(dfw$PRESSURE_VALUE, order = c(1, 0, 0))
 # Here the most impact has the AR(1) model, after that the impact is not large
 # The AR(1) coefficient is here 0.89 at 12h intervals with sigma2 = 21.3!
+
+# Normalizing the series around the median has little effect on AR(1) coef:
+# it remains around 0.88, and sigma2 also remains around 21-23.
+# This was tested on both df and dfw.
+# So we can conclude that for modeling air pressure AR(1) is a good model.
