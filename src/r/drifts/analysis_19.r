@@ -101,3 +101,14 @@ arima(dfv$PRESSURE_VALUE, order = c(1, 0, 0))
 # Here also the most impact has the AR(1) model, after that the impact is not large
 # The AR(1) coefficient is here 0.82 at 12h intervals with sigma2 = 31.85
 
+# 65% non-drinfting barometers
+analysis_10 <- data.table::fread(file = './drifts/analysis_10/baro_median_errors.csv')
+analysis_10 <- analysis_10[order(WISK, decreasing = TRUE),]
+dfw <- data.table::rbindlist(lapply(analysis_10[WISK <= quantile(WISK, probs = 0.65), FILE], read.baro), use.names = TRUE, fill = TRUE)
+data.table::setkey(dfw, FILE, TIMESTAMP_UTC)
+dfw
+ggplot2::ggplot(data = dfw, ggplot2::aes(x = TIMESTAMP_UTC, y = PRESSURE_VALUE, color = FILE)) +
+  ggplot2::geom_line(show.legend = FALSE)
+arima(dfw$PRESSURE_VALUE, order = c(1, 0, 0))
+# Here the most impact has the AR(1) model, after that the impact is not large
+# The AR(1) coefficient is here 0.89 at 12h intervals with sigma2 = 21.3!
