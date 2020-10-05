@@ -66,7 +66,9 @@ plt.comp <- function(TIMESTAMP_UTC, Y, lm = NULL, front_layer = NULL,
     ggplot2::coord_cartesian(ylim = ylim, xlim = xlim) +
     ggplot2::ylab('PRESSURE_DIFF') +
     ggplot2::theme_light() +
-    ggplot2::theme(axis.text.y = ggplot2::element_text(angle = 90, hjust = 0.5))
+    ggplot2::theme(axis.text.y = ggplot2::element_text(angle = 90, hjust = 0.5),
+                   axis.title.x = ggplot2::element_blank(),
+                   axis.title.y = ggplot2::element_blank())
 
   p
 }

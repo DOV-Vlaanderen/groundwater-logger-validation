@@ -81,6 +81,7 @@ plt.comp <- function(TIMESTAMP_UTC, Y, M = NULL, significant = NULL, front_layer
     ggplot2::ylab('PRESSURE_DIFF') +
     ggplot2::theme_light() +
     ggplot2::theme(axis.text.y = ggplot2::element_text(angle = 90, hjust = 0.5),
+                   axis.title.y = ggplot2::element_blank(),
                    axis.title.x = ggplot2::element_blank())
 
   p
