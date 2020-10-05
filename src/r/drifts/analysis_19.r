@@ -34,6 +34,8 @@ df.list <- lapply(logger.names, read.baro)
 df <- data.table::rbindlist(df.list, use.names = TRUE, fill = TRUE)
 data.table::setkey(df, FILE, TIMESTAMP_UTC)
 df
+ggplot2::ggplot(data = df, ggplot2::aes(x = TIMESTAMP_UTC, y = PRESSURE_VALUE, color = FILE)) +
+  ggplot2::geom_line(show.legend = FALSE)
 
 # Unit root test seems to fail and 1st order diff are taken.
 # But assuming stationary one ends up with a slightly better likelihood and
@@ -59,15 +61,17 @@ fit.arima <- arima(df$PRESSURE_VALUE, order = c(0, 0, 0))
 plot(forecast:::simulate.Arima(fit.arima, 10000))
 
 # AR(1) model: looks quite like a real air pressure series
+# Coefficient is 0.90 with sigma2 = 23.62
 fit.arima <- arima(df$PRESSURE_VALUE, order = c(1, 0, 0))
 plot(forecast:::simulate.Arima(fit.arima, 10000))
 
-# Distribution of AR(1) model
+# Distribution of AR(1) model (coef = 0.90)
 # Seems to be normal given a timestamp.
 # So according to this approximation, a height-compensated barometer should be
 # within a normal distribution with mu = 1033 and sd = 11.137
 # Note that assumption is that the barometers are height-compensated.
-df.sim <- data.table::rbindlist(lapply(1:10000, function(x) data.frame(t = 1:1000, x = forecast:::simulate.Arima(fit.arima, 1000))))
+# With coef = 0.82 the sd = 9.9
+df.sim <- data.table::rbindlist(lapply(1:1000, function(x) data.frame(t = 1:1000, x = forecast:::simulate.Arima(fit.arima, 1000))))
 data.table::setkey(df.sim, t, verbose = TRUE)
 # plot(x = df.sim$t, y = df.sim$x, pch = '.')
 df.sim.stats <- df.sim[, .(sd = sd(x)), by = t]
@@ -85,3 +89,15 @@ plot(forecast:::simulate.Arima(fit.arima, 10000))
 # there are more AR components needed to simulate it correctly.
 # Concretely: there are 2-3 components needed for 1h intervals.
 # AR(1) model is too close to a random walk.
+
+# Verified barometers
+dfv <- data.table::copy(gwloggeR:::airpressure)
+dfv <- dfv[, .('PRESSURE_VALUE' = mean(PRESSURE_VALUE)),
+           by = .('TIMESTAMP_UTC' = round_timestamp(TIMESTAMP_UTC), FILE)]
+data.table::setkey(dfv, FILE, TIMESTAMP_UTC)
+ggplot2::ggplot(data = dfv, ggplot2::aes(x = TIMESTAMP_UTC, y = PRESSURE_VALUE, color = FILE)) +
+  ggplot2::geom_line(show.legend = FALSE)
+arima(dfv$PRESSURE_VALUE, order = c(1, 0, 0))
+# Here also the most impact has the AR(1) model, after that the impact is not large
+# The AR(1) coefficient is here 0.82 at 12h intervals with sigma2 = 31.85
+
