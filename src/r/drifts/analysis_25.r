@@ -7,25 +7,58 @@ set.seed(2020)
 
 #' LogLikelihood of AR(1) model with drift and seasonality
 #'
-#' @param dsi Start index of the drift in range 1 to length(x).
+#' Box & Jenkins suggest using unconditional likelihood, but here I have taken
+#' the approach of excluding p + q variables for ease.
+#'
+#' @param mu,sigma,phi scalars
+#' @param betas vector of betas for xreg
+#' @param xreg matrix of regressors similar to mu
 #'
 #' @keywords internal
-logL <- function(mu, sigma, phi1, d, dsi, x) {
-  dsi <- as.integer(dsi)
-  stopifnot(dsi >= 1 && dsi <= length(x))
+logL <- function(x, mu, sigma, phi1, betas = NULL, xreg = NULL) {
   n <- length(x)
-  dt <- c(rep(0, dsi - 1), 1:(n - dsi + 1))
-  stopifnot(length(dt) == n)
-  M <- phi1*x[-n] + mu * (1 - phi1) + d*(dt[-1] - phi1*dt[-n])
+  M <- phi1*x[-n] + mu * (1 - phi1)
+  if (!is.null(betas) || !is.null(xreg)) {
+    reg <- xreg[-1,,drop=FALSE] - phi1*xreg[-n,,drop=FALSE]
+    M <- M + reg %*% betas
+  }
   squared <- (x[-1] - M)^2
   sum(-squared/(2*sigma^2)) - (n - 1)*log(sigma * sqrt(2*pi))
 }
 
-logL(rnorm(100), mu = 0, sigma = 1, phi1 = 5, d = 2, dsi = 5)
+logL(rnorm(100), mu = 0, sigma = 1, phi1 = 5, betas = 2, xreg = matrix(c(rep(0, 4), 1:(100-4))))
+logL(rnorm(100), mu = 0, sigma = 1, phi1 = 5)
 
-logL.fn <- function(par, x, fixed) {
-  do.call(logL, args = c(as.list(par), as.list(fixed), list(x = x)))
+logL.compile <- function(mu = NULL, sigma = NULL, phi1 = NULL, betas = list()) {
+
+  stopifnot(length(betas) == 0 || !is.null(names(betas)))
+
+  i <- 0
+
+  fn.str <- sprintf(
+    'function(par, x, xreg = NULL) {
+      logL(x = x, mu = %s, sigma = %s, phi1 = %s, betas = %s, xreg = xreg)
+    }'
+    , if (is.null(mu)) sprintf('par[%i]', (i <- i + 1)) else mu
+    , if (is.null(sigma)) sprintf('par[%i]', (i <- i + 1)) else sigma
+    , if (is.null(phi1)) sprintf('par[%i]', (i <- i + 1)) else phi1
+    , if (length(betas) > 0L)
+      sprintf('c(%s)', paste(names(betas), '=', vapply(betas, function(v)
+        if (is.null(v)) sprintf('par[%i]', (i <<- i + 1)) else as.character(v), ''), collapse = ', '))
+      else 'NULL'
+  )
+
+  fn <- eval(parse(text = fn.str))
+  environment(fn) <- globalenv()
+
+  fn
 }
+
+(logL.fn <- logL.compile(phi1 = 0, betas = list('b1' = 1, 'b2' = NULL, 'b3' = 3)))
+logL.fn(par = c(1,2,3), x = rnorm(100), xreg = matrix(rnorm(300), ncol = 3))
+(logL.fn <- logL.compile(phi1 = 0))
+logL.fn(par = c(1,2), x = rnorm(100))
+
 
 sim <- function(n, mu, sigma, phi1, d, dsi,
                 init = if (dsi == 1) mu + d else mu,
@@ -41,8 +74,13 @@ sim <- function(n, mu, sigma, phi1, d, dsi,
   }
 }
 
+set.seed(2020)
+
 x.sim <- sim(10000, mu = 1032, sigma = sqrt(23), phi1 = 0.9, d = 0, dsi = 1)
 plot(x.sim, type = 'l')
+acf(x.sim)
+pacf(x.sim)
+
 
 x.sim.trend <- sim(10000, mu = 1032, sigma = sqrt(23), phi1 = 0.9, d = 0.005, dsi = 1)
 plot(x.sim.trend, type = 'l')
@@ -53,32 +91,39 @@ plot(x.sim.trend, type = 'l')
 #' If specific parameters are supplied, then they will be fixed.
 #'
 #' @keywords internal
-fit <- function(x, mu = NULL, sigma = NULL, phi1 = NULL, d = NULL, dsi = NULL) {
+fit <- function(x, mu = NULL, sigma = NULL, phi1 = NULL,
+                betas = if (is.null(xreg)) list() else setNames(vector('list', ncol(xreg)), colnames(xreg)),
+                xreg = NULL) {
 
-  all.param.names <- c('mu', 'sigma', 'phi1', 'd', 'dsi')
+  stopifnot(is.null(xreg) || is.matrix(xreg))
+  stopifnot(!is.matrix(xreg) || length(betas) == ncol(xreg))
+  stopifnot(!is.matrix(xreg) || all(names(betas) == colnames(xreg)))
+
+  all.param.names <- c('mu', 'sigma', 'phi1', names(betas))
+  stopifnot(length(unique(all.param.names)) == length(all.param.names))
+
+  stopifnot(!any(ls() %in% names(betas)))
+  list2env(betas, envir = environment())
 
   inits <- c(
     'mu'= median(x),
     'sigma' = var(x),
-    'phi1' = 0,
-    'd' = 0,
-    'dsi' = 1
+    'phi1' = pacf(x, plot = FALSE, lag.max = 1)$acf[1,1,1],
+    setNames(coef(lm(x ~ xreg))[-1], names(betas))
   )
 
   lower.bound <- c(
     'mu' = -Inf,
     'sigma' = 1e-7,
     'phi1' = -Inf,
-    'd' = -Inf,
-    'dsi' = 1
+    setNames(rep(-Inf, length(betas)), names(betas))
   )
 
   upper.bound <- c(
     'mu' = Inf,
     'sigma' = Inf,
     'phi1' = 1 - 1e-7,
-    'd' = Inf,
-    'dsi' = length(x)
+    setNames(rep(Inf, length(betas)), names(betas))
   )
 
   fixed <- unlist(mget(all.param.names)[!sapply(mget(all.param.names), is.null)])
@@ -86,12 +131,12 @@ fit <- function(x, mu = NULL, sigma = NULL, phi1 = NULL, d = NULL, dsi = NULL) {
 
   opt <- optim(
     par = inits[param.names],
-    fn = logL.fn,
+    fn = logL.compile(mu = mu, sigma = sigma, phi1 = phi1, betas = betas),
     method = 'L-BFGS-B',
     x = x,
     lower = lower.bound[param.names],
     upper = upper.bound[param.names],
-    fixed = fixed,
+    xreg = xreg,
     control = list('fnscale' = -1, trace = 0)
   )
 
@@ -101,21 +146,22 @@ fit <- function(x, mu = NULL, sigma = NULL, phi1 = NULL, d = NULL, dsi = NULL) {
   opt
 }
 
+xreg.trend.1 <- matrix(data = 1:length(x.sim), dimnames = list(NULL, 'trend'))
+
 # Here specification of likelihood is tested with general arima model.
 ## x.sim
-fit(x = x.sim) # -29826.68
-fit(x = x.sim, dsi = 1)
-fit(x = x.sim, d = 0, dsi = 1) # -29827.19
+fit(x = x.sim) # -29832.06
+fit(x = x.sim, xreg = xreg.trend.1)
+fit(x = x.sim, betas = list('b1' = 0), xreg = xreg.trend.1) # -29832.06
 
 #forecast::auto.arima(y = x.sim, trace = TRUE)
 fit.arima <- arima(x = x.sim, order = c(1, 0, 0))
-fit.arima # -29830.47
+fit.arima # -29835.35
 
 ## x.sim.trend
-fit(x = x.sim.trend, dsi = 1) # -29876.3
-fit.arima <- arima(x = x.sim.trend, order = c(1, 0, 0),
-                   xreg = matrix(data = 1:length(x.sim.trend), dimnames = list(NULL, 'trend')))
-fit.arima # -29879.61
+fit(x = x.sim.trend, xreg = xreg.trend.1) # -29997.49
+fit.arima <- arima(x = x.sim.trend, order = c(1, 0, 0), xreg = xreg.trend.1)
+fit.arima # -30000.82
 
 # Data -------------------------------------------------------------------------
 
