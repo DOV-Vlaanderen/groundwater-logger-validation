@@ -60,29 +60,33 @@ logL.fn(par = c(1,2,3), x = rnorm(100), xreg = matrix(rnorm(300), ncol = 3))
 logL.fn(par = c(1,2), x = rnorm(100))
 
 
-sim <- function(n, mu, sigma, phi1, d, dsi,
-                init = if (dsi == 1) mu + d else mu,
-                xt = NULL) {
-  a <- rnorm(n, 0, sd = sigma)
-  dt <- c(rep(0, dsi - 1), 1:(n - dsi + 1))
+sim <- function(n, mu, sigma, phi1, betas = NULL, xreg = NULL,
+                init = mu, xt = NULL, a = rnorm(n, 0, sd = sigma)) {
+
+  R <- 0
+  if (!is.null(betas) || !is.null(xreg)) {
+    reg <- xreg[-1,,drop=FALSE] - phi1*xreg[-n,,drop=FALSE]
+    R <- c(0, reg %*% betas)
+  }
+
   if (is.null(xt)) {
     # xp is the previous x: x_{t-1}
-    Reduce(f = function(xp, t) phi1*xp + mu*(1-phi1) + d*(dt[t] - phi1*dt[t-1]) + a[t], x = 2:n, init = init, accumulate = TRUE)
+    Reduce(f = function(xp, t) phi1*xp + mu*(1-phi1) + R[t] + a[t], x = 2:n, init = init, accumulate = TRUE)
   } else {
     c(xt[1],
-      phi1*xt[-n] + mu*(1-phi1) + d*(dt[-1] - phi1*dt[-n]) + a[-1])
+      phi1*xt[-n] + mu*(1-phi1) + R[-1] + a[-1])
   }
 }
 
 set.seed(2020)
 
-x.sim <- sim(10000, mu = 1032, sigma = sqrt(23), phi1 = 0.9, d = 0, dsi = 1)
+x.sim <- sim(10000, mu = 1032, sigma = sqrt(23), phi1 = 0.9, betas = 0, xreg = matrix(1:10000, ncol = 1))
 plot(x.sim, type = 'l')
 acf(x.sim)
 pacf(x.sim)
 
 
-x.sim.trend <- sim(10000, mu = 1032, sigma = sqrt(23), phi1 = 0.9, d = 0.005, dsi = 1)
+x.sim.trend <- sim(10000, mu = 1032, sigma = sqrt(23), phi1 = 0.9, betas = 0.005, xreg = matrix(1:10000, ncol = 1))
 plot(x.sim.trend, type = 'l')
 
 
@@ -109,7 +113,14 @@ fit <- function(x, mu = NULL, sigma = NULL, phi1 = NULL,
     'mu'= median(x),
     'sigma' = var(x),
     'phi1' = pacf(x, plot = FALSE, lag.max = 1)$acf[1,1,1],
-    setNames(coef(lm(x ~ xreg))[-1], names(betas))
+    if (length(betas) == 0L) NULL else setNames(coef(lm(x ~ xreg))[-1], names(betas))
+  )
+
+  scale <- c(
+    'mu' = if (length(betas) == 0L) 1 else summary(lm(x ~ xreg))$coefficients[1L, 2L],
+    'sigma' = 1,
+    'phi1' = 1/100,
+    if (length(betas) == 0L) NULL else setNames(summary(lm(x ~ xreg))$coefficients[-1L, 2L], names(betas))
   )
 
   lower.bound <- c(
@@ -137,7 +148,9 @@ fit <- function(x, mu = NULL, sigma = NULL, phi1 = NULL,
     lower = lower.bound[param.names],
     upper = upper.bound[param.names],
     xreg = xreg,
-    control = list('fnscale' = -1, trace = 0)
+    control = list('fnscale' = -1,
+                   'parscale' = scale[param.names],
+                   'trace' = 0)
   )
 
   # Add fixed parameters
@@ -152,7 +165,7 @@ xreg.trend.1 <- matrix(data = 1:length(x.sim), dimnames = list(NULL, 'trend'))
 ## x.sim
 fit(x = x.sim) # -29832.06
 fit(x = x.sim, xreg = xreg.trend.1)
-fit(x = x.sim, betas = list('b1' = 0), xreg = xreg.trend.1) # -29832.06
+fit(x = x.sim, betas = list('trend' = 0), xreg = xreg.trend.1) # -29832.06
 
 #forecast::auto.arima(y = x.sim, trace = TRUE)
 fit.arima <- arima(x = x.sim, order = c(1, 0, 0))
