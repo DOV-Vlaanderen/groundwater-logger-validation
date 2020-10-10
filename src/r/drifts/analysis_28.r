@@ -134,10 +134,7 @@ report <- function(logger.name) {
                                  xreg = data.matrix(cbind(sbasis, 'btrend' = M.ARDS[['btrend']])))
   M.AUTO[['btrend']] <- M.ARDS[['btrend']]
 
-  M.AUTOF <- forecast::auto.arima(df.diff$PRESSURE_DIFF, trace = TRUE,
-                                  stationary = FALSE, ic = 'aicc',
-                                  xreg = data.matrix(cbind(sbasis, 'btrend' = M.ARDS[['btrend']])))
-  M.AUTOF[['btrend']] <- M.ARDS[['btrend']]
+  df.diff[, TIMESTAMP_UTC_DIFF_HOURS := c(NA, round(diff(as.numeric(TIMESTAMP_UTC))/3600))]
 
   p.comp <- plt.comp(df.diff$TIMESTAMP_UTC, df.diff$PRESSURE_DIFF)
 
@@ -153,7 +150,19 @@ report <- function(logger.name) {
 
   p.M.AUTO <- plt.comp(df.diff$TIMESTAMP_UTC, df.diff$PRESSURE_DIFF, M.AUTO)
 
-  p.M.AUTOF <- plt.comp(df.diff$TIMESTAMP_UTC, df.diff$PRESSURE_DIFF, M.AUTOF)
+  p.ts.diff <- ggplot2::ggplot(data = df.diff[-1, ], mapping = ggplot2::aes(
+    x = TIMESTAMP_UTC,
+    y = TIMESTAMP_UTC_DIFF_HOURS)) +
+    ggplot2::scale_y_continuous(
+      trans = scales::trans_new(name = 'log12',
+                                transform = function(x) logb(x = x, base = 12),
+                                inverse = function(x) 12^x)) +
+    ggplot2::geom_point(pch = '-', size = 8) +
+    ggplot2::ylab('PRESSURE_DIFF') +
+    ggplot2::theme_light() +
+    ggplot2::theme(axis.text.y = ggplot2::element_text(angle = 90, hjust = 0.5),
+                   axis.title.y = ggplot2::element_blank(),
+                   axis.title.x = ggplot2::element_blank())
 
   # File export ----------------------------------------------------------------
 
@@ -164,10 +173,10 @@ report <- function(logger.name) {
                          c(3, 4),
                          c(5, 6))
 
-  grob.title <- grid::textGrob(sprintf('%s (#%s differences with KNMI data from %s to %s) -> %s | %s',
+  grob.title <- grid::textGrob(sprintf('%s (#%s differences with KNMI data from %s to %s) -> %s | Fixed AR(1) = 0.9',
                                        basename(logger.name), nrow(df.diff),
                                        min(df.diff$TIMESTAMP_UTC), max(df.diff$TIMESTAMP_UTC),
-                                       forecast:::arima.string(M.AUTO), forecast:::arima.string(M.AUTOF)),
+                                       forecast:::arima.string(M.AUTO)),
                                x = 0.05, hjust = 0)
 
   p.empty <- ggplot2::ggplot() + ggplot2::theme_void()
@@ -175,7 +184,7 @@ report <- function(logger.name) {
   local({
     png(filename, width = 1280, height = 720)
     on.exit(dev.off())
-    gridExtra::grid.arrange(p.M.AUTO, p.M.AUTOF,
+    gridExtra::grid.arrange(p.M.AUTO, p.ts.diff,
                             p.M.AR, p.M.ARS,
                             p.M.ARD, p.M.ARDS,
                             layout_matrix = layout_matrix,
