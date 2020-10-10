@@ -101,38 +101,60 @@ report <- function(logger.name) {
   M <- arima(x = df.diff$PRESSURE_DIFF, order = c(0, 0, 0))
   df.diff[, M_pred := fitted(M)]
 
-  M.AR <- arima(x = df.diff$PRESSURE_DIFF, order = c(1, 0, 0), transform.pars = FALSE, fixed = c(0.90, NA))
-  df.diff[, M.AR.pred := fitted(M.AR)]
+  M.AR90 <- arima(x = df.diff$PRESSURE_DIFF, order = c(1, 0, 0), transform.pars = FALSE, fixed = c(0.90, NA))
+  df.diff[, M.AR90.pred := fitted(M.AR90)]
+
+  M.AR60 <- arima(x = df.diff$PRESSURE_DIFF, order = c(1, 0, 0), transform.pars = FALSE, fixed = c(0.60, NA))
+  df.diff[, M.AR60.pred := fitted(M.AR60)]
 
   trend <- c(0, cumsum(diff(as.numeric(df.diff$TIMESTAMP_UTC))/3600/24))
   breakpoints <- seq(from = 1, to = nrow(df.diff) - 1, by = 10)
 
-  M.ARD <- M.AR
+  M.ARD90 <- M.AR90
   for (bp in breakpoints) {
     btrend <- c(rep(0, bp), trend[-(1:bp)] - (bp/2 - 0.5))
     .M <- arima(x = df.diff$PRESSURE_DIFF, order = c(1, 0, 0), xreg = btrend, transform.pars = FALSE, fixed = c(0.90, NA, NA))
     .M[['btrend']] <- btrend
-    if (logLik(.M) > logLik(M.ARD)) M.ARD <- .M
+    if (logLik(.M) > logLik(M.ARD90)) M.ARD90 <- .M
   }
-  df.diff[, M.ARD.pred := fitted(M.ARD)]
+  df.diff[, M.ARD90.pred := fitted(M.ARD90)]
+
+  M.ARD60 <- M.AR60
+  for (bp in breakpoints) {
+    btrend <- c(rep(0, bp), trend[-(1:bp)] - (bp/2 - 0.5))
+    .M <- arima(x = df.diff$PRESSURE_DIFF, order = c(1, 0, 0), xreg = btrend, transform.pars = FALSE, fixed = c(0.60, NA, NA))
+    .M[['btrend']] <- btrend
+    if (logLik(.M) > logLik(M.ARD60)) M.ARD60 <- .M
+  }
+  df.diff[, M.ARD60.pred := fitted(M.ARD60)]
 
 
   sbasis <- fbasis(timestamps = df.diff$TIMESTAMP_UTC, frequencies = 1/(365.25*3600*24))
 
-  M.ARS <- arima(x = df.diff$PRESSURE_DIFF, order = c(1, 0, 0), xreg = sbasis, transform.pars = FALSE, fixed = c(0.90, NA, NA, NA))
+  M.ARS90 <- arima(x = df.diff$PRESSURE_DIFF, order = c(1, 0, 0), xreg = sbasis, transform.pars = FALSE, fixed = c(0.90, NA, NA, NA))
 
-  M.ARDS <- M.ARS
+  M.ARDS90 <- M.ARS90
   for (bp in breakpoints) {
     btrend <- c(rep(0, bp), trend[-(1:bp)] - (bp/2 - 0.5))
     .M <- arima(x = df.diff$PRESSURE_DIFF, order = c(1, 0, 0), xreg = cbind(sbasis, btrend), transform.pars = FALSE, fixed = c(0.90, NA, NA, NA, NA))
     .M[['btrend']] <- btrend
-    if (logLik(.M) > logLik(M.ARDS)) M.ARDS <- .M
+    if (logLik(.M) > logLik(M.ARDS90)) M.ARDS90 <- .M
+  }
+
+  M.ARS60 <- arima(x = df.diff$PRESSURE_DIFF, order = c(1, 0, 0), xreg = sbasis, transform.pars = FALSE, fixed = c(0.60, NA, NA, NA))
+
+  M.ARDS60 <- M.ARS60
+  for (bp in breakpoints) {
+    btrend <- c(rep(0, bp), trend[-(1:bp)] - (bp/2 - 0.5))
+    .M <- arima(x = df.diff$PRESSURE_DIFF, order = c(1, 0, 0), xreg = cbind(sbasis, btrend), transform.pars = FALSE, fixed = c(0.60, NA, NA, NA, NA))
+    .M[['btrend']] <- btrend
+    if (logLik(.M) > logLik(M.ARDS60)) M.ARDS60 <- .M
   }
 
   M.AUTO <- forecast::auto.arima(df.diff$PRESSURE_DIFF, trace = TRUE,
                                  stationary = TRUE, ic = 'aicc',
-                                 xreg = data.matrix(cbind(sbasis, 'btrend' = M.ARDS[['btrend']])))
-  M.AUTO[['btrend']] <- M.ARDS[['btrend']]
+                                 xreg = data.matrix(cbind(sbasis, 'btrend' = M.ARDS90[['btrend']])))
+  M.AUTO[['btrend']] <- M.ARDS90[['btrend']]
 
   df.diff[, TIMESTAMP_UTC_DIFF_HOURS := c(NA, round(diff(as.numeric(TIMESTAMP_UTC))/3600))]
 
@@ -140,13 +162,17 @@ report <- function(logger.name) {
 
   p.M <- plt.comp(df.diff$TIMESTAMP_UTC, df.diff$PRESSURE_DIFF, M)
 
-  p.M.AR <- plt.comp(df.diff$TIMESTAMP_UTC, df.diff$PRESSURE_DIFF, M.AR)
+  p.M.AR60 <- plt.comp(df.diff$TIMESTAMP_UTC, df.diff$PRESSURE_DIFF, M.AR60)
+  p.M.AR90 <- plt.comp(df.diff$TIMESTAMP_UTC, df.diff$PRESSURE_DIFF, M.AR90)
 
-  p.M.ARS <- plt.comp(df.diff$TIMESTAMP_UTC, df.diff$PRESSURE_DIFF, M.ARS)
+  p.M.ARS60 <- plt.comp(df.diff$TIMESTAMP_UTC, df.diff$PRESSURE_DIFF, M.ARS60)
+  p.M.ARS90 <- plt.comp(df.diff$TIMESTAMP_UTC, df.diff$PRESSURE_DIFF, M.ARS90)
 
-  p.M.ARD <- plt.comp(df.diff$TIMESTAMP_UTC, df.diff$PRESSURE_DIFF, M.ARD)
+  p.M.ARD60 <- plt.comp(df.diff$TIMESTAMP_UTC, df.diff$PRESSURE_DIFF, M.ARD60)
+  p.M.ARD90 <- plt.comp(df.diff$TIMESTAMP_UTC, df.diff$PRESSURE_DIFF, M.ARD90)
 
-  p.M.ARDS <- plt.comp(df.diff$TIMESTAMP_UTC, df.diff$PRESSURE_DIFF, M.ARDS)
+  p.M.ARDS60 <- plt.comp(df.diff$TIMESTAMP_UTC, df.diff$PRESSURE_DIFF, M.ARDS60)
+  p.M.ARDS90 <- plt.comp(df.diff$TIMESTAMP_UTC, df.diff$PRESSURE_DIFF, M.ARDS90)
 
   p.M.AUTO <- plt.comp(df.diff$TIMESTAMP_UTC, df.diff$PRESSURE_DIFF, M.AUTO)
 
@@ -173,7 +199,7 @@ report <- function(logger.name) {
                          c(3, 4),
                          c(5, 6))
 
-  grob.title <- grid::textGrob(sprintf('%s (#%s differences with KNMI data from %s to %s) -> %s | Fixed AR(1) = 0.9',
+  grob.title <- grid::textGrob(sprintf('%s (#%s differences with KNMI data from %s to %s) -> %s | Fixed AR(1) = 0.9 and 0.6',
                                        basename(logger.name), nrow(df.diff),
                                        min(df.diff$TIMESTAMP_UTC), max(df.diff$TIMESTAMP_UTC),
                                        forecast:::arima.string(M.AUTO)),
@@ -185,8 +211,8 @@ report <- function(logger.name) {
     png(filename, width = 1280, height = 720)
     on.exit(dev.off())
     gridExtra::grid.arrange(p.M.AUTO, p.ts.diff,
-                            p.M.AR, p.M.ARS,
-                            p.M.ARD, p.M.ARDS,
+                            p.M.ARD90, p.M.ARDS90,
+                            p.M.ARD60, p.M.ARDS60,
                             layout_matrix = layout_matrix,
                             top = grob.title)
   })
