@@ -1,5 +1,5 @@
-# Best ARIMA model for drift detection
-# Rest is taken over from analysis v23
+# Best fixed AR(1) model for drift detection
+# Rest is taken over from analysis v23 and v26
 
 source('./../../gwloggeR/R/fourier.R')
 
@@ -157,7 +157,7 @@ report <- function(logger.name) {
 
   # File export ----------------------------------------------------------------
 
-  filename <- sprintf('./drifts/analysis_26/%s.png', tools::file_path_sans_ext(basename(logger.name)))
+  filename <- sprintf('./drifts/analysis_28/%s.png', tools::file_path_sans_ext(basename(logger.name)))
   dir.create(dirname(filename), showWarnings = FALSE, recursive = TRUE)
 
   layout_matrix <- rbind(c(1, 2),
