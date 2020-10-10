@@ -63,7 +63,7 @@ logL.fn(par = c(1,2), x = rnorm(100))
 sim <- function(n, mu, sigma, phi1, betas = NULL, xreg = NULL,
                 init = mu, xt = NULL, a = rnorm(n, 0, sd = sigma)) {
 
-  R <- 0
+  R <- rep(0, n)
   if (!is.null(betas) || !is.null(xreg)) {
     reg <- xreg[-1,,drop=FALSE] - phi1*xreg[-n,,drop=FALSE]
     R <- c(0, reg %*% betas)
