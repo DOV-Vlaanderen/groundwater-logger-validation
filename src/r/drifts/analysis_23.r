@@ -95,7 +95,7 @@ report <- function(logger.name) {
 
   lmt <- lm0
   for (bp in breakpoints) {
-    btrend <- c(rep(0, bp), trend[-(1:bp)] - bp/2)
+    btrend <- c(rep(0, bp - 1), trend[bp:length(trend)] - trend[bp])
     .lm <- lm(PRESSURE_DIFF ~ btrend + 1, data = df.diff)
     .lm[['btrend']] <- btrend
     if (logLik(.lm) > logLik(lmt)) lmt <- .lm
@@ -103,7 +103,7 @@ report <- function(logger.name) {
 
   lmts <- lm0
   for (bp in breakpoints) {
-    btrend <- c(rep(0, bp), trend[-(1:bp)] - bp/2)
+    btrend <- c(rep(0, bp - 1), trend[bp:length(trend)] - trend[bp])
     .lm <- lm(PRESSURE_DIFF ~ btrend + . + 1, data = df.seasonal)
     .lm[['btrend']] <- btrend
     if (logLik(.lm) > logLik(lmts)) lmts <- .lm

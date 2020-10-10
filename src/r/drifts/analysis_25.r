@@ -289,7 +289,7 @@ report <- function(logger.name) {
   # }
   M.ARD <- M.AR
   for (bp in breakpoints) {
-    btrend <- c(rep(0, bp), trend[-(1:bp)] - bp/2)
+    btrend <- c(rep(0, bp - 1), trend[bp:length(trend)] - trend[bp])
     .M <- arima(x = df.diff$PRESSURE_DIFF, order = c(1, 0, 0), xreg = btrend)
     .M[['btrend']] <- btrend
     if (logLik(.M) > logLik(M.ARD)) M.ARD <- .M
@@ -303,7 +303,7 @@ report <- function(logger.name) {
 
   M.ARDS <- M.ARS
   for (bp in breakpoints) {
-    btrend <- c(rep(0, bp), trend[-(1:bp)] - bp/2)
+    btrend <- c(rep(0, bp - 1), trend[bp:length(trend)] - trend[bp])
     .M <- arima(x = df.diff$PRESSURE_DIFF, order = c(1, 0, 0), xreg = cbind(sbasis, btrend))
     .M[['btrend']] <- btrend
     if (logLik(.M) > logLik(M.ARDS)) M.ARDS <- .M

@@ -112,7 +112,7 @@ report <- function(logger.name) {
 
   M.ARD90 <- M.AR90
   for (bp in breakpoints) {
-    btrend <- c(rep(0, bp), trend[-(1:bp)] - (bp/2 - 0.5))
+    btrend <- c(rep(0, bp - 1), trend[bp:length(trend)] - trend[bp])
     .M <- arima(x = df.diff$PRESSURE_DIFF, order = c(1, 0, 0), xreg = btrend, transform.pars = FALSE, fixed = c(0.90, NA, NA))
     .M[['btrend']] <- btrend
     if (logLik(.M) > logLik(M.ARD90)) M.ARD90 <- .M
@@ -121,7 +121,7 @@ report <- function(logger.name) {
 
   M.ARD60 <- M.AR60
   for (bp in breakpoints) {
-    btrend <- c(rep(0, bp), trend[-(1:bp)] - (bp/2 - 0.5))
+    btrend <- c(rep(0, bp - 1), trend[bp:length(trend)] - trend[bp])
     .M <- arima(x = df.diff$PRESSURE_DIFF, order = c(1, 0, 0), xreg = btrend, transform.pars = FALSE, fixed = c(0.60, NA, NA))
     .M[['btrend']] <- btrend
     if (logLik(.M) > logLik(M.ARD60)) M.ARD60 <- .M
@@ -135,7 +135,7 @@ report <- function(logger.name) {
 
   M.ARDS90 <- M.ARS90
   for (bp in breakpoints) {
-    btrend <- c(rep(0, bp), trend[-(1:bp)] - (bp/2 - 0.5))
+    btrend <- c(rep(0, bp - 1), trend[bp:length(trend)] - trend[bp])
     .M <- arima(x = df.diff$PRESSURE_DIFF, order = c(1, 0, 0), xreg = cbind(sbasis, btrend), transform.pars = FALSE, fixed = c(0.90, NA, NA, NA, NA))
     .M[['btrend']] <- btrend
     if (logLik(.M) > logLik(M.ARDS90)) M.ARDS90 <- .M
@@ -145,7 +145,7 @@ report <- function(logger.name) {
 
   M.ARDS60 <- M.ARS60
   for (bp in breakpoints) {
-    btrend <- c(rep(0, bp), trend[-(1:bp)] - (bp/2 - 0.5))
+    btrend <- c(rep(0, bp - 1), trend[bp:length(trend)] - trend[bp])
     .M <- arima(x = df.diff$PRESSURE_DIFF, order = c(1, 0, 0), xreg = cbind(sbasis, btrend), transform.pars = FALSE, fixed = c(0.60, NA, NA, NA, NA))
     .M[['btrend']] <- btrend
     if (logLik(.M) > logLik(M.ARDS60)) M.ARDS60 <- .M
@@ -224,4 +224,5 @@ report <- function(logger.name) {
 # report('BAOL009X_78680') # drifter
 # report('BAOL008X_72528') # x-y model AR component significantly down to 0.46
 # report('BAOL538X_B_002A2') # strong undetected (?) drift
+# report('BAOL031X_B5554') # shift at the end
 invisible(lapply(logger.names, report))
