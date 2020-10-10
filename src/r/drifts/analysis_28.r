@@ -197,4 +197,5 @@ report <- function(logger.name) {
 
 # report('BAOL009X_78680') # drifter
 # report('BAOL008X_72528') # x-y model AR component significantly down to 0.46
+# report('BAOL538X_B_002A2') # strong undetected (?) drift
 invisible(lapply(logger.names, report))
