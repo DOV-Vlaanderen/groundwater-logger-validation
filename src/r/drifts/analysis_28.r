@@ -101,7 +101,7 @@ report <- function(logger.name) {
   M <- arima(x = df.diff$PRESSURE_DIFF, order = c(0, 0, 0))
   df.diff[, M_pred := fitted(M)]
 
-  M.AR <- arima(x = df.diff$PRESSURE_DIFF, order = c(1, 0, 0))
+  M.AR <- arima(x = df.diff$PRESSURE_DIFF, order = c(1, 0, 0), transform.pars = FALSE, fixed = c(0.90, NA))
   df.diff[, M.AR.pred := fitted(M.AR)]
 
   trend <- c(0, cumsum(diff(as.numeric(df.diff$TIMESTAMP_UTC))/3600/24))
@@ -110,7 +110,7 @@ report <- function(logger.name) {
   M.ARD <- M.AR
   for (bp in breakpoints) {
     btrend <- c(rep(0, bp), trend[-(1:bp)] - (bp/2 - 0.5))
-    .M <- arima(x = df.diff$PRESSURE_DIFF, order = c(1, 0, 0), xreg = btrend)
+    .M <- arima(x = df.diff$PRESSURE_DIFF, order = c(1, 0, 0), xreg = btrend, transform.pars = FALSE, fixed = c(0.90, NA, NA))
     .M[['btrend']] <- btrend
     if (logLik(.M) > logLik(M.ARD)) M.ARD <- .M
   }
@@ -119,12 +119,12 @@ report <- function(logger.name) {
 
   sbasis <- fbasis(timestamps = df.diff$TIMESTAMP_UTC, frequencies = 1/(365.25*3600*24))
 
-  M.ARS <- arima(x = df.diff$PRESSURE_DIFF, order = c(1, 0, 0), xreg = sbasis)
+  M.ARS <- arima(x = df.diff$PRESSURE_DIFF, order = c(1, 0, 0), xreg = sbasis, transform.pars = FALSE, fixed = c(0.90, NA, NA, NA))
 
   M.ARDS <- M.ARS
   for (bp in breakpoints) {
     btrend <- c(rep(0, bp), trend[-(1:bp)] - (bp/2 - 0.5))
-    .M <- arima(x = df.diff$PRESSURE_DIFF, order = c(1, 0, 0), xreg = cbind(sbasis, btrend))
+    .M <- arima(x = df.diff$PRESSURE_DIFF, order = c(1, 0, 0), xreg = cbind(sbasis, btrend), transform.pars = FALSE, fixed = c(0.90, NA, NA, NA, NA))
     .M[['btrend']] <- btrend
     if (logLik(.M) > logLik(M.ARDS)) M.ARDS <- .M
   }
