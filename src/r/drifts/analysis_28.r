@@ -47,7 +47,7 @@ ref.compare <- function(logger.name) {
 }
 
 coef.pvals <- function(M) {
-  (1-pnorm(abs(M$coef)/sqrt(diag(M$var.coef))))*2
+  (1-pnorm(abs(M$coef[colnames(M$var.coef)])/sqrt(diag(M$var.coef))))*2
 }
 
 plt.comp <- function(TIMESTAMP_UTC, Y, M = NULL, significant = NULL, front_layer = NULL,
