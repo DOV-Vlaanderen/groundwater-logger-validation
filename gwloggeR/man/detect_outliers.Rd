@@ -23,7 +23,7 @@ detect_outliers(
 \arguments{
 \item{x}{numeric vector of values}
 
-\item{apriori}{\link{apriori} class}
+\item{apriori}{\link{Apriori} class}
 
 \item{...}{optional parameters, depending on signature:}
 

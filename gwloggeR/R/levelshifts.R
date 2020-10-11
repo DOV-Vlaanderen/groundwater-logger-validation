@@ -29,7 +29,7 @@ Levelshifts.Events <- function(events) {
 #' This function marks levelshifts in the input vector.
 #' @param x numeric vector of values
 #' @param timestamps timestamp vector
-#' @param apriori \link{apriori} class
+#' @param apriori \link{Apriori} class
 #' @param ... optional parameters, depending on signature:
 #' @param plot prints comprehensive plots
 #' @param verbose prints comprehensive information

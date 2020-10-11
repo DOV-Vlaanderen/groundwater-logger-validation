@@ -22,7 +22,7 @@ detect_temporalchanges(
 
 \item{timestamps}{timestamp vector}
 
-\item{apriori}{\link{apriori} class}
+\item{apriori}{\link{Apriori} class}
 
 \item{...}{optional parameters, depending on signature:}
 

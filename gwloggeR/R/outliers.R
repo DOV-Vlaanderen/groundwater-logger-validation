@@ -40,7 +40,7 @@ Outliers.Events <- function(events) {
 #' @description
 #' This function marks outliers in the input vector.
 #' @param x numeric vector of values
-#' @param apriori \link{apriori} class
+#' @param apriori \link{Apriori} class
 #' @param ... optional parameters, depending on signature:
 #' @param plot prints comprehensive plots
 #' @param verbose prints comprehensive information
