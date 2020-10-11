@@ -56,7 +56,7 @@ setGeneric(
 #'
 setMethod(
   'detect_levelshifts',
-  signature = c(x = "numeric", apriori = "apriori"),
+  signature = c(x = "numeric", apriori = "Apriori"),
   function(x, timestamps, apriori, plot, verbose, title) {
 
     if (apriori$data_type == "air pressure") return ({

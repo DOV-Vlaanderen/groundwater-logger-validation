@@ -114,7 +114,7 @@ setMethod(
 #'
 setMethod(
   'detect_outliers',
-  signature = c(x = "numeric", apriori = "apriori"),
+  signature = c(x = "numeric", apriori = "Apriori"),
   function(x, apriori, plot, verbose, title, timestamps) {
 
     if (apriori$data_type == "air pressure") return ({

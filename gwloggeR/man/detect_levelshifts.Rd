@@ -2,7 +2,7 @@
 % Please edit documentation in R/levelshifts.R
 \name{detect_levelshifts}
 \alias{detect_levelshifts}
-\alias{detect_levelshifts,numeric,apriori-method}
+\alias{detect_levelshifts,numeric,Apriori-method}
 \title{Detect levelshifts}
 \usage{
 detect_levelshifts(
@@ -15,7 +15,7 @@ detect_levelshifts(
   title = NULL
 )
 
-\S4method{detect_levelshifts}{numeric,apriori}(x, timestamps, apriori, plot, verbose, title)
+\S4method{detect_levelshifts}{numeric,Apriori}(x, timestamps, apriori, plot, verbose, title)
 }
 \arguments{
 \item{x}{numeric vector of values}
@@ -40,7 +40,7 @@ This function marks levelshifts in the input vector.
 }
 \section{Methods (by class)}{
 \itemize{
-\item \code{x = numeric,apriori = apriori}: 
+\item \code{x = numeric,apriori = Apriori}: 
 }}
 
 \references{
