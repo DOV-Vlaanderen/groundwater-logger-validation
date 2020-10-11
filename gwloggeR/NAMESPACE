@@ -2,6 +2,7 @@
 
 export(Apriori)
 export(apriori)
+export(compensate.altitude)
 export(detect_drift)
 export(detect_duplicates)
 export(detect_levelshifts)
