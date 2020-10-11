@@ -92,8 +92,8 @@ setMethod(
   signature = c(x = "numeric", apriori = "missing"),
   function(x, plot, verbose, title, timestamps) {
 
-    x.mean <- median(x, na.rm = TRUE)
-    x.sd <- mad(x, na.rm = TRUE)
+    x.mean <- stats::median(x, na.rm = TRUE)
+    x.sd <- stats::mad(x, na.rm = TRUE)
     outliers <- detect_outliers_norm(x, x.mean = x.mean, x.sd = x.sd)
     set.version(outliers, Version('0.01'))
 

@@ -5,7 +5,7 @@ histogram <- function(x, outliers) {
   # The multiplier is adjusted to allow for slightly more bins.
   multiplier <- 1.5
   n <- length(x)
-  binwidth <- multiplier * IQR(x) / n ^ (1/3)
+  binwidth <- multiplier * stats::IQR(x) / n ^ (1/3)
   fun.density <- attr(outliers, "fun.density")
   ggplot2::ggplot(data = data.frame(x), mapping = ggplot2::aes_string(x = 'x')) +
     ggplot2::geom_histogram(binwidth = binwidth, fill = 'black') +
@@ -19,9 +19,9 @@ histogram <- function(x, outliers) {
 #' @keywords internal
 qqplot <- function(x, outliers) {
   probs <- c(0.25, 0.75)
-  fit <- lm(quantile(x, probs, names = FALSE, na.rm = TRUE) ~ qnorm(probs))
-  ggplot2::ggplot(data = data.frame('sample' = x, 'theoretical' = qqnorm(x, plot.it = FALSE)$x, outliers)) +
-    ggplot2::geom_abline(intercept = coef(fit)[1], slope = coef(fit)[2]) + # inspired by qqline()
+  fit <- stats::lm(stats::quantile(x, probs, names = FALSE, na.rm = TRUE) ~ stats::qnorm(probs))
+  ggplot2::ggplot(data = data.frame('sample' = x, 'theoretical' = stats::qqnorm(x, plot.it = FALSE)$x, outliers)) +
+    ggplot2::geom_abline(intercept = stats::coef(fit)[1], slope = stats::coef(fit)[2]) + # inspired by qqline()
     ggplot2::geom_point(mapping = ggplot2::aes_string(x = "theoretical", y = "sample", color = "outliers"), show.legend = FALSE) +
     ggplot2::scale_color_manual(name = "OUTLIER", values = c("FALSE" = "black", "TRUE" = "red")) +
     ggplot2::geom_hline(yintercept = attr(outliers, 'cutpoints'), color = 'red') +

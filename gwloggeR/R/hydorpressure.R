@@ -155,7 +155,7 @@ Optimizer <- function(dx, types, indexes, mu, sigma2, par.init = NULL) {
   types.significant <- function(par, p.val.trehold = 1e-5) {
     if (length(par) == 0L) return(NULL)
     par.alpha <- par[par.idx.alpha]
-    p.val <- pnorm(par.alpha, mean = mu[indexes], sd = sqrt(sigma2[indexes]))
+    p.val <- stats::pnorm(par.alpha, mean = mu[indexes], sd = sqrt(sigma2[indexes]))
     p.val < p.val.trehold | p.val > 1-p.val.trehold
   }
 
@@ -170,10 +170,10 @@ Optimizer <- function(dx, types, indexes, mu, sigma2, par.init = NULL) {
     parscale[par.idx.delta] <- 0.5 # doubles the range such that it is > 1
     parscale[parscale == 0] <- 10
 
-    opt <- optim(par = par.init, fn = logL, method = 'L-BFGS-B',
-                 lower = ll, upper = ul,
-                 control = list('fnscale' = -1,
-                                'parscale' = parscale))
+    opt <- stats::optim(par = par.init, fn = logL, method = 'L-BFGS-B',
+                        lower = ll, upper = ul,
+                        control = list('fnscale' = -1,
+                                       'parscale' = parscale))
 
     Optimizer.Result(logLval = round(opt$value, digits = 4),
                      par = round(opt$par, digits = 3),
@@ -316,7 +316,7 @@ sweep <- function(dx, base.types = NULL, base.indexes = NULL, base.par = NULL,
 
 
 lrtest <- function(logL0, logL, df.diff) {
-  as.vector(1-pchisq(q = -2*(logL0 - logL), df = df.diff))
+  as.vector(1-stats::pchisq(q = -2*(logL0 - logL), df = df.diff))
 }
 
 #' @title Selects best model based on degrees of freedom.
@@ -421,7 +421,7 @@ detect <- function(x, timestamps, types = c('AO', 'LS', 'TC'), nr.tail = 25) {
                   tr <- range(dens)
                   list('dt' = interval.sec,
                        'lower.bound' = tr[1], 'upper.bound' = tr[2],
-                       'mu' = mean(dens), 'sigma2' = var(dens),
+                       'mu' = mean(dens), 'sigma2' = stats::var(dens),
                        'n.dens' = length(dens),
                        'c' = c.norm.optimal(alpha = 1/2000, n = n, type = 'two.sided'))
                 }, SIMPLIFY = FALSE)
