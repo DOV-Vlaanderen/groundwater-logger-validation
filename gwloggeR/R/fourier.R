@@ -44,8 +44,8 @@ dtft <- function(frequency, x, timestamps, plot = FALSE) {
     graphics::plot(projections)
     arrow_size.inch <- gr_vectorsize.inch(Re(psum)/length(x), Im(psum)/length(x))
     if (arrow_size.inch > 0.001)
-      arrows(0, 0, x1 = Re(psum)/length(x), y1 = Im(psum)/length(x), length = 0.1, lwd = 2)
-    title(sprintf("%0.3g +%0.3gi",  Re(psum)/length(x), Im(psum)/length(x)))
+      graphics::arrows(0, 0, x1 = Re(psum)/length(x), y1 = Im(psum)/length(x), length = 0.1, lwd = 2)
+    graphics::title(sprintf("%0.3g +%0.3gi",  Re(psum)/length(x), Im(psum)/length(x)))
   }
 
   psum
