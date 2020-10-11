@@ -3,14 +3,29 @@
 #' @keywords internal
 #' @rdname Drift
 #'
-Drift <- function(x) {
+Drift <- function(x, ...) {
   UseMethod('Drift', x)
 }
 
 #' @rdname Drift
 #'
-Drift.logical <- function(x) {
-  structure(x, 'class' = c('Drift', 'logical'))
+Drift.logical <- function(x, mu, rate, significance) {
+  structure(x, 'class' = c('Drift', 'logical'),
+            mu = mu,
+            rate = rate, significance = significance)
+}
+
+#' @rdname Drift
+#'
+Drift.Arima <- function(model) {
+  stopifnot(!is.null(model$xreg))
+  x <- rep(FALSE, nrow(model$xreg))
+  stopifnot(model$bp >= 1)
+  stopifnot(model$bp <= length(x))
+  x[model$bp:length(x)] <- TRUE
+  Drift(x, mu = model$coef[['intercept']],
+        significance = p.val(model)[['bptrend']],
+        rate = structure(model$coef[['bptrend']], units = 'cmH2O/year'))
 }
 
 
@@ -19,7 +34,7 @@ Drift.logical <- function(x) {
 #' This function marks a drift in the input vector.
 #' @param x numeric vector of values
 #' @param timestamps timestamp vector
-#' @param apriori \link{apriori} class. Defaults to air pressure.
+#' @param apriori \link{apriori} class. Defaults to air pressure in cmH2O.
 #' @param ... optional parameters, depending on signature:
 #' @param plot prints comprehensive plots
 #' @param verbose prints comprehensive information
@@ -33,9 +48,9 @@ Drift.logical <- function(x) {
 #'
 setGeneric(
   "detect_drift",
-  signature = c("x", "apriori"),
+  signature = c("x"),
   valueClass = "logical",
-  function(x, timestamps, apriori = apriori('air pressure', units = 'cmH2O'), ..., plot = FALSE, verbose = FALSE, title = NULL)
+  function(x, timestamps, apriori = Apriori('air pressure', units = 'cmH2O'), ..., plot = FALSE, verbose = FALSE, title = NULL)
     standardGeneric('detect_drift')
 )
 
@@ -46,21 +61,18 @@ setGeneric(
 #'
 setMethod(
   'detect_drift',
-  signature = c(x = "numeric", apriori = "apriori"),
+  signature = c(x = "numeric"),
   function(x, timestamps, apriori, plot, verbose, title) {
 
     if (apriori$data_type != "air pressure" && apriori$units != 'cmH2O') return ({
-      warning('WARNING: drift detection is only implemented for air pressure in cmH2O.')
-      return(Drift(rep(FALSE, length(x))))
+      stop('Drift detection is only implemented for air pressure data in cmH2O.')
     })
 
-    validate.hydropressure.timestamp(timestamps, x)
+    model <- model_drifts.fit(x = x, timestamps = timestamps)
 
-    events <- detect(x = x, timestamps = timestamps)
+    drift <- Drift(model)
 
-    drift <- Drift(events)
-
-    if (plot) plot_diagnostics_drift(x = x, timestamps = timestamps, events = events, title = title)
+    if (plot) plot_drifts(x = x, timestamps = timestamps, drift = drift, title = title)
 
     if (verbose) drift else as.vector(drift)
 })

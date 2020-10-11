@@ -2,27 +2,27 @@
 % Please edit documentation in R/interface_drifts.R
 \name{detect_drift}
 \alias{detect_drift}
-\alias{detect_drift,numeric,apriori-method}
+\alias{detect_drift,numeric-method}
 \title{Detect drift}
 \usage{
 detect_drift(
   x,
   timestamps,
-  apriori = apriori("air pressure", units = "cmH2O"),
+  apriori = Apriori("air pressure", units = "cmH2O"),
   ...,
   plot = FALSE,
   verbose = FALSE,
   title = NULL
 )
 
-\S4method{detect_drift}{numeric,apriori}(x, timestamps, apriori, plot, verbose, title)
+\S4method{detect_drift}{numeric}(x, timestamps, apriori, plot, verbose, title)
 }
 \arguments{
 \item{x}{numeric vector of values}
 
 \item{timestamps}{timestamp vector}
 
-\item{apriori}{\link{apriori} class. Defaults to air pressure.}
+\item{apriori}{\link{apriori} class. Defaults to air pressure in cmH2O.}
 
 \item{...}{optional parameters, depending on signature:}
 
@@ -40,7 +40,7 @@ This function marks a drift in the input vector.
 }
 \section{Methods (by class)}{
 \itemize{
-\item \code{x = numeric,apriori = apriori}: 
+\item \code{numeric}: 
 }}
 
 \references{

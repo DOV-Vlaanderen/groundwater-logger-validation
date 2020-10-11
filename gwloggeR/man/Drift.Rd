@@ -3,11 +3,14 @@
 \name{Drift}
 \alias{Drift}
 \alias{Drift.logical}
+\alias{Drift.Arima}
 \title{Drift object}
 \usage{
-Drift(x)
+Drift(x, ...)
 
-\method{Drift}{logical}(x)
+\method{Drift}{logical}(x, mu, rate, significance)
+
+\method{Drift}{Arima}(model)
 }
 \description{
 Drift object holds all the necessary information about the detected drift.
