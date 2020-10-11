@@ -8,9 +8,9 @@
 \usage{
 Drift(x, ...)
 
-\method{Drift}{logical}(x, mu, rate, significance)
+\method{Drift}{logical}(x, mu, timestamp, rate, significance)
 
-\method{Drift}{Arima}(model)
+\method{Drift}{Arima}(model, timestamps)
 }
 \description{
 Drift object holds all the necessary information about the detected drift.

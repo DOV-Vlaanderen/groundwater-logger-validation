@@ -34,6 +34,7 @@ model_drifts.fit <- function(x, timestamps, ar1 = 0.90) {
       .M <- arima(x = x, order = c(1, 0, 0), xreg = reg, transform.pars = FALSE, fixed = c(ar1, rep(NA, 1L + ncol(reg))))
       .M[['xreg']] <- reg
       .M[['bp']] <- bp
+      .M[['bp.ts']] <- ts.adj[bp]
       if (logLik(.M) > logLik(M0)) M0 <- .M
     }
     M0

@@ -9,21 +9,21 @@ Drift <- function(x, ...) {
 
 #' @rdname Drift
 #'
-Drift.logical <- function(x, mu, rate, significance) {
+Drift.logical <- function(x, mu, timestamp, rate, significance) {
   structure(x, 'class' = c('Drift', 'logical'),
             mu = mu,
-            rate = rate, significance = significance)
+            timestamp = timestamp, rate = rate, significance = significance)
 }
 
 #' @rdname Drift
 #'
-Drift.Arima <- function(model) {
+Drift.Arima <- function(model, timestamps) {
   stopifnot(!is.null(model$xreg))
-  x <- rep(FALSE, nrow(model$xreg))
-  stopifnot(model$bp >= 1)
-  stopifnot(model$bp <= length(x))
-  x[model$bp:length(x)] <- TRUE
+  stopifnot('bptrend' %in% colnames(model$xreg))
+  x <- rep(FALSE, length(timestamps))
+  x[timestamps >= model$bp.ts] <- TRUE
   Drift(x, mu = model$coef[['intercept']],
+        timestamp = model$bp.ts,
         significance = p.val(model)[['bptrend']],
         rate = structure(model$coef[['bptrend']], units = 'cmH2O/year'))
 }
@@ -70,7 +70,7 @@ setMethod(
 
     model <- model_drifts.fit(x = x, timestamps = timestamps)
 
-    drift <- Drift(model)
+    drift <- Drift(model, timestamps)
 
     if (plot) plot_drifts(x = x, timestamps = timestamps, drift = drift, title = title)
 
