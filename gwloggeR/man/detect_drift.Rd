@@ -8,6 +8,7 @@
 detect_drift(
   x,
   timestamps,
+  reference = list(),
   apriori = Apriori("air pressure", units = "cmH2O"),
   ...,
   plot = FALSE,
@@ -15,14 +16,19 @@ detect_drift(
   title = NULL
 )
 
-\S4method{detect_drift}{numeric}(x, timestamps, apriori, plot, verbose, title)
+\S4method{detect_drift}{numeric}(x, timestamps, reference, apriori, plot, verbose, title)
 }
 \arguments{
 \item{x}{numeric vector of values}
 
 \item{timestamps}{timestamp vector}
 
-\item{apriori}{\link{apriori} class. Defaults to air pressure in cmH2O.}
+\item{reference}{a list of list(x, timestamps) pairs that are to be used as
+reference for drift detection. The more data is supplied here, the better
+the results. Note also that the barometer data supplied here should be
+compensated for altitude.}
+
+\item{apriori}{\link{Apriori} class. Defaults to air pressure in cmH2O.}
 
 \item{...}{optional parameters, depending on signature:}
 
