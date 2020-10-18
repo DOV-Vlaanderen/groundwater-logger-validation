@@ -102,6 +102,9 @@ p <- replicate(n = 1000, expr = {
 })
 hist(p)
 sum(p < 0.05)/length(p)
+# pvals are not distributed uniformly under 2L df difference LR test.
+# LR test df difference seems also to be dependent on number of observations (n).
+# For 1000-10000 obs. a df difference of 2.8 seems to produce good results.
 
 
 
@@ -113,3 +116,4 @@ p <- replicate(n = 1000, expr = {
 })
 hist(p)
 sum(p < 0.05)/length(p)
+# Doesn't seem to be different from non-correlated drift.
