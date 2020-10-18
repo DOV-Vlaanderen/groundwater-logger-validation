@@ -56,9 +56,6 @@ sum(p < 0.05)/length(p)
 
 
 
-
-
-
 # Linear model: drift (NOK) ----
 set.seed(2020)
 list2env(xy.errors(Sigma = diag(c(5, 5))), envir = environment())
@@ -69,10 +66,10 @@ list2env(xy.errors(), envir = environment())
 plot(x, y)
 plot(x - y, type = 'l')
 
-p <- replicate(n = 1000, expr = {
+lin.sig <- function(x, y, dfdiff) {
 
-  n <- 1000
-  list2env(xy.errors(n = n, Sigma = diag(c(5, 5))), envir = environment())
+  stopifnot(length(x) == length(y))
+  n <- length(x)
 
   seekmin <- function(M0, bps, xreg = NULL) {
     for (bp in bps) {
@@ -100,7 +97,13 @@ p <- replicate(n = 1000, expr = {
   M1 <- seekmin(M0 = M0, bps = bps)
   M1 <- seekmin(M1, bps = bps.local(M1))
 
-  gwloggeR:::lrtest(logLik(M0), logLik(M1), df.diff = 2.8)
+  gwloggeR:::lrtest(logLik(M0), logLik(M1), df.diff = dfdiff)
+}
+
+p <- replicate(n = 1000, expr = {
+  n <- 1000
+  list2env(xy.errors(n = n, Sigma = diag(c(5, 5))), envir = environment())
+  lin.sig(x = x, y = y, dfdiff = 2.8)
 })
 hist(p)
 sum(p < 0.05)/length(p)
