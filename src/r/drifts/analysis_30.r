@@ -61,16 +61,15 @@ list2env(xy.errors(), envir = environment())
 plot(x, y)
 plot(x - y, type = 'l')
 
-lin.sig <- function(x, y, dfdiff) {
+lin.sig <- function(z, dfdiff) {
 
-  stopifnot(length(x) == length(y))
-  n <- length(x)
+  n <- length(z)
 
   seekmin <- function(M0, bps, xreg = NULL) {
     for (bp in bps) {
       bptrend <- c(rep(0, bp - 1), trend[bp:length(trend)] - trend[bp])
       reg <- if (!is.null(xreg)) cbind(xreg, bptrend) else cbind(bptrend)
-      .M <- lm(x - y ~ reg - 1)
+      .M <- lm(z ~ reg - 1)
       .M[['xreg']] <- reg
       .M[['bp']] <- bp
       if (logLik(.M) > logLik(M0)) M0 <- .M
@@ -79,7 +78,7 @@ lin.sig <- function(x, y, dfdiff) {
   }
 
   bps.local <- function(M) {
-    unique(c(max(1L, M$bp - 2*sidays):M$bp, M$bp:min(M$bp + 2*sidays, length(x) - 1)))
+    unique(c(max(1L, M$bp - 2*sidays):M$bp, M$bp:min(M$bp + 2*sidays, length(z) - 1)))
   }
 
   # Regressor definitions
@@ -87,7 +86,7 @@ lin.sig <- function(x, y, dfdiff) {
   sidays <- as.integer(sqrt(n)) # first sweep seek interval in days
   bps <- which(!duplicated((trend[-length(trend)] - trend[1L]) %/% (sidays))) # breakpoints for fitting
 
-  M0 <- lm(x - y ~ -1)
+  M0 <- lm(z ~ -1)
 
   M1 <- seekmin(M0 = M0, bps = bps)
   M1 <- seekmin(M1, bps = bps.local(M1))
@@ -98,7 +97,7 @@ lin.sig <- function(x, y, dfdiff) {
 p <- replicate(n = 1000, expr = {
   n <- 1000
   list2env(xy.errors(n = n, Sigma = diag(c(5, 5))), envir = environment())
-  lin.sig(x = x, y = y, dfdiff = 2.8)
+  lin.sig(z = x - y, dfdiff = 2.8)
 })
 hist(p)
 sum(p < 0.05)/length(p)
@@ -112,7 +111,7 @@ sum(p < 0.05)/length(p)
 p <- replicate(n = 1000, expr = {
   n <- 1000
   list2env(xy.errors(n = n), envir = environment())
-  lin.sig(x = x, y = y, dfdiff = 2.8)
+  lin.sig(z = x - y, dfdiff = 2.8)
 })
 hist(p)
 sum(p < 0.05)/length(p)
