@@ -108,3 +108,13 @@ p <- replicate(n = 1000, expr = {
 hist(p)
 sum(p < 0.05)/length(p)
 
+
+
+# Linear model: correlated drift (NOK) ----
+p <- replicate(n = 1000, expr = {
+  n <- 1000
+  list2env(xy.errors(n = n), envir = environment())
+  lin.sig(x = x, y = y, dfdiff = 2.8)
+})
+hist(p)
+sum(p < 0.05)/length(p)
