@@ -13,15 +13,17 @@ xy.errors <- function(n = 1000, mu = rep(1032, 2L), Sigma = matrix(c(23, 20, 20,
 
 # AR(1) model: intecept (OK) ----
 set.seed(2020)
-x <- gwloggeR:::model_drifts.simulate(n = 1000, mu = 1032, sigma = 5, phi1 = 0.9)
-y <- gwloggeR:::model_drifts.simulate(n = 1000, mu = 1032, sigma = 5, phi1 = 0.9)
+list2env(xy.errors(n = 1000, mu = c(0,0), Sigma = diag(c(5, 5))), envir = environment())
+x <- gwloggeR:::model_drifts.simulate(mu = 1032, phi1 = 0.9, a = x)
+y <- gwloggeR:::model_drifts.simulate(mu = 1032, phi1 = 0.9, a = y)
 plot(x - y, type = 'l')
 forecast::auto.arima(x - y, stationary = TRUE, trace = TRUE)
 
 p <- replicate(n = 1000, expr = {
   n <- 10000
-  x <- gwloggeR:::model_drifts.simulate(n = n, mu = 1032, sigma = 5, phi1 = 0.9)
-  y <- gwloggeR:::model_drifts.simulate(n = n, mu = 1032, sigma = 5, phi1 = 0.9)
+  list2env(xy.errors(n = n, mu = c(0,0), Sigma = diag(c(5, 5))), envir = environment())
+  x <- gwloggeR:::model_drifts.simulate(mu = 1032, phi1 = 0.9, a = x)
+  y <- gwloggeR:::model_drifts.simulate(mu = 1032, phi1 = 0.9, a = y)
   gwloggeR:::lrtest(
     logLik(arima(x - y, order = c(1, 0, 0), include.mean = FALSE)),
     logLik(arima(x - y, order = c(1, 0, 0))),
@@ -37,8 +39,9 @@ sum(p < 0.05)/length(p)
 set.seed(2020)
 p <- replicate(n = 1000, expr = {
   n <- 1000
-  x <- gwloggeR:::model_drifts.simulate(n = n, mu = 1000, sigma = 5, phi1 = 0.9)
-  y <- gwloggeR:::model_drifts.simulate(n = n, mu = 1050, sigma = 5, phi1 = 0.9)
+  list2env(xy.errors(n = n, mu = c(0,0), Sigma = diag(c(5, 5))), envir = environment())
+  x <- gwloggeR:::model_drifts.simulate(mu = 1000, phi1 = 0.9, a = x)
+  y <- gwloggeR:::model_drifts.simulate(mu = 1050, phi1 = 0.9, a = y)
   fit <- gwloggeR:::model_drifts.fit(
     x = x - y,
     timestamps = seq(as.POSIXct('2000-01-01'), by = '12 hours', length.out = n),
