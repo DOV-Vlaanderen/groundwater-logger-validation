@@ -4,14 +4,9 @@
 
 # Helper function for correlated errors ----
 xy.errors <- function(n = 1000, mu = rep(1032, 2L), Sigma = matrix(c(23, 20, 20, 23), ncol = 2)) {
-  if (is.null(sigma)) {
-    list('x' = rnorm(n, mean = mu[1], sd = Sigma[1, 1]),
-         'y' = rnorm(n, mean = mu[2], sd = Sigma[2, 2]))
-  } else {
-    as.list(data.frame(
-      MASS::mvrnorm(n, mu = c('x' = mu[1], 'y' = mu[2]), Sigma = Sigma)
-    ))
-  }
+  as.list(data.frame(
+    MASS::mvrnorm(n, mu = c('x' = mu[1], 'y' = mu[2]), Sigma = Sigma)
+  ))
 }
 
 
