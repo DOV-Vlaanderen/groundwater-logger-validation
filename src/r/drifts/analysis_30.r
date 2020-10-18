@@ -9,6 +9,39 @@ xy.errors <- function(n = 1000, mu = rep(1032, 2L), Sigma = matrix(c(23, 20, 20,
   ))
 }
 
+lin.sig <- function(z, dfdiff) {
+
+  n <- length(z)
+
+  seekmin <- function(M0, bps, xreg = NULL) {
+    for (bp in bps) {
+      bptrend <- c(rep(0, bp - 1), trend[bp:length(trend)] - trend[bp])
+      reg <- if (!is.null(xreg)) cbind(xreg, bptrend) else cbind(bptrend)
+      .M <- lm(z ~ reg - 1)
+      .M[['xreg']] <- reg
+      .M[['bp']] <- bp
+      if (logLik(.M) > logLik(M0)) M0 <- .M
+    }
+    M0
+  }
+
+  bps.local <- function(M) {
+    unique(c(max(1L, M$bp - 2*sidays):M$bp, M$bp:min(M$bp + 2*sidays, length(z) - 1)))
+  }
+
+  # Regressor definitions
+  trend <- 1:n
+  sidays <- as.integer(sqrt(n)) # first sweep seek interval in days
+  bps <- which(!duplicated((trend[-length(trend)] - trend[1L]) %/% (sidays))) # breakpoints for fitting
+
+  M0 <- lm(z ~ -1)
+
+  M1 <- seekmin(M0 = M0, bps = bps)
+  M1 <- seekmin(M1, bps = bps.local(M1))
+
+  gwloggeR:::lrtest(logLik(M0), logLik(M1), df.diff = dfdiff)
+}
+
 
 
 # AR(1) model: intecept (OK) ----
@@ -88,39 +121,6 @@ plot(x - y, type = 'l')
 list2env(xy.errors(), envir = environment())
 plot(x, y)
 plot(x - y, type = 'l')
-
-lin.sig <- function(z, dfdiff) {
-
-  n <- length(z)
-
-  seekmin <- function(M0, bps, xreg = NULL) {
-    for (bp in bps) {
-      bptrend <- c(rep(0, bp - 1), trend[bp:length(trend)] - trend[bp])
-      reg <- if (!is.null(xreg)) cbind(xreg, bptrend) else cbind(bptrend)
-      .M <- lm(z ~ reg - 1)
-      .M[['xreg']] <- reg
-      .M[['bp']] <- bp
-      if (logLik(.M) > logLik(M0)) M0 <- .M
-    }
-    M0
-  }
-
-  bps.local <- function(M) {
-    unique(c(max(1L, M$bp - 2*sidays):M$bp, M$bp:min(M$bp + 2*sidays, length(z) - 1)))
-  }
-
-  # Regressor definitions
-  trend <- 1:n
-  sidays <- as.integer(sqrt(n)) # first sweep seek interval in days
-  bps <- which(!duplicated((trend[-length(trend)] - trend[1L]) %/% (sidays))) # breakpoints for fitting
-
-  M0 <- lm(z ~ -1)
-
-  M1 <- seekmin(M0 = M0, bps = bps)
-  M1 <- seekmin(M1, bps = bps.local(M1))
-
-  gwloggeR:::lrtest(logLik(M0), logLik(M1), df.diff = dfdiff)
-}
 
 p <- replicate(n = 1000, expr = {
   n <- 1000
