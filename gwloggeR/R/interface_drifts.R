@@ -24,7 +24,7 @@ Drift.Arima <- function(model, timestamps) {
   x[timestamps >= model$bp.ts] <- TRUE
   Drift(x, mu = model$coef[['intercept']],
         timestamp = model$bp.ts,
-        significance = p.val(model)[['bptrend']],
+        significance = model$drift.significance,
         rate = structure(model$coef[['bptrend']], units = 'cmH2O/year'))
 }
 

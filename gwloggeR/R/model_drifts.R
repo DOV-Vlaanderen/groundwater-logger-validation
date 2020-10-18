@@ -25,7 +25,7 @@ model_drifts.simulate <- function(n, mu, sigma, phi1, betas = NULL, xreg = NULL,
 
 
 
-model_drifts.fit <- function(x, timestamps, ar1) {
+model_drifts.fit <- function(x, timestamps, ar1, dfdiff = 2) {
 
   seekmin <- function(M0, bps, xreg = NULL) {
     for (bp in bps) {
@@ -41,7 +41,7 @@ model_drifts.fit <- function(x, timestamps, ar1) {
   }
 
   bps.local <- function(M) {
-    unique(c(max(1L, M$bp - 2*sidays):M$bp, MD$bp:min(M$bp + 2*sidays, length(x.adj) - 1)))
+    unique(c(max(1L, M$bp - 2*sidays):M$bp, M$bp:min(M$bp + 2*sidays, length(x.adj) - 1)))
   }
 
   # Sanity checks
@@ -78,12 +78,14 @@ model_drifts.fit <- function(x, timestamps, ar1) {
 
   # Regressor definitions
   trend <- c(0, cumsum(ts.sec.diff/3600/24/365.25))
-  sidays <- 15 # first sweep seek interval in days
+  sidays <- ceiling(sqrt(length(x))) # first sweep seek interval in days
   bps <- which(!duplicated((ts.sec[-length(ts.sec)] - ts.sec[1L]) %/% (sidays*24*3600))) # breakpoints for fitting
   sbasis <- fbasis(timestamps = timestamps, frequencies = 1/(365.25*3600*24))
 
   # Models
   M0 <- arima(x = x.adj, order = c(1, 0, 0), transform.pars = FALSE, fixed = c(ar1, NA))
+
+  MS <- arima(x = x.adj, order = c(1, 0, 0), transform.pars = FALSE, xreg = sbasis, fixed = c(ar1, NA, NA, NA))
 
   MD <- seekmin(M0, bps = bps)
   MD <- seekmin(MD, bps = bps.local(MD))
@@ -94,6 +96,10 @@ model_drifts.fit <- function(x, timestamps, ar1) {
   # Model selection
   sp.val <- lrtest(logLik(MD), logLik(MDS), df.diff = 2L) # p-val for seasonality component
   MF <- if (sp.val < 1e-2) MDS else MD # final model
+
+  # Significance of drift component
+  MF[['drift.significance']] <-
+    lrtest(logLik(if (any(grepl('sin', names(MF$coef)))) MS else M0), logLik(MF), df.diff = dfdiff)
 
   MF
 }
