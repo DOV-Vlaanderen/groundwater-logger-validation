@@ -1,4 +1,4 @@
-model_drifts.simulate <- function(n, mu, sigma, phi1, betas = NULL, xreg = NULL,
+model_drifts.simulate <- function(n = length(a), mu, sigma, phi1, betas = NULL, xreg = NULL,
                                   init = mu, xt = NULL, a = rnorm(n, 0, sd = sigma)) {
 
   R <- rep(0, n)
