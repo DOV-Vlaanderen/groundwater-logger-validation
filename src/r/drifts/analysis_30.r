@@ -2,6 +2,20 @@
 
 
 
+# Helper function for correlated errors ----
+xy.errors <- function(n = 1000, mu = rep(1032, 2L), Sigma = matrix(c(23, 20, 20, 23), ncol = 2)) {
+  if (is.null(sigma)) {
+    list('x' = rnorm(n, mean = mu[1], sd = Sigma[1, 1]),
+         'y' = rnorm(n, mean = mu[2], sd = Sigma[2, 2]))
+  } else {
+    as.list(data.frame(
+      MASS::mvrnorm(n, mu = c('x' = mu[1], 'y' = mu[2]), Sigma = Sigma)
+    ))
+  }
+}
+
+
+
 # AR(1) model: intecept (OK) ----
 set.seed(2020)
 x <- gwloggeR:::model_drifts.simulate(n = 1000, mu = 1032, sigma = 5, phi1 = 0.9)
@@ -42,17 +56,23 @@ sum(p < 0.05)/length(p)
 
 
 
+
+
+
 # Linear model: drift (NOK) ----
 set.seed(2020)
-x <- rnorm(1000, mean = 1032, sd = 5)
-y <- rnorm(1000, mean = 1032, sd = 5)
+list2env(xy.errors(Sigma = diag(c(5, 5))), envir = environment())
+plot(x, y)
+plot(x - y, type = 'l')
+
+list2env(xy.errors(), envir = environment())
+plot(x, y)
 plot(x - y, type = 'l')
 
 p <- replicate(n = 1000, expr = {
 
   n <- 1000
-  x <- rnorm(n, mean = 1032, sd = 5)
-  y <- rnorm(n, mean = 1032, sd = 5)
+  list2env(xy.errors(n = n, Sigma = diag(c(5, 5))), envir = environment())
 
   seekmin <- function(M0, bps, xreg = NULL) {
     for (bp in bps) {
