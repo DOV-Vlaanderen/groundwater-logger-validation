@@ -32,7 +32,7 @@ p <- replicate(n = 1000, expr = {
 })
 hist(p)
 sum(p < 0.05)/length(p)
-
+# pvals are distributed uniformly
 
 
 # AR(1) model: drift (NOK) ----
@@ -45,12 +45,16 @@ p <- replicate(n = 1000, expr = {
   fit <- gwloggeR:::model_drifts.fit(
     x = x - y,
     timestamps = seq(as.POSIXct('2000-01-01'), by = '12 hours', length.out = n),
-    ar1 = 0.9, dfdiff = 2
+    ar1 = 0.9,
+    dfdiff = 2.8
   )
   fit$drift.significance
 })
 hist(p)
 sum(p < 0.05)/length(p)
+# pvals are not distributed uniformly under 2L df difference LR test.
+# LR test df difference seems also to be dependent on number of observations (n).
+# For 1000-10000 obs. a df difference of 2.8 seems to produce good results.
 
 
 
@@ -64,12 +68,14 @@ p <- replicate(n = 1000, expr = {
   fit <- gwloggeR:::model_drifts.fit(
     x = x - y,
     timestamps = seq(as.POSIXct('2000-01-01'), by = '12 hours', length.out = n),
-    ar1 = 0.9, dfdiff = 2
+    ar1 = 0.9,
+    dfdiff = 2.8
   )
   fit$drift.significance
 })
 hist(p)
 sum(p < 0.05)/length(p)
+# Doesn't seem to be different from non-correlated AR(1) drift.
 
 
 
@@ -125,7 +131,7 @@ hist(p)
 sum(p < 0.05)/length(p)
 # pvals are not distributed uniformly under 2L df difference LR test.
 # LR test df difference seems also to be dependent on number of observations (n).
-# For 1000-10000 obs. a df difference of 2.8 seems to produce good results.
+# For 1000-10000 obs. a df difference of 2.8 seems to produce good results, just like in AR(1) case.
 
 
 
