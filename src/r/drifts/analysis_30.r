@@ -24,6 +24,24 @@ sum(p < 0.05)/length(p)
 
 
 
+# AR(1) model: drift (NOK) ----
+set.seed(2020)
+p <- replicate(n = 1000, expr = {
+  n <- 1000
+  x <- gwloggeR:::model_drifts.simulate(n = n, mu = 1000, sigma = 5, phi1 = 0.9)
+  y <- gwloggeR:::model_drifts.simulate(n = n, mu = 1050, sigma = 5, phi1 = 0.9)
+  fit <- gwloggeR:::model_drifts.fit(
+    x = x - y,
+    timestamps = seq(as.POSIXct('2000-01-01'), by = '12 hours', length.out = n),
+    ar1 = 0.9, dfdiff = 2
+  )
+  fit$drift.significance
+})
+hist(p)
+sum(p < 0.05)/length(p)
+
+
+
 # Linear model: drift (NOK) ----
 set.seed(2020)
 x <- rnorm(1000, mean = 1032, sd = 5)
