@@ -68,6 +68,7 @@ sum(p < 0.05)/length(p)
 # pvals are distributed uniformly
 
 
+
 # AR(1) model: drift (NOK) ----
 set.seed(2020)
 p <- replicate(n = 1000, expr = {
@@ -135,7 +136,7 @@ sum(p < 0.05)/length(p)
 
 
 
-# Linear model: correlated drift (NOK) ----
+# Linear model: correlated + drift (NOK) ----
 p <- replicate(n = 1000, expr = {
   n <- 1000
   list2env(xy.errors(n = n), envir = environment())
