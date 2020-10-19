@@ -83,11 +83,3 @@ setMethod(
 
     if (verbose) drift else as.vector(drift)
 })
-
-# detect_drift(rnorm(100), seq(Sys.time(), by = '12 hours', length.out = 100), verbose = TRUE, plot = TRUE)
-# detect_drift(rnorm(100), seq(Sys.time(), by = '12 hours', length.out = 100), verbose = TRUE, plot = TRUE,
-#              reference = list(list(x = rnorm(100), timestamps = seq(Sys.time(), by = '12 hours', length.out = 100))))
-# detect_drift(x = gwloggeR::model_drifts.simulate(100, mu = 1032, sigma = 5, phi1 = 0.9),
-#              timestamps = seq(Sys.time(), by = '12 hours', length.out = 100), verbose = TRUE, plot = TRUE,
-#              reference = list(list(x = gwloggeR::model_drifts.simulate(100, mu = 1032, sigma = 5, phi1 = 0.9),
-#                                    timestamps = seq(Sys.time(), by = '12 hours', length.out = 100))))
