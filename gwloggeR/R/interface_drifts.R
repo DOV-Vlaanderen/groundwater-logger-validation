@@ -73,13 +73,16 @@ setMethod(
     if (apriori$data_type != "air pressure" && apriori$units != 'cmH2O')
       stop('Drift detection is only implemented for air pressure data in cmH2O.')
 
-    xdr <- drift_reference.differentiate(x = x, timestamps = timestamps, reference = reference)
+    # make differences of x with the reference in respect to matching timestamps: dr$x = x - referece
+    dr <- drift_reference.differentiate(x = x, timestamps = timestamps, reference = reference)
 
-    model <- model_drifts.fit(x = xdr$x, timestamps = xdr$timestamps, ar1 = 0.9, dfdiff = 2.8)
+    # fit the drift model
+    model <- model_drifts.fit(x = dr$x, timestamps = dr$timestamps, ar1 = 0.9, dfdiff = 2.8)
 
+    # convert model to Drift object which is then returned to the user
     drift <- Drift(model, timestamps)
 
-    if (plot) plot_drifts(x = x, timestamps = timestamps, drift = drift, title = title)
+    if (plot) plot_drifts(x = x, timestamps = timestamps, dr = dr, drift = drift, title = title)
 
     if (verbose) drift else as.vector(drift)
 })
