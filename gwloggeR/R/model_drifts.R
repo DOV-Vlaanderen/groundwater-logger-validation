@@ -25,13 +25,13 @@ model_drifts.simulate <- function(n = length(a), mu, sigma, phi1, betas = NULL, 
 
 
 
-model_drifts.fit <- function(x, timestamps, ar1, dfdiff) {
+model_drifts.fit <- function(dr.x, dr.ts, ar1, dfdiff) {
 
   seekmin <- function(M0, bps, xreg = NULL) {
     for (bp in bps) {
       bptrend <- c(rep(0, bp - 1), trend[bp:length(trend)] - trend[bp])
       reg <- if (!is.null(xreg)) cbind(xreg, bptrend) else cbind(bptrend)
-      .M <- arima(x = x, order = c(1, 0, 0), xreg = reg, transform.pars = FALSE, fixed = c(ar1, rep(NA, 1L + ncol(reg))))
+      .M <- arima(x = dr.x, order = c(1, 0, 0), xreg = reg, transform.pars = FALSE, fixed = c(ar1, rep(NA, 1L + ncol(reg))))
       .M[['xreg']] <- reg
       .M[['bp']] <- bp
       .M[['bp.ts']] <- ts.adj[bp]
@@ -45,22 +45,22 @@ model_drifts.fit <- function(x, timestamps, ar1, dfdiff) {
   }
 
   # Sanity checks
-  assert.timestamp(timestamps)
-  assert.nonas(timestamps)
-  assert.ordered(timestamps)
-  stopifnot(length(x) == length(timestamps))
-  stopifnot(!any(is.na(x)))
+  assert.timestamp(dr.ts)
+  assert.nonas(dr.ts)
+  assert.ordered(dr.ts)
+  stopifnot(length(dr.x) == length(dr.ts))
+  stopifnot(!any(is.na(dr.x)))
 
-  # Aggregating x to minimum 12h intervals: x.adj and ts.adj
+  # Aggregating dr.x to minimum 12h intervals: x.adj and ts.adj
   list2env(
     aggregate(
-      list('x.adj' = x),
-      by = list('ts.adj' = round.timestamp(timestamps, scalefactor.sec = 3600*12)),
+      list('x.adj' = dr.x),
+      by = list('ts.adj' = round.timestamp(dr.ts, scalefactor.sec = 3600*12)),
       FUN = mean),
     envir = environment()
   )
 
-  if (length(x) != length(x.adj))
+  if (length(dr.x) != length(x.adj))
     warning('Timeseries has intervals smaller than 12h. ' %||%
             'Measurements are averaged to 12h intervals.', call. = FALSE, immediate. = TRUE)
 
@@ -78,9 +78,9 @@ model_drifts.fit <- function(x, timestamps, ar1, dfdiff) {
 
   # Regressor definitions
   trend <- c(0, cumsum(ts.sec.diff/3600/24/365.25))
-  sidays <- ceiling(sqrt(length(x))) # first sweep seek interval in days
+  sidays <- ceiling(sqrt(length(dr.x))) # first sweep seek interval in days
   bps <- which(!duplicated((ts.sec[-length(ts.sec)] - ts.sec[1L]) %/% (sidays*24*3600))) # breakpoints for fitting
-  sbasis <- fbasis(timestamps = timestamps, frequencies = 1/(365.25*3600*24))
+  sbasis <- fbasis(timestamps = dr.ts, frequencies = 1/(365.25*3600*24))
 
   # Models
   M0 <- arima(x = x.adj, order = c(1, 0, 0), transform.pars = FALSE, fixed = c(ar1, NA))

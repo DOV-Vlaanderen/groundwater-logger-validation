@@ -77,7 +77,7 @@ setMethod(
     dr <- drift_reference.differentiate(x = x, timestamps = timestamps, reference = reference)
 
     # fit the drift model
-    model <- model_drifts.fit(x = dr$x, timestamps = dr$timestamps, ar1 = 0.9, dfdiff = 2.8)
+    model <- model_drifts.fit(dr.x = dr$x, dr.ts = dr$timestamps, ar1 = 0.9, dfdiff = 2.8)
 
     # convert model to Drift object which is then returned to the user
     drift <- Drift(model, timestamps)
