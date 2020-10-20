@@ -76,8 +76,11 @@ setMethod(
     # make differences of x with the reference in respect to matching timestamps: dr$x = x - referece
     dr <- drift_reference.differentiate(x = x, timestamps = timestamps, reference = reference)
 
+    # aggregate dr for model fitting
+    dra <- dr[, .(x = median(x)), by = .(timestamps)]
+
     # fit the drift model
-    model <- model_drifts.fit(dr.x = dr$x, dr.ts = dr$timestamps, ar1 = 0.9, dfdiff = 2.8)
+    model <- model_drifts.fit(dr.x = dra$x, dr.ts = dra$timestamps, ar1 = 0.9, dfdiff = 2.8)
 
     # convert model to Drift object which is then returned to the user
     drift <- Drift(model, timestamps)

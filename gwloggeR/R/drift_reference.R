@@ -15,6 +15,15 @@ drift_reference.assert <- function(x, timestamps, reference) {
   # TODO: check that enough reference data is supplied...
 }
 
+
+#' Takes the differences between x and the reference values
+#'
+#' @return A data.frame (x, timestamps, reference.id) with the differences.
+#' Note that in case of more than 1 reference is supplied, there might be
+#' duplicate timestamps based on different reference barometers.
+#'
+#' @keywords internal
+#'
 drift_reference.differentiate <- function(x, timestamps, reference) {
 
   # Aggregating x to minimum 12h intervals so differences can be taken on specific timestamps
@@ -34,10 +43,10 @@ drift_reference.differentiate <- function(x, timestamps, reference) {
 
   df <- df.aggregate(data.frame(x, timestamps))
 
-  df.ref <- data.table::rbindlist(lapply(reference, df.aggregate), use.names = TRUE, fill = TRUE, idcol = 'reference')
+  df.ref <- data.table::rbindlist(lapply(reference, df.aggregate), use.names = TRUE, fill = TRUE, idcol = 'reference.id')
   data.table::setkey(df.ref, 'timestamps')
 
-  df.diff <- df[J(df.ref), .('x' = x.x - i.x, timestamps, reference), nomatch = NULL][!is.na(x), .(x = median(x)), by = .(timestamps)]
+  df.diff <- df[J(df.ref), .('x' = x.x - i.x, timestamps, reference), nomatch = NULL][!is.na(x), ]
   data.table::setkey(df.diff, 'timestamps')
 
   df.diff
