@@ -25,7 +25,7 @@ model_drifts.simulate <- function(n = length(a), mu, sigma, phi1, betas = NULL, 
 
 
 
-model_drifts.fit <- function(x, timestamps, ar1, dfdiff = 2) {
+model_drifts.fit <- function(x, timestamps, ar1, dfdiff) {
 
   seekmin <- function(M0, bps, xreg = NULL) {
     for (bp in bps) {
