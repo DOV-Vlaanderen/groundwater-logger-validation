@@ -17,14 +17,24 @@ drift_reference.assert <- function(x, timestamps, reference) {
 
 drift_reference.differentiate <- function(x, timestamps, reference) {
 
+  # Aggregating x to minimum 12h intervals so differences can be taken on specific timestamps
+  df.aggregate <- function(df, scalefactor.sec = 3600*12) {
+    df <- data.table::as.data.table(df) # in case df is a reference (i.e. list)
+    df.new <- df[, .(x = mean(x)), by = .(timestamps = round.timestamp(timestamps, scalefactor.sec = scalefactor.sec))]
+    data.table::setkey(df.new, 'timestamps')
+
+    if (nrow(df) != nrow(df.new))
+      warning('Timeseries has intervals smaller than 12h. ' %||%
+              'Measurements are averaged to 12h intervals.', call. = FALSE, immediate. = TRUE)
+
+    df.new
+  }
+
   drift_reference.assert(x = x, timestamps = timestamps, reference = reference)
 
-  df <- data.table::data.table(x, timestamps)
-  df <- df[, .(x = mean(x)), by = .(timestamps = round.timestamp(timestamps, scalefactor.sec = 3600*12))]
-  data.table::setkey(df, 'timestamps')
+  df <- df.aggregate(data.frame(x, timestamps))
 
-  df.ref <- data.table::rbindlist(reference, use.names = TRUE, fill = TRUE, idcol = 'reference')
-  df.ref <- df.ref[!is.na(timestamps), .(x = mean(x, na.rm = TRUE)), by = .(reference, timestamps = round.timestamp(timestamps, scalefactor.sec = 3600*12))]
+  df.ref <- data.table::rbindlist(lapply(reference, df.aggregate), use.names = TRUE, fill = TRUE, idcol = 'reference')
   data.table::setkey(df.ref, 'timestamps')
 
   df.diff <- df[J(df.ref), .('x' = x.x - i.x, timestamps, reference), nomatch = NULL][!is.na(x), .(x = median(x)), by = .(timestamps)]

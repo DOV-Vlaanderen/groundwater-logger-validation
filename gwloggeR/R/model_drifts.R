@@ -34,14 +34,14 @@ model_drifts.fit <- function(dr.x, dr.ts, ar1, dfdiff) {
       .M <- arima(x = dr.x, order = c(1, 0, 0), xreg = reg, transform.pars = FALSE, fixed = c(ar1, rep(NA, 1L + ncol(reg))))
       .M[['xreg']] <- reg
       .M[['bp']] <- bp
-      .M[['bp.ts']] <- ts.adj[bp]
+      .M[['bp.ts']] <- dr.ts[bp]
       if (logLik(.M) > logLik(M0)) M0 <- .M
     }
     M0
   }
 
   bps.local <- function(M) {
-    unique(c(max(1L, M$bp - 2*sidays):M$bp, M$bp:min(M$bp + 2*sidays, length(x.adj) - 1)))
+    unique(c(max(1L, M$bp - 2*sidays):M$bp, M$bp:min(M$bp + 2*sidays, length(dr.x) - 1)))
   }
 
   # Sanity checks
@@ -51,27 +51,14 @@ model_drifts.fit <- function(dr.x, dr.ts, ar1, dfdiff) {
   stopifnot(length(dr.x) == length(dr.ts))
   stopifnot(!any(is.na(dr.x)))
 
-  # Aggregating dr.x to minimum 12h intervals: x.adj and ts.adj
-  list2env(
-    aggregate(
-      list('x.adj' = dr.x),
-      by = list('ts.adj' = round.timestamp(dr.ts, scalefactor.sec = 3600*12)),
-      FUN = mean),
-    envir = environment()
-  )
+  stopifnot(length(dr.x) >= 5L) # TODO: should return no drift
 
-  if (length(dr.x) != length(x.adj))
-    warning('Timeseries has intervals smaller than 12h. ' %||%
-            'Measurements are averaged to 12h intervals.', call. = FALSE, immediate. = TRUE)
-
-  stopifnot(length(x.adj) >= 5L) # TODO: should return no drift
-
-  ts.sec <- as.numeric(ts.adj)
+  ts.sec <- as.numeric(dr.ts)
   ts.sec.diff <- diff(ts.sec)
 
   stopifnot(all(ts.sec.diff >= 12*3600))
 
-  if (sum(ts.sec.diff > 12*3600)/length(x.adj) > 0.01)
+  if (sum(ts.sec.diff > 12*3600)/length(dr.x) > 0.01)
     warning('More than 1 % of time intervals is larger than 12h. ' %||%
             'The current drift detection model works best for 12h interval measurements.',
             call. = FALSE, immediate. = TRUE)
@@ -83,9 +70,9 @@ model_drifts.fit <- function(dr.x, dr.ts, ar1, dfdiff) {
   sbasis <- fbasis(timestamps = dr.ts, frequencies = 1/(365.25*3600*24))
 
   # Models
-  M0 <- arima(x = x.adj, order = c(1, 0, 0), transform.pars = FALSE, fixed = c(ar1, NA))
+  M0 <- arima(x = dr.x, order = c(1, 0, 0), transform.pars = FALSE, fixed = c(ar1, NA))
 
-  MS <- arima(x = x.adj, order = c(1, 0, 0), transform.pars = FALSE, xreg = sbasis, fixed = c(ar1, NA, NA, NA))
+  MS <- arima(x = dr.x, order = c(1, 0, 0), transform.pars = FALSE, xreg = sbasis, fixed = c(ar1, NA, NA, NA))
 
   MD <- seekmin(M0, bps = bps)
   MD <- seekmin(MD, bps = bps.local(MD))
