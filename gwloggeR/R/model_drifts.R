@@ -23,7 +23,11 @@ model_drifts.simulate <- function(n = length(a), mu, sigma, phi1, betas = NULL, 
 # acf(x.sim)
 # pacf(x.sim)
 
-
+model_drifts.trend <- function(timestamps, start.ts) {
+  trending.ts <- timestamps[timestamps >= start.ts]
+  c(rep(0, length(timestamps) - length(trending.ts) + 1L),
+    cumsum(diff(as.numeric(trending.ts)))/3600/24/365.25)
+}
 
 model_drifts.fit <- function(dr.x, dr.ts, ar1, dfdiff) {
 
