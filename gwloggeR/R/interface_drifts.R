@@ -7,24 +7,39 @@ Drift <- function(x, ...) {
   UseMethod('Drift', x)
 }
 
-#' @rdname Drift
-#'
-Drift.logical <- function(x, mu, timestamp, rate, significance) {
-  structure(x, 'class' = c('Drift', 'logical'),
-            mu = mu,
-            timestamp = timestamp, rate = rate, significance = significance)
-}
 
 #' @rdname Drift
 #'
-Drift.Arima <- function(model, timestamps) {
+Drift.logical <- function(x, mu, timestamp = as.POSIXct(NA), rate = as.numeric(NA),
+                          year.seasonality = c('sine' = as.numeric(NA), 'cosine' = NA),
+                          significance = as.numeric(NA)) {
+
+  structure(x, 'class' = c('Drift', 'logical'), is.drifting = !is.na(timestamp),
+            mu = mu, year.seasonality = year.seasonality,
+            timestamp = timestamp, rate = rate, significance = significance)
+}
+
+
+#' @rdname Drift
+#'
+Drift.Arima <- function(model, timestamps, sig.treshold = 1/1000) {
+
   stopifnot(!is.null(model$xreg))
   stopifnot('bptrend' %in% colnames(model$xreg))
+
+  sig <- model$drift.significance
+  mu <- model$coef[['intercept']]
+  ys <- setNames(model$coef[c('sin(31557600)', 'cos(31557600)')], c('sine', 'cosine'))
   x <- rep(FALSE, length(timestamps))
+
+  if (sig > sig.treshold) return(Drift(x, mu = mu, year.seasonality = ys))
+
   x[timestamps >= model$bp.ts] <- TRUE
-  Drift(x, mu = model$coef[['intercept']],
+
+  Drift(x, mu = mu,
         timestamp = model$bp.ts,
-        significance = model$drift.significance,
+        significance = sig,
+        year.seasonality = ys,
         rate = structure(model$coef[['bptrend']], units = 'cmH2O/year'))
 }
 
