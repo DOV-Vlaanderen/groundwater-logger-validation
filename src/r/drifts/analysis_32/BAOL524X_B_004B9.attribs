@@ -1,0 +1,22 @@
+$class
+[1] "Drift"   "logical"
+
+$is.drifting
+[1] FALSE
+
+$mu
+[1] -7.111907
+
+$year.seasonality
+  sine cosine 
+    NA     NA 
+
+$timestamp
+[1] NA
+
+$rate
+[1] NA
+
+$significance
+[1] NA
+
