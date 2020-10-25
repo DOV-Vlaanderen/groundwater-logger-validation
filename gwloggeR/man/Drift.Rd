@@ -8,9 +8,16 @@
 \usage{
 Drift(x, ...)
 
-\method{Drift}{logical}(x, mu, timestamp, rate, significance)
+\method{Drift}{logical}(
+  x,
+  mu,
+  timestamp = as.POSIXct(NA),
+  rate = as.numeric(NA),
+  year.seasonality = c(sine = as.numeric(NA), cosine = NA),
+  significance = as.numeric(NA)
+)
 
-\method{Drift}{Arima}(model, timestamps)
+\method{Drift}{Arima}(model, timestamps, sig.treshold = 1/1000)
 }
 \description{
 Drift object holds all the necessary information about the detected drift.
