@@ -44,9 +44,9 @@ Logical vector with same length as x, specifying TRUE for drifting observations.
 \description{
 This function marks a drift in the input vector.
 }
-\section{Methods (by class)}{
+\section{Functions}{
 \itemize{
-\item \code{numeric}: 
+\item \code{detect_drift,numeric-method}: 
 }}
 
 \references{

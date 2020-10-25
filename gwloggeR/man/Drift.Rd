@@ -4,6 +4,7 @@
 \alias{Drift}
 \alias{Drift.logical}
 \alias{Drift.Arima}
+\alias{Drift.ArimaExt}
 \title{Drift object}
 \usage{
 Drift(x, ...)
@@ -17,7 +18,9 @@ Drift(x, ...)
   significance = as.numeric(NA)
 )
 
-\method{Drift}{Arima}(model, timestamps, sig.treshold = 1/1000)
+\method{Drift}{Arima}(model, timestamps)
+
+\method{Drift}{ArimaExt}(model, timestamps, sig.treshold = 1/1000)
 }
 \description{
 Drift object holds all the necessary information about the detected drift.
