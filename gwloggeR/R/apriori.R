@@ -19,7 +19,7 @@ Apriori <- function(data_type = c("air pressure", "hydrostatic pressure"), units
          "var" = 9.586297^2,
          "data_type" = data_type,
          "units" = units),
-    class = "apriori")
+    class = "Apriori")
 
 
 }
