@@ -12,24 +12,24 @@ local({
     print(Sys.time())
     print(basename(f))
 
+    ROOT.PATH <- './drifts/analysis_32/'
+
     df <- gwloggeR.data::read(f)$df
     data.table::setkey(df, TIMESTAMP_UTC)
 
-    local({
-
-      imagename <- sprintf('./drifts/analysis_32/%s.png', basename(f))
-      dir.create(dirname(imagename), showWarnings = FALSE, recursive = TRUE)
-      png(imagename, width = 1280, height = 720)
-
-      result <- gwloggeR::detect_drift(
-        x = df$PRESSURE_VALUE, timestamps = df$TIMESTAMP_UTC,
-        reference = ref,
-        apriori = gwloggeR::Apriori(data_type = 'air pressure', units = 'cmH2O'),
-        verbose = TRUE, plot = TRUE, title = paste0(basename(f), ' - v0.01')
-      )
-
-      on.exit(dev.off())
-    })
+    gwloggeR:::test.detect_function(
+      fun = gwloggeR::detect_drift,
+      x = df$PRESSURE_VALUE,
+      timestamps = df$TIMESTAMP_UTC,
+      reference = ref,
+      apriori = gwloggeR::Apriori(data_type = 'air pressure', units = 'cmH2O'),
+      verbose = TRUE,
+      plot = TRUE,
+      title = paste0(basename(f), ' - v0.01'),
+      RESULT.PATH = paste0(ROOT.PATH, basename(f), '.result'),
+      ATTRIB.PATH = paste0(ROOT.PATH, basename(f), '.attribs'),
+      IMG.PATH = paste0(ROOT.PATH, basename(f), '.png')
+    )
 
   }
 
