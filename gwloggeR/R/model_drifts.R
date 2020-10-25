@@ -55,8 +55,6 @@ model_drifts.fit <- function(dr.x, dr.ts, ar1, dfdiff) {
   stopifnot(length(dr.x) == length(dr.ts))
   stopifnot(!any(is.na(dr.x)))
 
-  stopifnot(length(dr.x) >= 5L) # TODO: should return no drift
-
   ts.sec <- as.numeric(dr.ts)
   ts.sec.diff <- diff(ts.sec)
 
@@ -75,6 +73,13 @@ model_drifts.fit <- function(dr.x, dr.ts, ar1, dfdiff) {
 
   # Models
   M0 <- arima(x = dr.x, order = c(1, 0, 0), transform.pars = FALSE, fixed = c(ar1, NA))
+
+  if (length(dr.x) < 5L) {
+    warning('Can not detect drift because differences with reference data have less than 5 observations. ' %||%
+            'Returning nu drift by default.',
+            call. = FALSE, immediate. = TRUE)
+    return(M0)
+  }
 
   MS <- arima(x = dr.x, order = c(1, 0, 0), transform.pars = FALSE, xreg = sbasis, fixed = c(ar1, NA, NA, NA))
 
