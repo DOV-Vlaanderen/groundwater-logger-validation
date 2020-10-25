@@ -22,7 +22,20 @@ Drift.logical <- function(x, mu, timestamp = as.POSIXct(NA), rate = as.numeric(N
 
 #' @rdname Drift
 #'
-Drift.Arima <- function(model, timestamps, sig.treshold = 1/1000) {
+Drift.Arima <- function(model, timestamps) {
+
+  mu <- model$coef[['intercept']]
+  ys <- setNames(model$coef[c('sin(31557600)', 'cos(31557600)')], c('sine', 'cosine'))
+  x <- rep(FALSE, length(timestamps))
+
+  Drift(x, mu = mu,
+        year.seasonality = ys)
+}
+
+
+#' @rdname Drift
+#'
+Drift.ArimaExt <- function(model, timestamps, sig.treshold = 1/1000) {
 
   stopifnot(!is.null(model$xreg))
   stopifnot('bptrend' %in% colnames(model$xreg))
@@ -71,8 +84,23 @@ setGeneric(
   valueClass = "logical",
   function(x, timestamps, reference = list(),
            apriori = Apriori('air pressure', units = 'cmH2O'),
-           ..., plot = FALSE, verbose = FALSE, title = NULL)
+           ..., plot = FALSE, verbose = FALSE, title = NULL) {
+
+    if (is.null(timestamps)) stop('Drift detection requires a timestamp for each observation x.')
+    if (length(timestamps) != length(x)) stop('x and timestamps must have same length.')
+
+    assert.timestamp(timestamps)
+    assert.nonas(timestamps)
+    #assert.noduplicates(timestamps) # ToDo: decide to enable or disable.
+    assert.ordered(timestamps)
+
+    assert.nonas(x)
+
+    if (apriori$data_type != "air pressure" && apriori$units != 'cmH2O')
+      stop('Drift detection is only implemented for air pressure data in cmH2O units.')
+
     standardGeneric('detect_drift')
+  }
 )
 
 
@@ -85,20 +113,23 @@ setMethod(
   signature = c(x = "numeric"),
   function(x, timestamps, reference, apriori, plot, verbose, title) {
 
-    if (apriori$data_type != "air pressure" && apriori$units != 'cmH2O')
-      stop('Drift detection is only implemented for air pressure data in cmH2O.')
-
     # make differences of x with the reference in respect to matching timestamps: dr$x = x - referece
     dr <- drift_reference.differentiate(x = x, timestamps = timestamps, reference = reference)
 
     # aggregate dr for model fitting
     dra <- dr[, .(x = median(x)), by = .(timestamps)]
 
-    # fit the drift model
-    model <- model_drifts.fit(dr.x = dra$x, dr.ts = dra$timestamps, ar1 = 0.9, dfdiff = 2.8)
-
-    # convert model to Drift object which is then returned to the user
-    drift <- Drift(model, timestamps)
+    if (nrow(dra) >= 2L) {
+      # fit the drift model
+      model <- model_drifts.fit(dr.x = dra$x, dr.ts = dra$timestamps, ar1 = 0.9, dfdiff = 2.8)
+      # convert model to Drift object which is then returned to the user
+      drift <- Drift(model, timestamps)
+    } else {
+      warning('x and reference data have no mathcing timestamps. ' %||%
+              'At least 2 matches are required for computing drift.',
+              call. = FALSE, immediate. = TRUE)
+      drift <- Drift(rep(FALSE, length(x)), mu = NA)
+    }
 
     if (plot) plot_drifts(x = x, timestamps = timestamps, dr = dr, drift = drift, title = title)
 

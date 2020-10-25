@@ -29,6 +29,12 @@ model_drifts.trend <- function(timestamps, start.ts) {
     cumsum(diff(as.numeric(trending.ts)))/3600/24/365.25)
 }
 
+#' Fits a drift detection model
+#'
+#' @return Arima or ArimaExt object
+#'
+#' @keywords internal
+#'
 model_drifts.fit <- function(dr.x, dr.ts, ar1, dfdiff) {
 
   seekmin <- function(M0, bps, xreg = NULL) {
@@ -54,6 +60,7 @@ model_drifts.fit <- function(dr.x, dr.ts, ar1, dfdiff) {
   assert.ordered(dr.ts)
   stopifnot(length(dr.x) == length(dr.ts))
   stopifnot(!any(is.na(dr.x)))
+  stopifnot(length(dr.x) >= 2L) # need at least 2 observations for arima()
 
   ts.sec <- as.numeric(dr.ts)
   ts.sec.diff <- diff(ts.sec)
@@ -97,7 +104,7 @@ model_drifts.fit <- function(dr.x, dr.ts, ar1, dfdiff) {
   MF[['drift.significance']] <-
     lrtest(logLik(if (any(grepl('sin', names(MF$coef)))) MS else M0), logLik(MF), df.diff = dfdiff)
 
-  MF
+  structure(MF, class = c('ArimaExt', class(MF)))
 }
 
 # model_drifts.fit(x = x.sim, timestamps = ts.sim)
