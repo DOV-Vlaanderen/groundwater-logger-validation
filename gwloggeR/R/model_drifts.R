@@ -39,7 +39,7 @@ model_drifts.fit <- function(dr.x, dr.ts, ar1, dfdiff) {
 
   seekmin <- function(M0, bps, xreg = NULL) {
     for (bp in bps) {
-      bptrend <- c(rep(0, bp - 1), trend[bp:length(trend)] - trend[bp])
+      bptrend <- model_drifts.trend(dr.ts, dr.ts[bp])
       reg <- if (!is.null(xreg)) cbind(xreg, bptrend) else cbind(bptrend)
       .M <- arima(x = dr.x, order = c(1, 0, 0), xreg = reg, transform.pars = FALSE, fixed = c(ar1, rep(NA, 1L + ncol(reg))))
       .M[['xreg']] <- reg
