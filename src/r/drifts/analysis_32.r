@@ -55,11 +55,8 @@ save.output <- function(f) {
 results <- sapply(logger.names, save.output, USE.NAMES = TRUE, simplify = FALSE)
 
 results.df <- data.table::rbindlist(lapply(names(results), function(ln) {
-  a <- attributes(results[[ln]])
-  a[['name']] <- basename(ln)
-  a[['year.seasonality']] <- NULL
-  a[['class']] <- NULL
-  a
+  c(list('name' = basename(ln)),
+    attributes(results[[ln]])[c('mu', 'timestamp', 'rate', 'significance')])
 }), use.names = TRUE, fill = TRUE)
 
-write.csv(results.df, file = './drifts/analysis_32/results.csv')
+write.csv(results.df, file = './drifts/analysis_32/results.csv', row.names = FALSE)
