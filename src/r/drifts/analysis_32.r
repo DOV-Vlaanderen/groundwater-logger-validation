@@ -60,3 +60,15 @@ results.df <- data.table::rbindlist(lapply(names(results), function(ln) {
 }), use.names = TRUE, fill = TRUE)
 
 write.csv(results.df, file = './drifts/analysis_32/results.csv', row.names = FALSE)
+
+plot(x = results.df$significance, y = results.df$rate,
+     ylim = quantile(results.df$rate, probs = c(0.025, 0.975), na.rm = TRUE))
+
+plot(x = results.df$significance, y = results.df$rate,
+     ylim = quantile(results.df$rate, probs = c(0.025, 0.975), na.rm = TRUE),
+     xlim = c(0, 1/1000))
+
+hist(results.df$significance, breaks = 100)
+hist(results.df$significance[results.df$significance < 0.05], breaks = 100)
+quantile(results.df$significance, probs = c(0.05, 0.1, 0.2, 0.5), na.rm = TRUE)
+plot(ecdf(results.df$significance))
