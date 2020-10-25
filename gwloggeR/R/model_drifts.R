@@ -75,7 +75,7 @@ model_drifts.fit <- function(dr.x, dr.ts, ar1, dfdiff) {
   # Regressor definitions
   trend <- c(0, cumsum(ts.sec.diff/3600/24/365.25))
   sidays <- ceiling(sqrt(length(dr.x))) # first sweep seek interval in days
-  bps <- which(!duplicated((ts.sec[-length(ts.sec)] - ts.sec[1L]) %/% (sidays*24*3600))) # breakpoints for fitting
+  bps <- which(!duplicated((head(ts.sec, -1) - ts.sec[1L]) %/% (sidays*24*3600))) # breakpoints for fitting
   sbasis <- fbasis(timestamps = dr.ts, frequencies = 1/(365.25*3600*24))
 
   # Models
@@ -97,7 +97,10 @@ model_drifts.fit <- function(dr.x, dr.ts, ar1, dfdiff) {
   MDS <- seekmin(MDS, bps = bps.local(MDS), xreg = sbasis)
 
   # Model selection
-  sp.val <- lrtest(logLik(MD), logLik(MDS), df.diff = 2L) # p-val for seasonality component
+  # p-val for seasonality component: eventually, only either sin or cos
+  # are needed in case fase is 0, so df == 1. This also produces slightly
+  # better results.
+  sp.val <- lrtest(logLik(MD), logLik(MDS), df.diff = 1L)
   MF <- if (sp.val < 1e-2) MDS else MD # final model
 
   # Significance of drift component
