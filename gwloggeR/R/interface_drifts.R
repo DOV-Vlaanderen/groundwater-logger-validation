@@ -35,7 +35,7 @@ Drift.Arima <- function(model, timestamps) {
 
 #' @rdname Drift
 #'
-Drift.ArimaExt <- function(model, timestamps, sig.treshold = 1/1000) {
+Drift.ArimaExt <- function(model, timestamps, sig.treshold) {
 
   stopifnot(!is.null(model$xreg))
   stopifnot('bptrend' %in% colnames(model$xreg))
@@ -71,6 +71,7 @@ Drift.ArimaExt <- function(model, timestamps, sig.treshold = 1/1000) {
 #' @param plot prints comprehensive plots
 #' @param verbose prints comprehensive information
 #' @param title adds title to the plot
+#' @param significance level at which to detect drift. Defaults to 0.05.
 #' @return Logical vector with same length as x, specifying TRUE for drifting observations.
 #' @references
 #' \href{https://dov-vlaanderen.github.io/groundwater-logger-validation/gwloggeR/docs/articles/Airpressure.html}{Air pressure vignette}
@@ -84,7 +85,7 @@ setGeneric(
   valueClass = "logical",
   function(x, timestamps, reference = list(),
            apriori = Apriori('air pressure', units = 'cmH2O'),
-           ..., plot = FALSE, verbose = FALSE, title = NULL) {
+           ..., plot = FALSE, verbose = FALSE, title = NULL, significance = 0.05) {
 
     if (is.null(timestamps)) stop('Drift detection requires a timestamp for each observation x.')
     if (length(timestamps) != length(x)) stop('x and timestamps must have same length.')
@@ -111,7 +112,7 @@ setGeneric(
 setMethod(
   'detect_drift',
   signature = c(x = "numeric"),
-  function(x, timestamps, reference, apriori, plot, verbose, title) {
+  function(x, timestamps, reference, apriori, plot, verbose, title, significance) {
 
     # make differences of x with the reference in respect to matching timestamps: dr$x = x - referece
     dr <- drift_reference.differentiate(x = x, timestamps = timestamps, reference = reference)
@@ -123,7 +124,7 @@ setMethod(
       # fit the drift model
       model <- model_drifts.fit(dr.x = dra$x, dr.ts = dra$timestamps, ar1 = 0.9, dfdiff = 2.8)
       # convert model to Drift object which is then returned to the user
-      drift <- Drift(model, timestamps)
+      drift <- Drift(model, timestamps, sig.treshold = significance)
     } else {
       warning('x and reference data have no mathcing timestamps. ' %||%
               'At least 2 matches are required for computing drift.',

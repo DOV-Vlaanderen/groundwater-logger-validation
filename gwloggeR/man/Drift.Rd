@@ -20,7 +20,7 @@ Drift(x, ...)
 
 \method{Drift}{Arima}(model, timestamps)
 
-\method{Drift}{ArimaExt}(model, timestamps, sig.treshold = 1/1000)
+\method{Drift}{ArimaExt}(model, timestamps, sig.treshold)
 }
 \description{
 Drift object holds all the necessary information about the detected drift.

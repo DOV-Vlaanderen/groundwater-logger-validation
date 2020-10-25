@@ -13,10 +13,20 @@ detect_drift(
   ...,
   plot = FALSE,
   verbose = FALSE,
-  title = NULL
+  title = NULL,
+  significance = 0.05
 )
 
-\S4method{detect_drift}{numeric}(x, timestamps, reference, apriori, plot, verbose, title)
+\S4method{detect_drift}{numeric}(
+  x,
+  timestamps,
+  reference,
+  apriori,
+  plot,
+  verbose,
+  title,
+  significance
+)
 }
 \arguments{
 \item{x}{numeric vector of values}
@@ -37,6 +47,8 @@ compensated for altitude.}
 \item{verbose}{prints comprehensive information}
 
 \item{title}{adds title to the plot}
+
+\item{significance}{level at which to detect drift. Defaults to 0.05.}
 }
 \value{
 Logical vector with same length as x, specifying TRUE for drifting observations.
