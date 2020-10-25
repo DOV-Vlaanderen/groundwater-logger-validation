@@ -18,7 +18,7 @@ Drift(x, ...)
   significance = as.numeric(NA)
 )
 
-\method{Drift}{Arima}(model, timestamps)
+\method{Drift}{Arima}(model, timestamps, ...)
 
 \method{Drift}{ArimaExt}(model, timestamps, sig.treshold)
 }

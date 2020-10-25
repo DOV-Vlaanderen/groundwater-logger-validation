@@ -22,7 +22,7 @@ Drift.logical <- function(x, mu, timestamp = as.POSIXct(NA), rate = as.numeric(N
 
 #' @rdname Drift
 #'
-Drift.Arima <- function(model, timestamps) {
+Drift.Arima <- function(model, timestamps, ...) {
 
   mu <- model$coef[['intercept']]
   ys <- setNames(model$coef[c('sin(31557600)', 'cos(31557600)')], c('sine', 'cosine'))
