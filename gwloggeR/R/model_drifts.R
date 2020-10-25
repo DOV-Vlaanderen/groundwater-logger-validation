@@ -51,7 +51,7 @@ model_drifts.fit <- function(dr.x, dr.ts, ar1, dfdiff) {
   }
 
   bps.local <- function(M) {
-    unique(c(max(1L, M$bp - 2*sidays):M$bp, M$bp:min(M$bp + 2*sidays, length(dr.x) - 1)))
+    unique(c(max(1L, M$bp - si):M$bp, M$bp:min(M$bp + si, length(dr.x) - 1)))
   }
 
   # Sanity checks
@@ -74,8 +74,8 @@ model_drifts.fit <- function(dr.x, dr.ts, ar1, dfdiff) {
 
   # Regressor definitions
   trend <- c(0, cumsum(ts.sec.diff/3600/24/365.25))
-  sidays <- ceiling(sqrt(length(dr.x))) # first sweep seek interval in days
-  bps <- which(!duplicated((head(ts.sec, -1) - ts.sec[1L]) %/% (sidays*24*3600))) # breakpoints for fitting
+  si <- ceiling(sqrt(length(dr.x))) # first sweep seek interval in observations
+  bps <- seq(from = 1L, to = length(dr.x) - 1, by = si)
   sbasis <- fbasis(timestamps = dr.ts, frequencies = 1/(365.25*3600*24))
 
   # Models

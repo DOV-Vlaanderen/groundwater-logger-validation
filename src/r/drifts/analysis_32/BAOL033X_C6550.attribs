@@ -5,11 +5,11 @@ $is.drifting
 [1] FALSE
 
 $mu
-[1] -0.8125855
+[1] -0.8225687
 
 $year.seasonality
      sine    cosine 
-0.2681094 0.7932488 
+0.2729532 0.7878267 
 
 $timestamp
 [1] NA
