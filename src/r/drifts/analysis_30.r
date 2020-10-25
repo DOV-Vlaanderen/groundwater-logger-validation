@@ -1,4 +1,7 @@
 # P-value analysis for AR(1) model
+# We are mainly interested here in the distribution of p-values
+# in case of drift an LR test. The key question is whether the distribution
+# is uniform.
 
 
 
