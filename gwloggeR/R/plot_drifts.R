@@ -37,6 +37,59 @@ plot_drifts.timedifferences <- function(x, timestamps, hline.h = NULL,
 
 #' @keywords internal
 #'
+plot_drifts.dtft <- function(x, timestamps, drift, remove.drift = FALSE) {
+
+  periods.sec <- seq(from = 2*24*3600,
+                     # take minimum a year for the periods
+                     to = max(diff(as.numeric(range(timestamps))), 1.1*365.25*24*3600),
+                     length.out = 10000)
+
+  x.centered <- x - median(x)
+  if (remove.drift && attr(drift, 'is.drifting')) {
+    x.drift <- attr(drift, 'rate')*model_drifts.trend(timestamps, start.ts = attr(drift, 'timestamp'))
+    x.centered <- x.centered - x.drift
+  }
+
+  freqdomain <- sapply(1/periods.sec, FUN = dtft, x = x.centered, timestamps = timestamps)
+  intensity <- Mod(freqdomain)/length(x)
+
+  ggplot2::ggplot(mapping = ggplot2::aes(x = periods.sec/3600/24, y = intensity)) +
+    ggplot2::geom_line(col = 'black') +
+    ggplot2::geom_vline(xintercept = 365.25, col = 'red') +
+    #ggplot2::ylab('Intensity') +
+    #ggplot2::xlab('Period (days)') +
+    #ggplot2::ggtitle('Discrete-Time Fourier Transform') +
+    ggplot2::theme_light() +
+    ggplot2::theme(axis.text.y = ggplot2::element_text(angle = 90, hjust = 0.5),
+                   axis.title.y = ggplot2::element_blank(),
+                   axis.title.x = ggplot2::element_blank())
+}
+
+
+#' @keywords internal
+#'
+plot_drifts.yearly <- function(x, timestamps, drift, remove.drift = FALSE,
+                               ylim = quantile(x, probs = c(0.005, 0.995))) {
+
+  if (remove.drift && attr(drift, 'is.drifting')) {
+    x.drift <- attr(drift, 'rate')*model_drifts.trend(timestamps, start.ts = attr(drift, 'timestamp'))
+    x <- x - x.drift
+  }
+
+  ggplot2::ggplot() +
+    ggplot2::geom_point(mapping = ggplot2::aes(x = data.table::yday(timestamps), y = x)) +
+    #ggplot2::xlab('Day') +
+    ggplot2::coord_cartesian(ylim = ylim,
+                             xlim = c(1, 366)) +
+    ggplot2::theme_light() +
+    ggplot2::theme(axis.text.y = ggplot2::element_text(angle = 90, hjust = 0.5),
+                   axis.title.y = ggplot2::element_blank(),
+                   axis.title.x = ggplot2::element_blank())
+}
+
+
+#' @keywords internal
+#'
 plot_drifts.original <- function(x, timestamps, xlim = range(timestamps),
                                  ylim = quantile(x, c(0.005, 0.995))) {
 
@@ -120,15 +173,21 @@ plot_drifts <- function(x, timestamps, dr, drift, title) {
   p.orig <- plot_drifts.original(x, timestamps)
   p.diff <- plot_drifts.differences(dr.x = dr$x, dr.ts = dr$timestamps, drift = drift, xlim = range(timestamps))
   p.tsdiff <- plot_drifts.timedifferences(x = x, timestamps = timestamps, hline.h = 12)
+  p.dtft.orig <- plot_drifts.dtft(x = x, timestamps = timestamps, drift = drift, remove.drift = TRUE)
+  p.dtft.diff <- plot_drifts.dtft(x = dr$x, timestamps = dr$timestamps, drift = drift, remove.drift = TRUE)
+  p.yearly.orig <- plot_drifts.yearly(x = x, timestamps = timestamps, drift = drift, remove.drift = TRUE)
+  p.yearly.diff <- plot_drifts.yearly(x = dr$x, timestamps = dr$timestamps, drift = drift, remove.drift = TRUE)
   p.empty <- ggplot2::ggplot() + ggplot2::theme_void()
 
-  layout_matrix <- rbind(c(1),
-                         c(2),
-                         c(3))
+  layout_matrix <- rbind(c(rep(1, 4), 4, 7),
+                         c(rep(2, 4), 5, 8),
+                         c(rep(3, 4), 6, 9))
 
   grob.title <- if (!is.null(title)) grid::textGrob(title, x = 0.05, hjust = 0)
 
   gridExtra::grid.arrange(p.tsdiff, p.orig, p.diff,
+                          p.empty, p.dtft.orig, p.dtft.diff,
+                          p.empty, p.yearly.orig, p.yearly.diff,
                           layout_matrix = layout_matrix,
                           top = grob.title)
 }
