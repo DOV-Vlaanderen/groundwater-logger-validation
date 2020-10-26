@@ -103,9 +103,12 @@ model_drifts.fit <- function(dr.x, dr.ts, ar1, dfdiff) {
   sp.val <- lrtest(logLik(MD), logLik(MDS), df.diff = 1L)
   MF <- if (sp.val < 1e-2) MDS else MD # final model
 
+  MND <- if (any(grepl('sin', names(MF$coef)))) MS else M0
+  MF[['MND']] <- MND
+
   # Significance of drift component
   MF[['drift.significance']] <-
-    lrtest(logLik(if (any(grepl('sin', names(MF$coef)))) MS else M0), logLik(MF), df.diff = dfdiff)
+    lrtest(logLik(MND), logLik(MF), df.diff = dfdiff)
 
   structure(MF, class = c('ArimaExt', class(MF)))
 }

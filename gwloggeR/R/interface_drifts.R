@@ -41,11 +41,16 @@ Drift.ArimaExt <- function(model, timestamps, sig.treshold) {
   stopifnot('bptrend' %in% colnames(model$xreg))
 
   sig <- model$drift.significance
-  mu <- model$coef[['intercept']]
-  ys <- setNames(model$coef[c('sin(31557600)', 'cos(31557600)')], c('sine', 'cosine'))
   x <- rep(FALSE, length(timestamps))
 
-  if (sig > sig.treshold) return(Drift(x, mu = mu, year.seasonality = ys))
+  if (sig > sig.treshold) {
+    mu <- model$MND$coef[['intercept']]
+    ys <- setNames(model$MND$coef[c('sin(31557600)', 'cos(31557600)')], c('sine', 'cosine'))
+    return(Drift(x, mu = mu, year.seasonality = ys))
+  } else {
+    mu <- model$coef[['intercept']]
+    ys <- setNames(model$coef[c('sin(31557600)', 'cos(31557600)')], c('sine', 'cosine'))
+  }
 
   x[timestamps >= model$bp.ts] <- TRUE
 
