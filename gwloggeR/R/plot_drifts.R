@@ -1,5 +1,14 @@
 #' @keywords internal
 #'
+plot_drifts.sigcolor <- function(significance) {
+  if (significance < 1/1000) return('red')
+  if (significance < 5/100) return('orange')
+  'springgreen'
+}
+
+
+#' @keywords internal
+#'
 plot_drifts.original <- function(x, timestamps, xlim = range(timestamps),
                                  ylim = quantile(x, c(0.005, 0.995))) {
 
@@ -35,11 +44,31 @@ plot_drifts.differences <- function(dr.x, dr.ts, drift, xlim = range(dr.ts),
     mu <- mu + attr(drift, 'rate')*model_drifts.trend(dr.ts, start.ts = bp.ts)
   }
 
-  p <- ggplot2::ggplot(mapping = ggplot2::aes(x = dr.ts, y = dr.x)) +
-    ggplot2::geom_line(col = 'red', alpha = 1) +
+  p <- ggplot2::ggplot(mapping = ggplot2::aes(x = dr.ts, y = dr.x))
+
+  if (attr(drift, 'is.drifting'))
+    p <- p + ggplot2::annotate(
+      'rect', xmin = bp.ts, xmax = max(dr.ts),
+      ymin = -Inf, ymax = Inf, alpha = 0.1,
+      fill = plot_drifts.sigcolor(attr(drift, 'significance'))
+    )
+
+  p <- p + ggplot2::geom_line(col = 'steelblue', alpha = 1) +
     ggplot2::geom_line(mapping = ggplot2::aes(y = mu), col = 'black', size = 1.5) +
-    ggplot2::geom_vline(xintercept = bp.ts, col = 'blue', linetype = 'dotted', size = 1.2) +
-    ggplot2::coord_cartesian(ylim = ylim, xlim = xlim) +
+    ggplot2::geom_vline(xintercept = bp.ts,
+                        col = plot_drifts.sigcolor(attr(drift, 'significance')),
+                        linetype = 'dashed', size = 1.2)
+
+  if (attr(drift, 'is.drifting'))
+    p <- p + ggplot2::annotate(
+      'label', x = as.POSIXct(-Inf, origin = '1970-01-01'), y = Inf,
+      size = 4.5, col = 'black',
+      hjust = 0, vjust = 1, fill = 'grey', alpha = 0.8, label.size = NA,
+      label = sprintf('Drift p-value: %.2e, rate: %.2f %s', attr(drift, 'significance'),
+                      attr(drift, 'rate'), attr(attr(drift, 'rate'), 'units'))
+    )
+
+  p <- p + ggplot2::coord_cartesian(ylim = ylim, xlim = xlim) +
     ggplot2::theme_light() +
     ggplot2::theme(axis.text.y = ggplot2::element_text(angle = 90, hjust = 0.5),
                    axis.title.y = ggplot2::element_blank(),
