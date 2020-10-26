@@ -1,9 +1,37 @@
 #' @keywords internal
 #'
 plot_drifts.sigcolor <- function(significance) {
+  if (is.null(significance) || is.na(significance)) return('springgreen')
   if (significance < 1/1000) return('red')
   if (significance < 5/100) return('orange')
   'springgreen'
+}
+
+
+#' @keywords internal
+#'
+plot_drifts.timedifferences <- function(x, timestamps, hline.h = NULL,
+                                        xlim = range(timestamps)) {
+
+  ts.diff.h <- round(diff(as.numeric(timestamps))/3600)
+  p <- ggplot2::ggplot(mapping = ggplot2::aes(x = timestamps[-1], y = ts.diff.h)) +
+    ggplot2::geom_hline(yintercept = hline.h, col = 'red', size = 0.2, alpha = 0.2) +
+    ggplot2::geom_point(pch = '-', size = 8) +
+    ggplot2::scale_y_continuous(
+      breaks = unique(ts.diff.h),
+      #labels = paste0(unique(ts.diff.h), 'h'),
+      minor_breaks = NULL,
+      trans = scales::trans_new(
+        name = 'log12',
+        transform = function(x) logb(x = x, base = 12),
+        inverse = function(x) 12^x)) +
+    ggplot2::coord_cartesian(xlim = xlim) +
+    ggplot2::theme_light() +
+    ggplot2::theme(axis.text.y = ggplot2::element_text(angle = 90, hjust = 0.5),
+                   axis.title.y = ggplot2::element_blank(),
+                   axis.title.x = ggplot2::element_blank())
+
+  p
 }
 
 
@@ -89,16 +117,18 @@ plot_drifts.refcount <- function() {
 #' @keywords internal
 #'
 plot_drifts <- function(x, timestamps, dr, drift, title) {
-  p.orig <- plot_drifts.original(x, timestamps, xlim = range(timestamps))
+  p.orig <- plot_drifts.original(x, timestamps)
   p.diff <- plot_drifts.differences(dr.x = dr$x, dr.ts = dr$timestamps, drift = drift, xlim = range(timestamps))
+  p.tsdiff <- plot_drifts.timedifferences(x = x, timestamps = timestamps, hline.h = 12)
   p.empty <- ggplot2::ggplot() + ggplot2::theme_void()
 
   layout_matrix <- rbind(c(1),
-                         c(2))
+                         c(2),
+                         c(3))
 
   grob.title <- if (!is.null(title)) grid::textGrob(title, x = 0.05, hjust = 0)
 
-  gridExtra::grid.arrange(p.orig, p.diff,
+  gridExtra::grid.arrange(p.tsdiff, p.orig, p.diff,
                           layout_matrix = layout_matrix,
                           top = grob.title)
 }
