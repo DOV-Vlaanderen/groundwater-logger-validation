@@ -37,21 +37,30 @@ model_drifts.trend <- function(timestamps, start.ts) {
 #'
 model_drifts.fit <- function(dr.x, dr.ts, ar1, dfdiff) {
 
-  seekmin <- function(M0, bps, xreg = NULL) {
+  seekmin <- function(M0, x, ts, idx = NULL, xreg = NULL) {
+
+    si <- ceiling(sqrt(length(x)))
+    if (is.null(idx)) bps <- seq(from = 1L, to = length(x) - 1, by = si)
+    else bps <- idx
+
     for (bp in bps) {
-      bptrend <- model_drifts.trend(dr.ts, dr.ts[bp])
-      reg <- if (!is.null(xreg)) cbind(xreg, bptrend) else cbind(bptrend)
-      .M <- arima(x = dr.x, order = c(1, 0, 0), xreg = reg, transform.pars = FALSE, fixed = c(ar1, rep(NA, 1L + ncol(reg))))
-      .M[['xreg']] <- reg
+      .bptrend <- model_drifts.trend(ts, ts[bp])
+      .xreg <- if (!is.null(xreg)) cbind(xreg, 'bptrend' = .bptrend) else cbind('bptrend' = .bptrend)
+      .M <- arima(x = x, order = c(1, 0, 0), xreg = .xreg, transform.pars = FALSE, fixed = c(ar1, rep(NA, 1L + ncol(.xreg))))
+      .M[['xreg']] <- .xreg
       .M[['bp']] <- bp
-      .M[['bp.ts']] <- dr.ts[bp]
+      .M[['bp.ts']] <- ts[bp]
       if (logLik(.M) > logLik(M0)) M0 <- .M
     }
-    M0
-  }
 
-  bps.local <- function(M) {
-    unique(c(max(1L, M$bp - si):M$bp, M$bp:min(M$bp + si, length(dr.x) - 1)))
+    if (is.null(idx)) M0 <-
+      seekmin(
+        M0 = M0, x = x, ts = ts,
+        idx = unique(c(max(1L, M0$bp - si):M0$bp,
+                       M0$bp:min(M0$bp + si, length(x) - 1)))
+      )
+
+    M0
   }
 
   # Sanity checks
@@ -73,13 +82,13 @@ model_drifts.fit <- function(dr.x, dr.ts, ar1, dfdiff) {
             call. = FALSE, immediate. = TRUE)
 
   # Regressor definitions
-  trend <- c(0, cumsum(ts.sec.diff/3600/24/365.25))
-  si <- ceiling(sqrt(length(dr.x))) # first sweep seek interval in observations
-  bps <- seq(from = 1L, to = length(dr.x) - 1, by = si)
   sbasis <- fbasis(timestamps = dr.ts, frequencies = 1/(365.25*3600*24))
 
   # Models
-  M0 <- arima(x = dr.x, order = c(1, 0, 0), transform.pars = FALSE, fixed = c(ar1, NA))
+  M <- arima(x = dr.x, order = c(1, 0, 0), transform.pars = FALSE, fixed = c(ar1, NA))
+  ol <- detect_outliers(as.vector(residuals(M)))
+
+  M0 <- arima(x = dr.x[!ol], order = c(1, 0, 0), transform.pars = FALSE, fixed = c(ar1, NA))
 
   if (length(dr.x) < 5L) {
     warning('Can not detect drift because differences with reference data have less than 5 observations. ' %||%
@@ -88,13 +97,12 @@ model_drifts.fit <- function(dr.x, dr.ts, ar1, dfdiff) {
     return(M0)
   }
 
-  MS <- arima(x = dr.x, order = c(1, 0, 0), transform.pars = FALSE, xreg = sbasis, fixed = c(ar1, NA, NA, NA))
+  MS <- arima(x = dr.x[!ol], order = c(1, 0, 0), transform.pars = FALSE,
+              xreg = sbasis[!ol,,drop=FALSE], fixed = c(ar1, NA, NA, NA))
 
-  MD <- seekmin(M0, bps = bps)
-  MD <- seekmin(MD, bps = bps.local(MD))
+  MD <- seekmin(M0, x = dr.x[!ol], ts = dr.ts[!ol])
 
-  MDS <- seekmin(MD, bps = c(MD$bp, bps), xreg = sbasis)
-  MDS <- seekmin(MDS, bps = bps.local(MDS), xreg = sbasis)
+  MDS <- seekmin(MS, x = dr.x[!ol], ts = dr.ts[!ol], xreg = sbasis[!ol,,drop=FALSE])
 
   # Model selection
   # p-val for seasonality component: eventually, only either sin or cos
