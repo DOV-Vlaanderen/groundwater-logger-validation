@@ -10,12 +10,12 @@ Drift <- function(x, ...) {
 
 #' @rdname Drift
 #'
-Drift.logical <- function(x, mu, timestamp = as.POSIXct(NA), rate = as.numeric(NA),
+Drift.logical <- function(x, mu, sigma, timestamp = as.POSIXct(NA), rate = as.numeric(NA),
                           year.seasonality = c('sine' = as.numeric(NA), 'cosine' = NA),
                           significance = as.numeric(NA)) {
 
   structure(x, 'class' = c('Drift', 'logical'), is.drifting = !is.na(timestamp),
-            mu = mu, year.seasonality = year.seasonality,
+            mu = mu, sigma = sigma, year.seasonality = year.seasonality,
             timestamp = timestamp, rate = rate, significance = significance)
 }
 
@@ -25,10 +25,11 @@ Drift.logical <- function(x, mu, timestamp = as.POSIXct(NA), rate = as.numeric(N
 Drift.Arima <- function(model, timestamps, ...) {
 
   mu <- model$coef[['intercept']]
+  sigma <- sqrt(model$sigma2)
   ys <- setNames(model$coef[c('sin(31557600)', 'cos(31557600)')], c('sine', 'cosine'))
   x <- rep(FALSE, length(timestamps))
 
-  Drift(x, mu = mu,
+  Drift(x, mu = mu, sigma = sigma,
         year.seasonality = ys)
 }
 
@@ -45,16 +46,18 @@ Drift.ArimaExt <- function(model, timestamps, sig.treshold) {
 
   if (sig > sig.treshold) {
     mu <- model$MND$coef[['intercept']]
+    sigma <- sqrt(model$MND$sigma2)
     ys <- setNames(model$MND$coef[c('sin(31557600)', 'cos(31557600)')], c('sine', 'cosine'))
     return(Drift(x, mu = mu, year.seasonality = ys))
   } else {
     mu <- model$coef[['intercept']]
+    sigma <- sqrt(model$sigma2)
     ys <- setNames(model$coef[c('sin(31557600)', 'cos(31557600)')], c('sine', 'cosine'))
   }
 
   x[timestamps >= model$bp.ts] <- TRUE
 
-  Drift(x, mu = mu,
+  Drift(x, mu = mu, sigma = sigma,
         timestamp = model$bp.ts,
         significance = sig,
         year.seasonality = ys,
