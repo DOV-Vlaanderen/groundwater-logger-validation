@@ -55,7 +55,7 @@ model_drifts.fit <- function(dr.x, dr.ts, ar1, dfdiff) {
 
     if (is.null(idx)) M0 <-
       seekmin(
-        M0 = M0, x = x, ts = ts,
+        M0 = M0, x = x, ts = ts, xreg = xreg,
         idx = unique(c(max(1L, M0$bp - si):M0$bp,
                        M0$bp:min(M0$bp + si, length(x) - 1)))
       )
