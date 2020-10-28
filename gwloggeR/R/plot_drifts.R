@@ -80,7 +80,7 @@ plot_drifts.yearly <- function(x, timestamps, drift, remove.drift = FALSE,
   }
 
   ggplot2::ggplot() +
-    ggplot2::geom_point(mapping = ggplot2::aes(x = data.table::yday(timestamps), y = x)) +
+    ggplot2::geom_point(mapping = ggplot2::aes(x = data.table::yday(timestamps), y = x), shape = 16) +
     #ggplot2::xlab('Day') +
     ggplot2::coord_cartesian(ylim = ylim,
                              xlim = c(1, 366)) +
