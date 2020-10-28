@@ -40,8 +40,10 @@ model_drifts.fit <- function(dr.x, dr.ts, ar1, dfdiff) {
   seekmin <- function(M0, x, ts, idx = NULL, xreg = NULL) {
 
     si <- ceiling(sqrt(length(x)/2)) # n=x*2x (2x due to left + right lookup)
-    if (is.null(idx)) bps <- seq(from = 1L, to = length(x) - 1, by = si)
-    else bps <- idx
+    if (is.null(idx)) {
+      # length(x) - si: trick to not look to much at the end
+      bps <- c(seq(from = 1L, to = length(x) - si - 1, by = si), length(x) - si)
+    } else bps <- idx
 
     for (bp in bps) {
       .bptrend <- model_drifts.trend(ts, ts[bp])
@@ -53,8 +55,8 @@ model_drifts.fit <- function(dr.x, dr.ts, ar1, dfdiff) {
       if (logLik(.M) > logLik(M0)) M0 <- .M
     }
 
-    if (is.null(idx)) M0 <-
-      seekmin(
+    if (is.null(idx))
+      M0 <- seekmin(
         M0 = M0, x = x, ts = ts, xreg = xreg,
         idx = unique(c(max(1L, M0$bp - si):M0$bp,
                        M0$bp:min(M0$bp + si, length(x) - 1)))
