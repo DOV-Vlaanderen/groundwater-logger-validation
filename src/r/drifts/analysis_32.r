@@ -35,7 +35,7 @@ save.output <- function(f) {
     verbose = TRUE,
     plot = TRUE,
     title = paste0(basename(f), ' - v0.01'),
-    significance = 1/1000,
+    significance = 5/100,
     RESULT.PATH = paste0(ROOT.PATH, basename(f), '.result'),
     ATTRIB.PATH = paste0(ROOT.PATH, basename(f), '.attribs'),
     IMG.PATH = paste0(ROOT.PATH, basename(f), '.png')
