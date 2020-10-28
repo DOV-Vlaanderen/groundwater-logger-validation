@@ -4,7 +4,7 @@
 \alias{drift_reference.differentiate}
 \title{Takes the differences between x and the reference values}
 \usage{
-drift_reference.differentiate(x, timestamps, reference)
+drift_reference.differentiate(x, timestamps, reference, scalefactor.sec)
 }
 \value{
 A data.frame (x, timestamps, reference.id) with the differences.
