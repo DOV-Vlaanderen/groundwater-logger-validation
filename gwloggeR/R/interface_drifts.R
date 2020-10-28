@@ -123,7 +123,7 @@ setMethod(
   function(x, timestamps, reference, apriori, plot, verbose, title, significance) {
 
     # make differences of x with the reference in respect to matching timestamps: dr$x = x - referece
-    dr <- drift_reference.differentiate(x = x, timestamps = timestamps, reference = reference)
+    dr <- drift_reference.differentiate(x = x, timestamps = timestamps, reference = reference, scalefactor.sec = 3600*12)
 
     # aggregate dr for model fitting
     dra <- dr[, .(x = median(x)), by = .(timestamps)]
