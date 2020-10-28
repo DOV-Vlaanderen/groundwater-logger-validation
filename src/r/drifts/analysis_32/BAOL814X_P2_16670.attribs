@@ -7,6 +7,9 @@ $is.drifting
 $mu
 [1] -0.2340691
 
+$sigma
+[1] 0.3626717
+
 $year.seasonality
       sine     cosine 
 -0.2221494 -0.2453914 
