@@ -76,11 +76,15 @@ Drift.ArimaExt <- function(model, timestamps, alpha) {
 #' compensated for altitude.
 #' @param apriori \link{Apriori} class. Defaults to air pressure in cmH2O.
 #' @param ... optional parameters, depending on signature:
-#' @param plot prints comprehensive plots
-#' @param verbose prints comprehensive information
+#' @param plot prints diagnostic plots. Consult the dedicated section below for more information.
+#' @param verbose adds extra information as attributes to the result.
 #' @param title adds title to the plot
 #' @param alpha significance level at which to detect drift. Defaults to 0.01.
 #' @return Logical vector with same length as x, specifying TRUE for drifting observations.
+#' @details # Diagnostic plots
+#' Note that the DTFT and Year plots have the drift effect subtracted. In the Year plots
+#' this results to a more pronounced seasonal pattern, and in the DTFT plot the
+#' amplitude of low frequencies (high periods) is tuned down.
 #' @references
 #' \href{https://dov-vlaanderen.github.io/groundwater-logger-validation/gwloggeR/docs/articles/Airpressure.html}{Air pressure vignette}
 #' @importFrom methods setGeneric

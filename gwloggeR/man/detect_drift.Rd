@@ -33,9 +33,9 @@ compensated for altitude.}
 
 \item{...}{optional parameters, depending on signature:}
 
-\item{plot}{prints comprehensive plots}
+\item{plot}{prints diagnostic plots. Consult the dedicated section below for more information.}
 
-\item{verbose}{prints comprehensive information}
+\item{verbose}{adds extra information as attributes to the result.}
 
 \item{title}{adds title to the plot}
 
@@ -51,6 +51,12 @@ This function marks a drift in the input vector.
 \itemize{
 \item \code{detect_drift,numeric-method}: 
 }}
+
+\section{Diagnostic plots}{
+Note that the DTFT and Year plots have the drift effect subtracted. In the Year plots
+this results to a more pronounced seasonal pattern, and in the DTFT plot the
+amplitude of low frequencies (high periods) is tuned down.
+}
 
 \references{
 \href{https://dov-vlaanderen.github.io/groundwater-logger-validation/gwloggeR/docs/articles/Airpressure.html}{Air pressure vignette}
