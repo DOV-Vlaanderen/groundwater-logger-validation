@@ -3,7 +3,7 @@
 plot_drifts.sigcolor <- function(significance) {
   if (is.null(significance) || is.na(significance)) return('springgreen')
   if (significance < 1/1000) return('red')
-  if (significance < 5/100) return('orange')
+  if (significance < 1/100) return('orange')
   'springgreen'
 }
 
