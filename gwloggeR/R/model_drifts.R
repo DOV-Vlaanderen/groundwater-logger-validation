@@ -86,6 +86,12 @@ model_drifts.fit <- function(dr.x, dr.ts, ar1, dfdiff) {
 
   # Models
   M <- arima(x = dr.x, order = c(1, 0, 0), transform.pars = FALSE, fixed = c(ar1, NA))
+
+  # Filter out the worst case outliers so they do not result in detected drifts.
+  # This has mainly an effect for drifts towards the end of the series, cased
+  # by strong outliers.
+  # It might well be that there will still remain outliers because their
+  # outlying effect was suppressed by the now removed outlier (due to AR1 effect).
   ol <- detect_outliers(as.vector(residuals(M)))
 
   M0 <- arima(x = dr.x[!ol], order = c(1, 0, 0), transform.pars = FALSE, fixed = c(ar1, NA))
