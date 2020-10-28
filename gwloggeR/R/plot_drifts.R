@@ -167,6 +167,7 @@ plot_drifts.differences <- function(dr.x, dr.ts, drift, xlim = range(dr.ts),
 plot_drifts.refcount <- function() {
   # Here we should see how many reference barometers we have at all times,
   # and also the time differences between measurements. All in 1 plot?
+  stop('Not yet implemented')
 }
 
 
