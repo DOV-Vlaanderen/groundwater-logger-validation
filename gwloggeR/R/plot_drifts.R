@@ -15,9 +15,9 @@ plot_drifts.timedifferences <- function(x, timestamps, hline.h = NULL,
 
   ts.diff.h <- round(diff(as.numeric(timestamps))/3600)
   freq <- data.table::data.table(ts.diff.h)[ts.diff.h != 0, .(.N), by = ts.diff.h][order(N, decreasing = TRUE), ]
-  idx.zero <- which(ts.diff.h == 0)
+  zero <- ts.diff.h == 0
   breaks <- freq[1:min(5, .N), ]
-  p <- ggplot2::ggplot(mapping = ggplot2::aes(x = timestamps[-1][-idx.zero], y = ts.diff.h[-idx.zero])) +
+  p <- ggplot2::ggplot(mapping = ggplot2::aes(x = timestamps[-1][!zero], y = ts.diff.h[!zero])) +
     ggplot2::geom_hline(yintercept = hline.h, col = 'red', size = 0.2, alpha = 0.2) +
     ggplot2::geom_point(pch = '-', size = 8) +
     ggplot2::scale_y_continuous(
