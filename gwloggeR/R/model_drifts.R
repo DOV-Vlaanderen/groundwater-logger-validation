@@ -39,7 +39,7 @@ model_drifts.fit <- function(dr.x, dr.ts, ar1, dfdiff) {
 
   seekmin <- function(M0, x, ts, idx = NULL, xreg = NULL) {
 
-    si <- ceiling(sqrt(length(x)))
+    si <- ceiling(sqrt(length(x)/2)) # n=x*2x (2x due to left + right lookup)
     if (is.null(idx)) bps <- seq(from = 1L, to = length(x) - 1, by = si)
     else bps <- idx
 

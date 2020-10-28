@@ -48,7 +48,7 @@ Drift.ArimaExt <- function(model, timestamps, sig.treshold) {
     mu <- model$MND$coef[['intercept']]
     sigma <- sqrt(model$MND$sigma2)
     ys <- setNames(model$MND$coef[c('sin(31557600)', 'cos(31557600)')], c('sine', 'cosine'))
-    return(Drift(x, mu = mu, year.seasonality = ys))
+    return(Drift(x, mu = mu, sigma = sigma, year.seasonality = ys))
   } else {
     mu <- model$coef[['intercept']]
     sigma <- sqrt(model$sigma2)
