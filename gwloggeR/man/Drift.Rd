@@ -12,6 +12,7 @@ Drift(x, ...)
 \method{Drift}{logical}(
   x,
   mu,
+  sigma,
   timestamp = as.POSIXct(NA),
   rate = as.numeric(NA),
   year.seasonality = c(sine = as.numeric(NA), cosine = NA),
@@ -20,7 +21,7 @@ Drift(x, ...)
 
 \method{Drift}{Arima}(model, timestamps, ...)
 
-\method{Drift}{ArimaExt}(model, timestamps, sig.treshold)
+\method{Drift}{ArimaExt}(model, timestamps, alpha)
 }
 \description{
 Drift object holds all the necessary information about the detected drift.

@@ -36,7 +36,7 @@ Drift.Arima <- function(model, timestamps, ...) {
 
 #' @rdname Drift
 #'
-Drift.ArimaExt <- function(model, timestamps, sig.treshold) {
+Drift.ArimaExt <- function(model, timestamps, alpha) {
 
   stopifnot(!is.null(model$xreg))
   stopifnot('bptrend' %in% colnames(model$xreg))
@@ -44,7 +44,7 @@ Drift.ArimaExt <- function(model, timestamps, sig.treshold) {
   sig <- model$drift.significance
   x <- rep(FALSE, length(timestamps))
 
-  if (sig > sig.treshold) {
+  if (sig > alpha) { # Take MND: Model No Drift
     mu <- model$MND$coef[['intercept']]
     sigma <- sqrt(model$MND$sigma2)
     ys <- setNames(model$MND$coef[c('sin(31557600)', 'cos(31557600)')], c('sine', 'cosine'))
@@ -79,7 +79,7 @@ Drift.ArimaExt <- function(model, timestamps, sig.treshold) {
 #' @param plot prints comprehensive plots
 #' @param verbose prints comprehensive information
 #' @param title adds title to the plot
-#' @param significance level at which to detect drift. Defaults to 0.05.
+#' @param alpha significance level at which to detect drift. Defaults to 0.01.
 #' @return Logical vector with same length as x, specifying TRUE for drifting observations.
 #' @references
 #' \href{https://dov-vlaanderen.github.io/groundwater-logger-validation/gwloggeR/docs/articles/Airpressure.html}{Air pressure vignette}
@@ -93,7 +93,7 @@ setGeneric(
   valueClass = "logical",
   function(x, timestamps, reference = list(),
            apriori = Apriori('air pressure', units = 'cmH2O'),
-           ..., plot = FALSE, verbose = FALSE, title = NULL, significance = 0.05) {
+           ..., plot = FALSE, verbose = FALSE, title = NULL, alpha = 0.01) {
 
     if (is.null(timestamps)) stop('Drift detection requires a timestamp for each observation x.')
     if (length(timestamps) != length(x)) stop('x and timestamps must have same length.')
@@ -120,7 +120,7 @@ setGeneric(
 setMethod(
   'detect_drift',
   signature = c(x = "numeric"),
-  function(x, timestamps, reference, apriori, plot, verbose, title, significance) {
+  function(x, timestamps, reference, apriori, plot, verbose, title, alpha) {
 
     # make differences of x with the reference in respect to matching timestamps: dr$x = x - referece
     dr <- drift_reference.differentiate(x = x, timestamps = timestamps, reference = reference, scalefactor.sec = 3600*12)
@@ -132,7 +132,7 @@ setMethod(
       # fit the drift model
       model <- model_drifts.fit(dr.x = dra$x, dr.ts = dra$timestamps, ar1 = 0.9, dfdiff = 2.8)
       # convert model to Drift object which is then returned to the user
-      drift <- Drift(model, timestamps, sig.treshold = significance)
+      drift <- Drift(model, timestamps, alpha = alpha)
     } else {
       warning('x and reference data have no mathcing timestamps. ' %||%
               'At least 2 matches are required for computing drift.',
