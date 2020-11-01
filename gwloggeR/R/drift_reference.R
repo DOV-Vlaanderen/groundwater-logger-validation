@@ -55,7 +55,7 @@ drift_reference.differentiate <- function(x, timestamps, reference, scalefactor.
     use.names = TRUE, fill = TRUE, idcol = 'reference.id')
   data.table::setkey(df.ref, 'timestamps')
 
-  df.diff <- df[J(df.ref), .('x' = x.x - i.x, timestamps, reference), nomatch = NULL][!is.na(x), ]
+  df.diff <- df[J(df.ref), .('x' = x.x - i.x, timestamps, reference.id, reference.x = i.x), nomatch = NULL][!is.na(x), ]
   data.table::setkey(df.diff, 'timestamps')
 
   df.diff
