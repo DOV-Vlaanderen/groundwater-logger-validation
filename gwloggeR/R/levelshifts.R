@@ -29,7 +29,7 @@ Levelshifts.Events <- function(events) {
 #' This function marks levelshifts in the input vector.
 #' @param x numeric vector of values
 #' @param timestamps timestamp vector
-#' @param apriori \link{apriori} class
+#' @param apriori \link{Apriori} class
 #' @param ... optional parameters, depending on signature:
 #' @param plot prints comprehensive plots
 #' @param verbose prints comprehensive information
@@ -56,7 +56,7 @@ setGeneric(
 #'
 setMethod(
   'detect_levelshifts',
-  signature = c(x = "numeric", apriori = "apriori"),
+  signature = c(x = "numeric", apriori = "Apriori"),
   function(x, timestamps, apriori, plot, verbose, title) {
 
     if (apriori$data_type == "air pressure") return ({

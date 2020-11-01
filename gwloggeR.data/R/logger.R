@@ -78,7 +78,7 @@ Logger <- function(name) {
                                      tz = 'UTC')]
     df[, PRESSURE_VALUE := P.Pa_to_cmH2O(V5*10)] # hPa = 100Pa, but data is in 0.1hPa
     df[, PRESSURE_UNIT := "cmH2O"]
-    df[, TEMPERATURE_VALUE := V4]
+    df[, TEMPERATURE_VALUE := V4/10] # temp is in integers x10 of real value
     df[, TEMPERATURE_UNIT := "°C"]
     df[, c("V1","V2","V3","V4","V5") := NULL]
 

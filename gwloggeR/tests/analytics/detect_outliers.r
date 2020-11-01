@@ -15,7 +15,7 @@ sapply(
       return(invisible(FALSE))
     }
 
-    test_detect_function(
+    gwloggeR:::test.detect_function(
       fun = gwloggeR::detect_outliers,
       x = df$PRESSURE_VALUE,
       apriori = gwloggeR::apriori("air pressure", "cmH2O"),
@@ -41,7 +41,7 @@ sapply(
     df <- df[!is.na(TIMESTAMP_UTC),]
     df <- df[order(TIMESTAMP_UTC),]
 
-    test_detect_function(
+    gwloggeR:::test.detect_function(
       fun = gwloggeR::detect_outliers,
       x = df$PRESSURE_VALUE,
       apriori = gwloggeR::apriori("hydrostatic pressure", "cmH2O"),
@@ -67,7 +67,7 @@ sapply(
     df <- df[!is.na(TIMESTAMP_UTC),]
     df <- df[order(TIMESTAMP_UTC),]
 
-    test_detect_function(
+    gwloggeR:::test.detect_function(
       fun = gwloggeR::detect_outliers,
       x = df$PRESSURE_VALUE,
       apriori = gwloggeR::apriori("hydrostatic pressure", "cmH2O"),

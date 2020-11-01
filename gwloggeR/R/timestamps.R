@@ -1,10 +1,8 @@
 #' @keywords internal
 #'
-aggregate <- function(x, ts, by = c('days', 'hours')) {
-  assert.timestamp(ts)
-  by <- match.arg(by)
-
-  stats::aggregate(x, by = list(as.POSIXct(trunc(ts, units = by))), FUN = mean)$x
+round.timestamp <- function(timestamps, scalefactor.sec = 3600*12) {
+  assert.timestamp(timestamps)
+  as.POSIXct(round(as.numeric(timestamps)/scalefactor.sec) * scalefactor.sec, origin = '1970-01-01', tz = 'UTC')
 }
 
 #' @keywords internal

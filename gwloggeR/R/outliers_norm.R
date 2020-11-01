@@ -4,7 +4,7 @@ c.norm.optimal <- function(alpha, n, type = c("two.sided", "one.sided")) {
 
   TS <- if (type == "two.sided") 2 else 1
 
-  -qnorm((1-(1-alpha)^(1/n))/TS)
+  -stats::qnorm((1-(1-alpha)^(1/n))/TS)
 }
 
 
@@ -19,7 +19,7 @@ detect_outliers_norm <- function(x, alpha = CONST.ALPHA, verbose = FALSE, x.mean
   return.obj <- function(x.rejects, sigma.reject = NULL) {
     Outliers(x.rejects, x.mean = x.mean, x.sd = x.sd,
              sigma.reject = sigma.reject, alpha = alpha, type = type,
-             fun.density = function(x) dnorm(x, x.mean, x.sd),
+             fun.density = function(x) stats::dnorm(x, x.mean, x.sd),
              cutpoints = c(-1, 1) * sigma.reject * x.sd + x.mean)
   }
 
