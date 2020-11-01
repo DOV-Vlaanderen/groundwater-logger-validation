@@ -2,24 +2,26 @@ $class
 [1] "Drift"   "logical"
 
 $is.drifting
-[1] FALSE
+[1] TRUE
 
 $mu
-[1] 1.514487
+[1] 1.540001
 
 $sigma
-[1] 0.9797525
+[1] 0.9796956
 
 $year.seasonality
   sine cosine 
     NA     NA 
 
 $timestamp
-[1] NA
+[1] "2018-05-20 12:00:00 UTC"
 
 $rate
-[1] NA
+[1] -1.142919
+attr(,"units")
+[1] "cmH2O/year"
 
 $significance
-[1] NA
+[1] 0.9338372
 
