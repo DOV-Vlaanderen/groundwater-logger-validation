@@ -31,5 +31,5 @@ test.detect_function <- function(fun, ..., RESULT.PATH, ATTRIB.PATH = NULL, IMG.
     file = RESULT.PATH, row.names = FALSE
   )
 
-  invisible(TRUE)
+  invisible(result)
 }

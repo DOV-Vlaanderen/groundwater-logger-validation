@@ -41,15 +41,6 @@ save.output <- function(f) {
     IMG.PATH = paste0(ROOT.PATH, basename(f), '.png')
   )
 
-  gwloggeR::detect_drift(
-    x = df$PRESSURE_VALUE,
-    timestamps = df$TIMESTAMP_UTC,
-    reference = ref,
-    plot = FALSE,
-    verbose = TRUE,
-    alpha = 1
-  )
-
 }
 
 results <- sapply(logger.names, save.output, USE.NAMES = TRUE, simplify = FALSE)
