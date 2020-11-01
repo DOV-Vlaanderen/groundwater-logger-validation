@@ -93,11 +93,20 @@ plot_drifts.yearly <- function(x, timestamps, drift, remove.drift = FALSE,
 
 #' @keywords internal
 #'
-plot_drifts.original <- function(x, timestamps, xlim = range(timestamps),
+plot_drifts.original <- function(x, timestamps, xlim = range(timestamps), dr = NULL,
                                  ylim = quantile(x, c(0.005, 0.995))) {
 
-  p <- ggplot2::ggplot(mapping = ggplot2::aes(x = timestamps, y = x)) +
-    ggplot2::geom_line(col = 'black', alpha = 1) +
+  p <- ggplot2::ggplot()
+
+  if (!is.null(dr))
+    p <- p + ggplot2::geom_line(
+      data = dr,
+      mapping = ggplot2::aes(x = timestamps, y = reference.x, col = factor(reference.id)),
+      col = 'red3',
+    )
+
+  p <- p + ggplot2::geom_line(mapping = ggplot2::aes(x = timestamps, y = x),
+                              col = 'black', alpha = 1) +
     ggplot2::coord_cartesian(ylim = ylim, xlim = xlim) +
     ggplot2::theme_light() +
     ggplot2::theme(axis.text.y = ggplot2::element_text(angle = 90, hjust = 0.5),
@@ -174,7 +183,7 @@ plot_drifts.refcount <- function() {
 #' @keywords internal
 #'
 plot_drifts <- function(x, timestamps, dr, drift, title) {
-  p.orig <- plot_drifts.original(x, timestamps)
+  p.orig <- plot_drifts.original(x, timestamps, dr = dr)
   p.diff <- plot_drifts.differences(dr.x = dr$x, dr.ts = dr$timestamps, drift = drift, xlim = range(timestamps))
   p.tsdiff <- plot_drifts.timedifferences(x = x, timestamps = timestamps, hline.h = 12)
   p.dtft.orig <- plot_drifts.dtft(x = x, timestamps = timestamps, drift = drift, remove.drift = TRUE)
