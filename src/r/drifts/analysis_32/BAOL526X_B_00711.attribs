@@ -5,23 +5,23 @@ $is.drifting
 [1] TRUE
 
 $mu
-[1] -7.583805
+[1] -7.576863
 
 $sigma
-[1] 1.678998
+[1] 1.67885
 
 $year.seasonality
-  sine cosine 
-    NA     NA 
+        sine       cosine 
+ 0.002705456 -0.210682926 
 
 $timestamp
 [1] "2019-12-20 12:00:00 UTC"
 
 $rate
-[1] -159.0884
+[1] -157.2498
 attr(,"units")
 [1] "cmH2O/year"
 
 $significance
-[1] 0.1472573
+[1] 0.1738835
 
