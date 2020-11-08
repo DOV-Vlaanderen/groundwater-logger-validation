@@ -117,7 +117,7 @@ model_drifts.fit <- function(dr.x, dr.ts, ar1, dfdiff) {
   # are needed in case fase is 0, so df == 1. This also produces slightly
   # better results.
   sp.val <- lrtest(logLik(MD), logLik(MDS), df.diff = 1L)
-  MF <- if (sp.val < 1e-2) MDS else MD # final model
+  MF <- MDS # final model
 
   MND <- if (any(grepl('sin', names(MF$coef)))) MS else M0
   MF[['MND']] <- MND
