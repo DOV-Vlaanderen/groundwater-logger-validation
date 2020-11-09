@@ -73,6 +73,13 @@ model_drifts.fit <- function(dr.x, dr.ts, ar1, dfdiff) {
   stopifnot(!any(is.na(dr.x)))
   stopifnot(length(dr.x) >= 2L) # need at least 2 observations for arima()
 
+  if (length(dr.x) < 5L) {
+    warning('Can not detect drift because differences with reference data have less than 5 observations. ' %||%
+            'Returning no drift by default.',
+            call. = FALSE, immediate. = TRUE)
+    return(arima(x = dr.x, order = c(1, 0, 0), transform.pars = FALSE, fixed = c(ar1, NA)))
+  }
+
   ts.sec <- as.numeric(dr.ts)
   ts.sec.diff <- diff(ts.sec)
 
@@ -87,7 +94,7 @@ model_drifts.fit <- function(dr.x, dr.ts, ar1, dfdiff) {
   sbasis <- fbasis(timestamps = dr.ts, frequencies = 1/(365.25*3600*24))
 
   # Models
-  M <- arima(x = dr.x, order = c(1, 0, 0), transform.pars = FALSE, fixed = c(ar1, NA))
+  M <- arima(x = dr.x, order = c(1, 0, 0), transform.pars = FALSE, xreg = sbasis, fixed = c(ar1, NA, NA, NA))
 
   # Filter out the worst case outliers so they do not result in detected drifts.
   # This has mainly an effect for drifts towards the end of the series, cased
@@ -95,13 +102,6 @@ model_drifts.fit <- function(dr.x, dr.ts, ar1, dfdiff) {
   # It might well be that there will still remain outliers because their
   # outlying effect was suppressed by the now removed outlier (due to AR1 effect).
   ol <- detect_outliers(as.vector(residuals(M)))
-
-  if (length(dr.x) < 5L) {
-    warning('Can not detect drift because differences with reference data have less than 5 observations. ' %||%
-            'Returning nu drift by default.',
-            call. = FALSE, immediate. = TRUE)
-    return(arima(x = dr.x[!ol], order = c(1, 0, 0), transform.pars = FALSE, fixed = c(ar1, NA)))
-  }
 
   MS <- arima(x = dr.x[!ol], order = c(1, 0, 0), transform.pars = FALSE,
               xreg = sbasis[!ol,,drop=FALSE], fixed = c(ar1, NA, NA, NA))
