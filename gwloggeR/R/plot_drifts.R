@@ -107,11 +107,17 @@ plot_drifts.yearly <- function(x, timestamps, drift, remove.drift = FALSE,
     x <- x - x.drift
   }
 
+  mdays <- c(31, 28.25, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31)
+  mdaybreaks <- cumsum(mdays) - mdays/2
+  mbreaks <- c(1, 3, 5, 8, 10, 12)
+
   ggplot2::ggplot() +
     ggplot2::geom_point(mapping = ggplot2::aes(x = data.table::yday(timestamps), y = x), shape = 16) +
     #ggplot2::xlab('Day') +
     ggplot2::coord_cartesian(ylim = ylim,
                              xlim = c(1, 366)) +
+    ggplot2::scale_x_continuous(breaks = mdaybreaks[mbreaks], labels = mbreaks,
+                                minor_breaks = NULL) +
     ggplot2::theme_light() +
     ggplot2::theme(axis.text.y = ggplot2::element_text(angle = 90, hjust = 0.5),
                    axis.title.y = ggplot2::element_blank(),
