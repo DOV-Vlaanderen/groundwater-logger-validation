@@ -13,21 +13,34 @@ plot_drifts.sigcolor <- function(significance) {
 plot_drifts.timedifferences <- function(x, timestamps, hline.h = NULL,
                                         xlim = range(timestamps)) {
 
+  # y-axis log transformation functions
+  log12 <- function(x) logb(x = x, base = 12)
+  log12inv <-  function(x) 12^x
+
   ts.diff.h <- round(diff(as.numeric(timestamps))/3600)
   freq <- data.table::data.table(ts.diff.h)[ts.diff.h != 0, .(.N), by = ts.diff.h][order(N, decreasing = TRUE), ]
   zero <- ts.diff.h == 0
-  breaks <- freq[1:min(2, .N), ]
+
+  # Determining breaks for y-axis on log12 scale: lbreaks
+  lrange <- diff(range(log12(freq$ts.diff.h)))/4
+  lbreaks <- as.numeric()
+  for (lbr in log12(freq$ts.diff.h)) {
+    if (!any(lbr > lbreaks - lrange/2 & lbr < lbreaks + lrange/2)) {
+      lbreaks <- c(lbreaks, lbr)
+    }
+  }
+
   p <- ggplot2::ggplot(mapping = ggplot2::aes(x = timestamps[-1][!zero], y = ts.diff.h[!zero])) +
     ggplot2::geom_hline(yintercept = hline.h, col = 'red', size = 0.2, alpha = 0.2) +
     ggplot2::geom_point(pch = '-', size = 8) +
     ggplot2::scale_y_continuous(
-      breaks = unique(c(breaks$ts.diff.h, range(freq$ts.diff.h))),
+      breaks = log12inv(lbreaks),
       #labels = paste0(unique(ts.diff.h), 'h'),
       minor_breaks = NULL,
       trans = scales::trans_new(
         name = 'log12',
-        transform = function(x) logb(x = x, base = 12),
-        inverse = function(x) 12^x)) +
+        transform = log12,
+        inverse = log12inv)) +
     ggplot2::coord_cartesian(xlim = xlim) +
     ggplot2::theme_light() +
     ggplot2::theme(axis.text.y = ggplot2::element_text(angle = 90, hjust = 0.5),
