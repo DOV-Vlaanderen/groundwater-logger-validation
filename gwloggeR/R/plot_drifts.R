@@ -170,8 +170,9 @@ plot_drifts.differences <- function(dr.x, dr.ts, drift, xlim = range(dr.ts),
       'label', x = as.POSIXct(-Inf, origin = '1970-01-01'), y = Inf,
       size = 4.5, col = 'black',
       hjust = 0, vjust = 1, fill = 'grey', alpha = 0.8, label.size = NA,
-      label = sprintf('Drift p-value: %.2e, rate: %.2f %s', attr(drift, 'significance'),
-                      attr(drift, 'rate'), attr(attr(drift, 'rate'), 'units'))
+      label = sprintf('Drift p-value: %.2e, rate: %.2f %s @%s', attr(drift, 'significance'),
+                      attr(drift, 'rate'), attr(attr(drift, 'rate'), 'units'),
+                      attr(drift, 'timestamp'))
     )
 
   p <- p + ggplot2::coord_cartesian(ylim = ylim, xlim = xlim) +
