@@ -10,7 +10,7 @@ plot_drifts.sigcolor <- function(significance) {
 
 #' @keywords internal
 #'
-plot_drifts.timedifferences <- function(x, timestamps, hline.h = NULL,
+plot_drifts.samplingrate <- function(timestamps, hline.h = NULL,
                                         xlim = range(timestamps)) {
 
   # y-axis log transformation functions
@@ -198,7 +198,7 @@ plot_drifts.refcount <- function() {
 plot_drifts <- function(x, timestamps, dr, drift, title) {
   p.orig <- plot_drifts.original(x, timestamps, dr = dr)
   p.diff <- plot_drifts.differences(dr.x = dr$x, dr.ts = dr$timestamps, drift = drift, xlim = range(timestamps))
-  p.tsdiff <- plot_drifts.timedifferences(x = x, timestamps = timestamps, hline.h = 12)
+  p.tsdiff <- plot_drifts.samplingrate(timestamps = timestamps, hline.h = 12)
   p.dtft.orig <- plot_drifts.dtft(x = x, timestamps = timestamps, drift = drift, remove.drift = TRUE)
   p.dtft.diff <- plot_drifts.dtft(x = dr$x, timestamps = dr$timestamps, drift = drift, remove.drift = TRUE)
   p.yearly.orig <- plot_drifts.yearly(x = x, timestamps = timestamps, drift = drift, remove.drift = TRUE)
