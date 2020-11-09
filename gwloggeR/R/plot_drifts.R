@@ -69,12 +69,27 @@ plot_drifts.dtft <- function(x, timestamps, drift, remove.drift = FALSE) {
   freqdomain <- sapply(1/periods.sec, FUN = dtft, x = x.centered, timestamps = timestamps)
   intensity <- Mod(freqdomain)/length(x)
 
+  # Determine peaks in the intensity curve
+  df <- data.table::data.table(periods.sec, intensity)#[order(intensity, decreasing = TRUE),]
+  df[, lup := c(TRUE, intensity[-1] >= intensity[-.N])]
+  df[, rdown := c(intensity[-.N] >= intensity[-1], TRUE)]
+  df.peaks <- df[lup & rdown, ][order(intensity, decreasing = TRUE)]
+
+  # Set x-axis breaks based on intensity peaks
+  brange <- diff(range(periods.sec))/4
+  breaks <- numeric()
+  while (nrow(df.peaks) > 0L) {
+    breaks <- c(breaks, df.peaks[1L, periods.sec])
+    df.peaks <- df.peaks[periods.sec <= tail(breaks, 1L) - brange/2 | periods.sec >= tail(breaks, 1L) + brange/2, ]
+  }
+
   ggplot2::ggplot(mapping = ggplot2::aes(x = periods.sec/3600/24, y = intensity)) +
     ggplot2::geom_line(col = 'black') +
     ggplot2::geom_vline(xintercept = 365.25, col = 'red') +
     #ggplot2::ylab('Intensity') +
     #ggplot2::xlab('Period (days)') +
     #ggplot2::ggtitle('Discrete-Time Fourier Transform') +
+    ggplot2::scale_x_continuous(breaks = round(breaks/3600/24), minor_breaks = NULL) +
     ggplot2::theme_light() +
     ggplot2::theme(axis.text.y = ggplot2::element_text(angle = 90, hjust = 0.5),
                    axis.title.y = ggplot2::element_blank(),
