@@ -43,6 +43,12 @@ save.output <- function(f) {
 
 }
 
+# parallel::setDefaultCluster(parallel::makeCluster(spec = 5L))
+# parallel::clusterExport(varlist = c('ref'))
+# results <- setNames(parallel::clusterApplyLB(x = logger.names, fun = save.output), logger.names)
+# names(results) <- logger.names
+# parallel::stopCluster(cl = parallel::getDefaultCluster())
+
 results <- sapply(logger.names, save.output, USE.NAMES = TRUE, simplify = FALSE)
 
 results.df <- data.table::rbindlist(lapply(names(results), function(ln) {
