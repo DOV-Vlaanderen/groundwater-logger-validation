@@ -23,7 +23,7 @@ plot_drifts.samplingrate <- function(timestamps, hline.h = NULL,
 
   # Determining breaks for y-axis on log12 scale: lbreaks
   lrange <- diff(range(log12(freq$ts.diff.h)))/4
-  lbreaks <- as.numeric()
+  lbreaks <- numeric()
   for (lbr in log12(freq$ts.diff.h)) {
     if (!any(lbr > lbreaks - lrange/2 & lbr < lbreaks + lrange/2)) {
       lbreaks <- c(lbreaks, lbr)
