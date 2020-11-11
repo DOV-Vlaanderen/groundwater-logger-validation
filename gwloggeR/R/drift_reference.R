@@ -63,6 +63,12 @@ drift_reference.differentiate <- function(x, timestamps, reference, scalefactor.
   df.diff <- df.x[J(df.ref), .('x' = x.x - i.x, timestamps, reference.id, reference.x = i.x), nomatch = NULL][!is.na(x), ]
   data.table::setkey(df.diff, 'timestamps')
 
+  # Right side
+  if (df.x[.N, timestamps] > df.diff[.N, timestamps])
+    stop(sprintf('Reference data ends at %s while the barometer data ends later: %s. ' %||%
+                   'Either provide the barometer data only till %1$s, or add reference data up till %s.',
+                 max(df.ref$timestamps), max(timestamps), df.x[.N, timestamps]), call. = FALSE)
+
   # Missing reference (mr) data
   df.diff.N <- df.diff[J(df.x),][, .(nref = sum(!is.na(reference.id))), by = timestamps][, .N, by = nref]
   stopifnot(sum(df.diff.N$N) == nrow(df.x))
