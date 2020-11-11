@@ -7,7 +7,7 @@ logger.names <- tools::file_path_sans_ext(grep('barometer/', gwloggeR.data::enum
 
 df.ref <- gwloggeR.data::read('KNMI_20201103_hourly_Westdorpe')$df
 
-ref <- list(list(x = df.ref$PRESSURE_VALUE, timestamps = df.ref$TIMESTAMP_UTC))
+ref <- list(list(x = df.ref[!is.na(PRESSURE_VALUE), PRESSURE_VALUE], timestamps = df.ref[!is.na(PRESSURE_VALUE), TIMESTAMP_UTC]))
 
 save.output <- function(f) {
 
