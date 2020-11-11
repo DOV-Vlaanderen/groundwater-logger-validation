@@ -1,4 +1,3 @@
 Warning: Timeserie has intervals smaller than 12h. Measurements are averaged to 12h intervals.
 Warning: Reference data has intervals smaller than 12h. Measurements are averaged to 12h intervals.
-Warning: Given the 1 reference timeserie, there is for 7.51 % of barometer observations missing reference data.
 Warning: More than 1 % of time intervals is larger than 12h. The current drift detection model works best for 12h interval measurements.
