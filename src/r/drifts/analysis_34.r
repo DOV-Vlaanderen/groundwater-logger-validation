@@ -1,20 +1,21 @@
-# Test for gwloggeR detect_drift() with KNMI as reference.
+# Test for gwloggeR detect_drift() with multiple KNMI series as reference.
+# This analysis is based on 32 where only 1 reference is used.
 
 logger.names <- tools::file_path_sans_ext(grep('barometer/', gwloggeR.data::enumerate(), value = TRUE))
-#logger.names <- 'BAOL079X_177936.csv' # all timestamps are NA
-#logger.names <- 'BAOL528X_B_B2152.csv' # has less than 5 matching observations with KNMI data
-#logger.names <- 'BAOL544X_B_002A6.csv' # has NA values in x
+ref.logger.names <- tools::file_path_sans_ext(grep('20201103', gwloggeR.data::enumerate(partner = 'knmi'), value = TRUE))
 
-df.ref <- gwloggeR.data::read('KNMI_20201103_hourly_Westdorpe')$df
-
-ref <- list(list(x = df.ref[!is.na(PRESSURE_VALUE), PRESSURE_VALUE], timestamps = df.ref[!is.na(PRESSURE_VALUE), TIMESTAMP_UTC]))
+ref <- sapply(ref.logger.names, function(name) {
+  df.ref <- gwloggeR.data::read(name)$df
+  list('x' = df.ref[!is.na(PRESSURE_VALUE), PRESSURE_VALUE],
+       'timestamps' = df.ref[!is.na(PRESSURE_VALUE), TIMESTAMP_UTC])
+}, simplify = FALSE, USE.NAMES = TRUE)
 
 save.output <- function(f) {
 
   print(Sys.time())
   print(basename(f))
 
-  ROOT.PATH <- './drifts/analysis_32/'
+  ROOT.PATH <- './drifts/analysis_34/'
 
   df <- gwloggeR.data::read(f)$df
   df <- df[!is.na(TIMESTAMP_UTC),]
@@ -34,7 +35,7 @@ save.output <- function(f) {
     apriori = gwloggeR::Apriori(data_type = 'air pressure', units = 'cmH2O'),
     verbose = TRUE,
     plot = TRUE,
-    title = paste0(basename(f), ' - v0.01'),
+    title = paste0(basename(f), ' - v0.02'),
     alpha = 1,
     RESULT.PATH = paste0(ROOT.PATH, basename(f), '.result'),
     ATTRIB.PATH = paste0(ROOT.PATH, basename(f), '.attribs'),
