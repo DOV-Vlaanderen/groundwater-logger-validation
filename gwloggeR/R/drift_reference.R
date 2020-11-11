@@ -73,11 +73,11 @@ drift_reference.differentiate <- function(x, timestamps, reference, scalefactor.
                     length(reference), if (length(reference) > 1L) 's' else '', mr.prop*100),
             call. = FALSE, immediate. = TRUE)
 
-  # # Left side
-  # if (df.x[1L, timestamps] < df.diff[1L, timestamps])
-  #   stop(sprintf('Reference data starts at %s while the barometer data starts sooner: %s. ' %||%
-  #                  'Either provide the barometer data only from %1$s, or add reference data down till %s.',
-  #                min(df.ref$timestamps), min(timestamps), df.x[1L, timestamps]), call. = FALSE)
+  # Left side
+  if (df.x[1L, timestamps] < df.diff[1L, timestamps])
+    stop(sprintf('Reference data starts at %s while the barometer data starts sooner: %s. ' %||%
+                   'Either provide the barometer data only from %1$s, or add reference data down till %s.',
+                 min(df.ref$timestamps), min(timestamps), df.x[1L, timestamps]), call. = FALSE)
 
   # Right side
   if (df.x[.N, timestamps] > df.diff[.N, timestamps])
