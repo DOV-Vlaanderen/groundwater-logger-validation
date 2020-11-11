@@ -10,6 +10,20 @@ ref <- sapply(ref.logger.names, function(name) {
        'timestamps' = df.ref[!is.na(PRESSURE_VALUE), TIMESTAMP_UTC])
 }, simplify = FALSE, USE.NAMES = TRUE)
 
+
+ggplot2::ggplot(data = data.table::rbindlist(ref, use.names = TRUE, fill = TRUE, idcol = 'file'),
+                mapping = ggplot2::aes(x = timestamps, y = x, col = file)) +
+  ggplot2::geom_line(alpha = 0.5) +
+  ggplot2::theme_light() +
+  ggplot2::theme(legend.position='top',
+                 axis.text.y = ggplot2::element_text(angle = 90, hjust = 0.5),
+                 axis.title.y = ggplot2::element_blank(),
+                 axis.title.x = ggplot2::element_blank())
+
+dir.create('./drifts/analysis_34', recursive = TRUE, showWarnings = FALSE)
+ggplot2::ggsave('./drifts/analysis_34/knmi_all.png', width = 1280/96, height = 720/96, dpi = 96)
+
+
 save.output <- function(f) {
 
   print(Sys.time())
