@@ -146,7 +146,7 @@ setMethod(
       drift <- Drift(rep(FALSE, length(x)), mu = NA)
     }
 
-    if (plot) plot_drifts(x = x, timestamps = timestamps, dr = dr, drift = drift, title = title)
+    if (plot) plot_drifts(x = x, timestamps = timestamps, dr = dr, dra = dra, drift = drift, title = title)
 
     if (verbose) drift else as.vector(drift)
 })

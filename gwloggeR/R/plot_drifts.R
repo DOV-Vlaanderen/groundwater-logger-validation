@@ -11,7 +11,7 @@ plot_drifts.sigcolor <- function(significance) {
 #' @keywords internal
 #'
 plot_drifts.samplingrate <- function(timestamps, hline.h = NULL,
-                                        xlim = range(timestamps)) {
+                                     xlim = range(timestamps)) {
 
   # y-axis log transformation functions
   log12 <- function(x) logb(x = x, base = 12)
@@ -136,8 +136,8 @@ plot_drifts.original <- function(x, timestamps, xlim = range(timestamps), dr = N
 
   if (!is.null(dr))
     p <- p + ggplot2::geom_line(
-      data = dr,
-      mapping = ggplot2::aes(x = timestamps, y = reference.x, col = factor(reference.id)),
+      data = dr[, .(reference.x.average = mean(reference.x)), by = timestamps],
+      mapping = ggplot2::aes(x = timestamps, y = reference.x.average),
       col = 'red3',
     )
 
@@ -155,35 +155,44 @@ plot_drifts.original <- function(x, timestamps, xlim = range(timestamps), dr = N
 
 #' @keywords internal
 #'
-plot_drifts.differences <- function(dr.x, dr.ts, drift, xlim = range(dr.ts),
-                                    ylim = quantile(dr.x, c(0.005, 0.995))) {
+plot_drifts.differences <- function(dra, drift, dr = NULL, xlim = range(dra$timestamps),
+                                    ylim = quantile(dra$x, c(0.005, 0.995))) {
 
   # intercept line
-  mu <- rep(attr(drift, 'mu'), length(dr.x))
+  mu <- rep(attr(drift, 'mu'), nrow(dra))
 
   # add seasonality
   sc <- attr(drift, 'year.seasonality')
   if (all(!is.na(sc)))
-    mu <- mu + data.matrix(fbasis(timestamps = dr.ts, frequencies = 1/(365.25*3600*24))) %*% sc
+    mu <- mu + data.matrix(fbasis(timestamps = dra$timestamps, frequencies = 1/(365.25*3600*24))) %*% sc
 
   # add drift
   bp.ts <- NULL
   if (attr(drift, 'is.drifting')) {
     bp.ts <- attr(drift, 'timestamp')
-    mu <- mu + attr(drift, 'rate')*model_drifts.trend(dr.ts, start.ts = bp.ts)
+    mu <- mu + attr(drift, 'rate')*model_drifts.trend(dra$timestamps, start.ts = bp.ts)
   }
 
-  p <- ggplot2::ggplot(mapping = ggplot2::aes(x = dr.ts, y = dr.x))
+
+  p <- ggplot2::ggplot()
+
+  if (!is.null(dr) && nrow(dr) != nrow(dra))
+    p <- p + ggplot2::geom_point(
+      data = dr, mapping = ggplot2::aes(x = timestamps, y = x), pch = '.')
 
   if (attr(drift, 'is.drifting'))
     p <- p + ggplot2::annotate(
-      'rect', xmin = bp.ts, xmax = max(dr.ts),
+      'rect', xmin = bp.ts, xmax = max(dra$timestamps),
       ymin = -Inf, ymax = Inf, alpha = 0.1,
       fill = plot_drifts.sigcolor(attr(drift, 'significance'))
     )
 
-  p <- p + ggplot2::geom_line(col = 'steelblue', alpha = 1) +
-    ggplot2::geom_line(mapping = ggplot2::aes(y = mu), col = 'black', size = 1.5) +
+  p <- p +
+    ggplot2::geom_line(data = dra,
+                       mapping = ggplot2::aes(x = timestamps, y = x),
+                       col = 'steelblue', alpha = 1) +
+    ggplot2::geom_line(mapping = ggplot2::aes(x = dra$timestamps, y = mu),
+                       col = 'black', size = 1.5) +
     ggplot2::geom_vline(xintercept = bp.ts,
                         col = plot_drifts.sigcolor(attr(drift, 'significance')),
                         linetype = 'dashed', size = 1.2)
@@ -219,14 +228,14 @@ plot_drifts.refcount <- function() {
 
 #' @keywords internal
 #'
-plot_drifts <- function(x, timestamps, dr, drift, title) {
+plot_drifts <- function(x, timestamps, dr, dra, drift, title) {
   p.orig <- plot_drifts.original(x, timestamps, dr = dr)
-  p.diff <- plot_drifts.differences(dr.x = dr$x, dr.ts = dr$timestamps, drift = drift, xlim = range(timestamps))
+  p.diff <- plot_drifts.differences(dra = dra, drift = drift, dr = dr, xlim = range(timestamps))
   p.tsdiff <- plot_drifts.samplingrate(timestamps = timestamps, hline.h = 12)
   p.dtft.orig <- plot_drifts.dtft(x = x, timestamps = timestamps, drift = drift, remove.drift = TRUE)
-  p.dtft.diff <- plot_drifts.dtft(x = dr$x, timestamps = dr$timestamps, drift = drift, remove.drift = TRUE)
+  p.dtft.diff <- plot_drifts.dtft(x = dra$x, timestamps = dra$timestamps, drift = drift, remove.drift = TRUE)
   p.yearly.orig <- plot_drifts.yearly(x = x, timestamps = timestamps, drift = drift, remove.drift = TRUE)
-  p.yearly.diff <- plot_drifts.yearly(x = dr$x, timestamps = dr$timestamps, drift = drift, remove.drift = TRUE)
+  p.yearly.diff <- plot_drifts.yearly(x = dra$x, timestamps = dra$timestamps, drift = drift, remove.drift = TRUE)
   p.empty <- ggplot2::ggplot() + ggplot2::theme_void()
 
   layout_matrix <- rbind(c(rep(1, 4), 4, 7),
