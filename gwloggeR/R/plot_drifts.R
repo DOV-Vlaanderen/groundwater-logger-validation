@@ -102,7 +102,7 @@ plot_drifts.dtft <- function(x, timestamps, drift, remove.drift = FALSE) {
 plot_drifts.yearly <- function(x, timestamps, drift, remove.drift = FALSE,
                                ylim = quantile(x, probs = c(0.005, 0.995))) {
 
-  force(ylim) # compute ylim on given x, not the later adjusted one!
+  # force(ylim) # compute ylim on given x, not the later adjusted one!
 
   if (remove.drift && attr(drift, 'is.drifting')) {
     x.drift <- attr(drift, 'rate')*model_drifts.trend(timestamps, start.ts = attr(drift, 'timestamp'))
