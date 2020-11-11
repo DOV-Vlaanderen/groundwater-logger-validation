@@ -20,14 +20,19 @@ drift_reference.assert <- function(x, timestamps, reference) {
 #'
 #' @keywords internal
 #'
-drift_reference.aggregate <- function(df, scalefactor.sec) {
+drift_reference.aggregate <- function(df, scalefactor.sec, is.reference = FALSE) {
+  stopifnot(is.list(df) || is.data.frame(df))
+
   df <- data.table::as.data.table(df) # in case df is a reference (i.e. list)
   df.new <- df[, .(x = mean(x)), by = .(timestamps = round.timestamp(timestamps, scalefactor.sec = scalefactor.sec))]
   data.table::setkey(df.new, 'timestamps')
 
   if (nrow(df) != nrow(df.new))
-    warning(sprintf('Timeseries has intervals smaller than %ih. ', scalefactor.sec/3600) %||%
-            sprintf('Measurements are averaged to %ih intervals.', scalefactor.sec/3600),
+    warning(sprintf('%s has intervals smaller than %ih. ',
+                    if (is.reference) 'Reference timeseries' else 'Timeseries',
+                    scalefactor.sec/3600) %||%
+            sprintf('Measurements are averaged to %ih intervals.',
+                    scalefactor.sec/3600),
             call. = FALSE, immediate. = TRUE)
 
   df.new
@@ -51,7 +56,7 @@ drift_reference.differentiate <- function(x, timestamps, reference, scalefactor.
   data.table::setkey(df, 'timestamps')
 
   df.ref <- data.table::rbindlist(
-    lapply(reference, drift_reference.aggregate, scalefactor.sec = scalefactor.sec),
+    lapply(reference, drift_reference.aggregate, scalefactor.sec = scalefactor.sec, is.reference = TRUE),
     use.names = TRUE, fill = TRUE, idcol = 'reference.id')
   data.table::setkey(df.ref, 'timestamps')
 
