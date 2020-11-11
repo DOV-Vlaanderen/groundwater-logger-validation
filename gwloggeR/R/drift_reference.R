@@ -63,5 +63,15 @@ drift_reference.differentiate <- function(x, timestamps, reference, scalefactor.
   df.diff <- df.x[J(df.ref), .('x' = x.x - i.x, timestamps, reference.id, reference.x = i.x), nomatch = NULL][!is.na(x), ]
   data.table::setkey(df.diff, 'timestamps')
 
+  # Missing reference (mr) data
+  df.diff.N <- df.diff[J(df.x),][, .(nref = sum(!is.na(reference.id))), by = timestamps][, .N, by = nref]
+  stopifnot(sum(df.diff.N$N) == nrow(df.x))
+  mr.prop <- sum(df.diff.N[nref != length(reference), N])/df.diff.N[nref == length(reference), N]
+  if (mr.prop > 0.05)
+    warning(sprintf('Given the %i reference timeserie%s, ' %||%
+                      'there is for %.2f %% of barometer observations missing reference data.',
+                    length(reference), if (length(reference) > 1L) 's' else '', mr.prop*100),
+            call. = FALSE, immediate. = TRUE)
+
   df.diff
 }
