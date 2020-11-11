@@ -72,7 +72,7 @@ results.df <- data.table::rbindlist(lapply(names(results), function(ln) {
     attributes(results[[ln]])[c('mu', 'timestamp', 'rate', 'significance')])
 }), use.names = TRUE, fill = TRUE)
 
-write.csv(results.df, file = './drifts/analysis_32/results.csv', row.names = FALSE)
+write.csv(results.df, file = './drifts/analysis_34/results.csv', row.names = FALSE)
 
 plot(x = results.df$significance, y = results.df$rate,
      ylim = quantile(results.df$rate, probs = c(0.025, 0.975), na.rm = TRUE))
