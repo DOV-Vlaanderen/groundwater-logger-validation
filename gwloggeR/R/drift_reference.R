@@ -15,9 +15,6 @@ drift_reference.assert <- function(reference) {
     assert.nonas(reference[[id]][['x']])
 
   })
-
-  if (length(reference) > 1L)
-    stop('Current version of drift detection requires exactly 1 reference barometer.', call. = FALSE)
 }
 
 
