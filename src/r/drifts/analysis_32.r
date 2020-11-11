@@ -5,7 +5,7 @@ logger.names <- tools::file_path_sans_ext(grep('barometer/', gwloggeR.data::enum
 #logger.names <- 'BAOL528X_B_B2152.csv' # has less than 5 matching observations with KNMI data
 #logger.names <- 'BAOL544X_B_002A6.csv' # has NA values in x
 
-df.ref <- gwloggeR.data::read('KNMI_20200312_hourly')$df
+df.ref <- gwloggeR.data::read('KNMI_20201103_hourly_Westdorpe')$df
 
 ref <- list(list(x = df.ref$PRESSURE_VALUE, timestamps = df.ref$TIMESTAMP_UTC))
 
