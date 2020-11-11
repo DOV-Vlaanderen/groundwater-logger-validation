@@ -69,7 +69,7 @@ results <- sapply(logger.names, save.output, USE.NAMES = TRUE, simplify = FALSE)
 
 results.df <- data.table::rbindlist(lapply(names(results), function(ln) {
   c(list('name' = basename(ln)),
-    attributes(results[[ln]])[c('mu', 'timestamp', 'rate', 'significance')])
+    attributes(results[[ln]])[c('mu', 'sigma', 'timestamp', 'rate', 'significance')])
 }), use.names = TRUE, fill = TRUE)
 
 write.csv(results.df, file = './drifts/analysis_34/results.csv', row.names = FALSE)
