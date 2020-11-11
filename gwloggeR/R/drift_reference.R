@@ -1,18 +1,23 @@
 #' @keywords internal
 #'
-drift_reference.assert <- function(x, timestamps, reference) {
+drift_reference.assert <- function(reference) {
   if (!is.list(reference) || length(reference) == 0L)
     stop('Current version of drift detection requires reference barometer data. ' %||%
            'See ?gwloggeR::detect_drift for how to supply it.', call. = FALSE)
 
-  if ('x' %in% names(reference) || 'timestamps' %in% names(reference))
-    stop('Reference data should be supplied as list of lists. ' %||%
-           'E.g. list(list(x, timestamps), list(x, timestamps), ...)', call. = FALSE)
+  lapply(length(reference), function(id) {
+
+    if (!all(c('x', 'timestamps') %in% names(reference[[id]])))
+      stop('Reference data should be supplied as list of lists. ' %||%
+             'E.g. list(list(x, timestamps), list(x, timestamps), ...)', call. = FALSE)
+
+    assert.timestamp(reference[[id]][['timestamps']])
+    assert.nonas(reference[[id]][['x']])
+
+  })
 
   if (length(reference) > 1L)
     stop('Current version of drift detection requires exactly 1 reference barometer.', call. = FALSE)
-
-  # TODO: check that enough reference data is supplied...
 }
 
 
@@ -50,8 +55,6 @@ drift_reference.aggregate <- function(df, scalefactor.sec, is.reference = FALSE)
 drift_reference.differentiate <- function(x, timestamps, reference, scalefactor.sec) {
 
   # Aggregating x to minimum 12h intervals so differences can be taken on specific timestamps
-  drift_reference.assert(x = x, timestamps = timestamps, reference = reference)
-
   df.x <- drift_reference.aggregate(data.frame(x, timestamps), scalefactor.sec = scalefactor.sec)
   data.table::setkey(df.x, 'timestamps')
 

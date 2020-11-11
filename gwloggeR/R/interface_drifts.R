@@ -99,6 +99,10 @@ setGeneric(
            apriori = Apriori('air pressure', units = 'cmH2O'),
            ..., plot = FALSE, verbose = FALSE, title = NULL, alpha = 0.01) {
 
+    if (apriori$data_type != "air pressure" && apriori$units != 'cmH2O')
+      stop('Drift detection is only implemented for air pressure data in cmH2O units.')
+
+
     if (is.null(timestamps)) stop('Drift detection requires a timestamp for each observation x.')
     if (length(timestamps) != length(x)) stop('x and timestamps must have same length.')
 
@@ -109,8 +113,7 @@ setGeneric(
 
     assert.nonas(x)
 
-    if (apriori$data_type != "air pressure" && apriori$units != 'cmH2O')
-      stop('Drift detection is only implemented for air pressure data in cmH2O units.')
+    drift_reference.assert(reference = reference)
 
     standardGeneric('detect_drift')
   }
