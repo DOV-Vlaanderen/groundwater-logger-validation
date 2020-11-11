@@ -2,7 +2,7 @@
 #'
 #' @keywords internal
 #'
-test.detect_function <- function(fun, ..., RESULT.PATH, ATTRIB.PATH = NULL, IMG.PATH = NULL) {
+test.detect_function <- function(fun, ..., RESULT.PATH, ATTRIB.PATH = NULL, IMG.PATH = NULL, LOG.PATH = NULL) {
 
   stopifnot(!is.null(RESULT.PATH))
 
@@ -11,10 +11,22 @@ test.detect_function <- function(fun, ..., RESULT.PATH, ATTRIB.PATH = NULL, IMG.
   if (!is.null(IMG.PATH)) {
     dir.create(dirname(IMG.PATH), showWarnings = FALSE, recursive = TRUE)
     png(IMG.PATH, width = 1280, height = 720)
-    on.exit(dev.off())
+    on.exit(dev.off(), add = TRUE)
   }
 
-  result <- fun(...)
+  result <- local({
+    if (!is.null(LOG.PATH)) {
+      dir.create(dirname(LOG.PATH), showWarnings = FALSE, recursive = TRUE)
+      log.file <- file(LOG.PATH, open = 'wt')
+      on.exit(close(log.file), add = TRUE, after = FALSE)
+      sink(file = log.file, split = TRUE, type = 'output')
+      on.exit(sink(), add = TRUE, after = FALSE)
+      sink(file = log.file, type = 'message') # cannot split message stream :( !
+      on.exit(sink(type = 'message'), add = TRUE, after = FALSE)
+    }
+
+    fun(...)
+  })
 
   if (!is.null(ATTRIB.PATH)) {
     dir.create(dirname(ATTRIB.PATH), showWarnings = FALSE, recursive = TRUE)
