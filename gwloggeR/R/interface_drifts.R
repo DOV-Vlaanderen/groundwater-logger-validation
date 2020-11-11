@@ -104,7 +104,7 @@ setGeneric(
 
     assert.timestamp(timestamps)
     assert.nonas(timestamps)
-    #assert.noduplicates(timestamps) # ToDo: decide to enable or disable.
+    assert.noduplicates(timestamps, warn.only = TRUE)
     assert.ordered(timestamps)
 
     assert.nonas(x)
