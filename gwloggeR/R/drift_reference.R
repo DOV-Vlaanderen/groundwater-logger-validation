@@ -29,7 +29,7 @@ drift_reference.aggregate <- function(df, scalefactor.sec, is.reference = FALSE)
 
   if (nrow(df) != nrow(df.new))
     warning(sprintf('%s has intervals smaller than %ih. ',
-                    if (is.reference) 'Reference timeseries' else 'Timeseries',
+                    if (is.reference) 'Reference data' else 'Timeserie',
                     scalefactor.sec/3600) %||%
             sprintf('Measurements are averaged to %ih intervals.',
                     scalefactor.sec/3600),
