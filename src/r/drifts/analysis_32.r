@@ -38,7 +38,8 @@ save.output <- function(f) {
     alpha = 1,
     RESULT.PATH = paste0(ROOT.PATH, basename(f), '.result'),
     ATTRIB.PATH = paste0(ROOT.PATH, basename(f), '.attribs'),
-    IMG.PATH = paste0(ROOT.PATH, basename(f), '.png')
+    IMG.PATH = paste0(ROOT.PATH, basename(f), '.png'),
+    LOG.PATH = paste0(ROOT.PATH, basename(f), '.log')
   )
 
 }
