@@ -102,7 +102,6 @@ setGeneric(
     if (apriori$data_type != "air pressure" && apriori$units != 'cmH2O')
       stop('Drift detection is only implemented for air pressure data in cmH2O units.')
 
-
     if (is.null(timestamps)) stop('Drift detection requires a timestamp for each observation x.')
     if (length(timestamps) != length(x)) stop('x and timestamps must have same length.')
 
