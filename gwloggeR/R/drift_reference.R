@@ -52,15 +52,15 @@ drift_reference.differentiate <- function(x, timestamps, reference, scalefactor.
   # Aggregating x to minimum 12h intervals so differences can be taken on specific timestamps
   drift_reference.assert(x = x, timestamps = timestamps, reference = reference)
 
-  df <- drift_reference.aggregate(data.frame(x, timestamps), scalefactor.sec = scalefactor.sec)
-  data.table::setkey(df, 'timestamps')
+  df.x <- drift_reference.aggregate(data.frame(x, timestamps), scalefactor.sec = scalefactor.sec)
+  data.table::setkey(df.x, 'timestamps')
 
   df.ref <- data.table::rbindlist(
     lapply(reference, drift_reference.aggregate, scalefactor.sec = scalefactor.sec, is.reference = TRUE),
     use.names = TRUE, fill = TRUE, idcol = 'reference.id')
   data.table::setkey(df.ref, 'timestamps')
 
-  df.diff <- df[J(df.ref), .('x' = x.x - i.x, timestamps, reference.id, reference.x = i.x), nomatch = NULL][!is.na(x), ]
+  df.diff <- df.x[J(df.ref), .('x' = x.x - i.x, timestamps, reference.id, reference.x = i.x), nomatch = NULL][!is.na(x), ]
   data.table::setkey(df.diff, 'timestamps')
 
   df.diff
