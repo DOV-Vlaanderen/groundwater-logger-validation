@@ -1,0 +1,3 @@
+Warning: Timeserie has intervals smaller than 12h. Measurements are averaged to 12h intervals.
+Warning: Reference data has intervals smaller than 12h. Measurements are averaged to 12h intervals.
+Warning: Given the 1 reference timeserie, there is for 8.14 % of barometer observations missing reference data.
