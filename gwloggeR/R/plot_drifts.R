@@ -178,7 +178,8 @@ plot_drifts.differences <- function(dra, drift, dr = NULL, xlim = range(dra$time
 
   if (!is.null(dr) && nrow(dr) != nrow(dra))
     p <- p + ggplot2::geom_point(
-      data = dr, mapping = ggplot2::aes(x = timestamps, y = x), pch = '.')
+      data = dr, mapping = ggplot2::aes(x = timestamps, y = x),
+      pch = '.', col = 'grey', alpha = 0.6)
 
   if (attr(drift, 'is.drifting'))
     p <- p + ggplot2::annotate(
@@ -192,7 +193,7 @@ plot_drifts.differences <- function(dra, drift, dr = NULL, xlim = range(dra$time
                        mapping = ggplot2::aes(x = timestamps, y = x),
                        col = 'steelblue', alpha = 1) +
     ggplot2::geom_line(mapping = ggplot2::aes(x = dra$timestamps, y = mu),
-                       col = 'black', size = 1.5) +
+                       col = 'black', size = 1.5, alpha = 1) +
     ggplot2::geom_vline(xintercept = bp.ts,
                         col = plot_drifts.sigcolor(attr(drift, 'significance')),
                         linetype = 'dashed', size = 1.2)
