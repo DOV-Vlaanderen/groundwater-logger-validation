@@ -180,20 +180,6 @@ plot_drifts.differences <- function(dr.x, dr.ts, drift, xlim = range(dr.ts),
       fill = plot_drifts.sigcolor(attr(drift, 'significance'))
     )
 
-  if (xlim[1] < min(dr.ts))
-    p <- p + ggplot2::annotate(
-      'rect', xmin = xlim[1], xmax = min(dr.ts),
-      ymin = -Inf, ymax = Inf, alpha = 0.1,
-      fill = 'grey'
-    )
-
-  if (xlim[2] > max(dr.ts))
-    p <- p + ggplot2::annotate(
-      'rect', xmin = xlim[2], xmax = max(dr.ts),
-      ymin = -Inf, ymax = Inf, alpha = 0.1,
-      fill = 'grey'
-    )
-
   p <- p + ggplot2::geom_line(col = 'steelblue', alpha = 1) +
     ggplot2::geom_line(mapping = ggplot2::aes(y = mu), col = 'black', size = 1.5) +
     ggplot2::geom_vline(xintercept = bp.ts,
