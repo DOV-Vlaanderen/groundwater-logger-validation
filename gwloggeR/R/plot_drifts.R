@@ -10,24 +10,37 @@ plot_drifts.sigcolor <- function(significance) {
 
 #' @keywords internal
 #'
-plot_drifts.timedifferences <- function(x, timestamps, hline.h = NULL,
-                                        xlim = range(timestamps)) {
+plot_drifts.samplingrate <- function(timestamps, hline.h = NULL,
+                                     xlim = range(timestamps)) {
+
+  # y-axis log transformation functions
+  log12 <- function(x) logb(x = x, base = 12)
+  log12inv <-  function(x) 12^x
 
   ts.diff.h <- round(diff(as.numeric(timestamps))/3600)
   freq <- data.table::data.table(ts.diff.h)[ts.diff.h != 0, .(.N), by = ts.diff.h][order(N, decreasing = TRUE), ]
   zero <- ts.diff.h == 0
-  breaks <- freq[1:min(5, .N), ]
+
+  # Determining breaks for y-axis on log12 scale: lbreaks
+  lrange <- diff(range(log12(freq$ts.diff.h)))/4
+  lbreaks <- numeric()
+  for (lbr in log12(freq$ts.diff.h)) {
+    if (!any(lbr > lbreaks - lrange/2 & lbr < lbreaks + lrange/2)) {
+      lbreaks <- c(lbreaks, lbr)
+    }
+  }
+
   p <- ggplot2::ggplot(mapping = ggplot2::aes(x = timestamps[-1][!zero], y = ts.diff.h[!zero])) +
     ggplot2::geom_hline(yintercept = hline.h, col = 'red', size = 0.2, alpha = 0.2) +
     ggplot2::geom_point(pch = '-', size = 8) +
     ggplot2::scale_y_continuous(
-      breaks = unique(c(breaks$ts.diff.h, range(freq$ts.diff.h))),
+      breaks = log12inv(lbreaks),
       #labels = paste0(unique(ts.diff.h), 'h'),
       minor_breaks = NULL,
       trans = scales::trans_new(
         name = 'log12',
-        transform = function(x) logb(x = x, base = 12),
-        inverse = function(x) 12^x)) +
+        transform = log12,
+        inverse = log12inv)) +
     ggplot2::coord_cartesian(xlim = xlim) +
     ggplot2::theme_light() +
     ggplot2::theme(axis.text.y = ggplot2::element_text(angle = 90, hjust = 0.5),
@@ -56,12 +69,27 @@ plot_drifts.dtft <- function(x, timestamps, drift, remove.drift = FALSE) {
   freqdomain <- sapply(1/periods.sec, FUN = dtft, x = x.centered, timestamps = timestamps)
   intensity <- Mod(freqdomain)/length(x)
 
+  # Determine peaks in the intensity curve
+  df <- data.table::data.table(periods.sec, intensity)#[order(intensity, decreasing = TRUE),]
+  df[, lup := c(TRUE, intensity[-1] >= intensity[-.N])]
+  df[, rdown := c(intensity[-.N] >= intensity[-1], TRUE)]
+  df.peaks <- df[lup & rdown, ][order(intensity, decreasing = TRUE)]
+
+  # Set x-axis breaks based on intensity peaks
+  brange <- diff(range(periods.sec))/4
+  breaks <- numeric()
+  while (nrow(df.peaks) > 0L) {
+    breaks <- c(breaks, df.peaks[1L, periods.sec])
+    df.peaks <- df.peaks[periods.sec <= tail(breaks, 1L) - brange/2 | periods.sec >= tail(breaks, 1L) + brange/2, ]
+  }
+
   ggplot2::ggplot(mapping = ggplot2::aes(x = periods.sec/3600/24, y = intensity)) +
     ggplot2::geom_line(col = 'black') +
     ggplot2::geom_vline(xintercept = 365.25, col = 'red') +
     #ggplot2::ylab('Intensity') +
     #ggplot2::xlab('Period (days)') +
     #ggplot2::ggtitle('Discrete-Time Fourier Transform') +
+    ggplot2::scale_x_continuous(breaks = round(breaks/3600/24), minor_breaks = NULL) +
     ggplot2::theme_light() +
     ggplot2::theme(axis.text.y = ggplot2::element_text(angle = 90, hjust = 0.5),
                    axis.title.y = ggplot2::element_blank(),
@@ -74,16 +102,24 @@ plot_drifts.dtft <- function(x, timestamps, drift, remove.drift = FALSE) {
 plot_drifts.yearly <- function(x, timestamps, drift, remove.drift = FALSE,
                                ylim = quantile(x, probs = c(0.005, 0.995))) {
 
+  # force(ylim) # compute ylim on given x, not the later adjusted one!
+
   if (remove.drift && attr(drift, 'is.drifting')) {
     x.drift <- attr(drift, 'rate')*model_drifts.trend(timestamps, start.ts = attr(drift, 'timestamp'))
     x <- x - x.drift
   }
+
+  mdays <- c(31, 28.25, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31)
+  mdaybreaks <- cumsum(mdays) - mdays/2
+  mbreaks <- c(1, 3, 5, 8, 10, 12)
 
   ggplot2::ggplot() +
     ggplot2::geom_point(mapping = ggplot2::aes(x = data.table::yday(timestamps), y = x), shape = 16) +
     #ggplot2::xlab('Day') +
     ggplot2::coord_cartesian(ylim = ylim,
                              xlim = c(1, 366)) +
+    ggplot2::scale_x_continuous(breaks = mdaybreaks[mbreaks], labels = mbreaks,
+                                minor_breaks = NULL) +
     ggplot2::theme_light() +
     ggplot2::theme(axis.text.y = ggplot2::element_text(angle = 90, hjust = 0.5),
                    axis.title.y = ggplot2::element_blank(),
@@ -93,11 +129,20 @@ plot_drifts.yearly <- function(x, timestamps, drift, remove.drift = FALSE,
 
 #' @keywords internal
 #'
-plot_drifts.original <- function(x, timestamps, xlim = range(timestamps),
+plot_drifts.original <- function(x, timestamps, xlim = range(timestamps), dr = NULL,
                                  ylim = quantile(x, c(0.005, 0.995))) {
 
-  p <- ggplot2::ggplot(mapping = ggplot2::aes(x = timestamps, y = x)) +
-    ggplot2::geom_line(col = 'black', alpha = 1) +
+  p <- ggplot2::ggplot()
+
+  if (!is.null(dr))
+    p <- p + ggplot2::geom_line(
+      data = dr[, .(reference.x.average = median(reference.x)), by = timestamps],
+      mapping = ggplot2::aes(x = timestamps, y = reference.x.average),
+      col = 'red3',
+    )
+
+  p <- p + ggplot2::geom_line(mapping = ggplot2::aes(x = timestamps, y = x),
+                              col = 'black', alpha = 1) +
     ggplot2::coord_cartesian(ylim = ylim, xlim = xlim) +
     ggplot2::theme_light() +
     ggplot2::theme(axis.text.y = ggplot2::element_text(angle = 90, hjust = 0.5),
@@ -110,35 +155,45 @@ plot_drifts.original <- function(x, timestamps, xlim = range(timestamps),
 
 #' @keywords internal
 #'
-plot_drifts.differences <- function(dr.x, dr.ts, drift, xlim = range(dr.ts),
-                                    ylim = quantile(dr.x, c(0.005, 0.995))) {
+plot_drifts.differences <- function(dra, drift, dr = NULL, xlim = range(dra$timestamps),
+                                    ylim = quantile(dra$x, c(0.005, 0.995))) {
 
   # intercept line
-  mu <- rep(attr(drift, 'mu'), length(dr.x))
+  mu <- rep(attr(drift, 'mu'), nrow(dra))
 
   # add seasonality
   sc <- attr(drift, 'year.seasonality')
   if (all(!is.na(sc)))
-    mu <- mu + data.matrix(fbasis(timestamps = dr.ts, frequencies = 1/(365.25*3600*24))) %*% sc
+    mu <- mu + data.matrix(fbasis(timestamps = dra$timestamps, frequencies = 1/(365.25*3600*24))) %*% sc
 
   # add drift
   bp.ts <- NULL
   if (attr(drift, 'is.drifting')) {
     bp.ts <- attr(drift, 'timestamp')
-    mu <- mu + attr(drift, 'rate')*model_drifts.trend(dr.ts, start.ts = bp.ts)
+    mu <- mu + attr(drift, 'rate')*model_drifts.trend(dra$timestamps, start.ts = bp.ts)
   }
 
-  p <- ggplot2::ggplot(mapping = ggplot2::aes(x = dr.ts, y = dr.x))
+
+  p <- ggplot2::ggplot()
+
+  if (!is.null(dr) && nrow(dr) != nrow(dra))
+    p <- p + ggplot2::geom_point(
+      data = dr, mapping = ggplot2::aes(x = timestamps, y = x),
+      pch = '.', col = 'grey', alpha = 0.6)
 
   if (attr(drift, 'is.drifting'))
     p <- p + ggplot2::annotate(
-      'rect', xmin = bp.ts, xmax = max(dr.ts),
+      'rect', xmin = bp.ts, xmax = max(dra$timestamps),
       ymin = -Inf, ymax = Inf, alpha = 0.1,
       fill = plot_drifts.sigcolor(attr(drift, 'significance'))
     )
 
-  p <- p + ggplot2::geom_line(col = 'steelblue', alpha = 1) +
-    ggplot2::geom_line(mapping = ggplot2::aes(y = mu), col = 'black', size = 1.5) +
+  p <- p +
+    ggplot2::geom_line(data = dra,
+                       mapping = ggplot2::aes(x = timestamps, y = x),
+                       col = 'steelblue', alpha = 1) +
+    ggplot2::geom_line(mapping = ggplot2::aes(x = dra$timestamps, y = mu),
+                       col = 'black', size = 1.5, alpha = 1) +
     ggplot2::geom_vline(xintercept = bp.ts,
                         col = plot_drifts.sigcolor(attr(drift, 'significance')),
                         linetype = 'dashed', size = 1.2)
@@ -148,8 +203,9 @@ plot_drifts.differences <- function(dr.x, dr.ts, drift, xlim = range(dr.ts),
       'label', x = as.POSIXct(-Inf, origin = '1970-01-01'), y = Inf,
       size = 4.5, col = 'black',
       hjust = 0, vjust = 1, fill = 'grey', alpha = 0.8, label.size = NA,
-      label = sprintf('Drift p-value: %.2e, rate: %.2f %s', attr(drift, 'significance'),
-                      attr(drift, 'rate'), attr(attr(drift, 'rate'), 'units'))
+      label = sprintf('Drift p-value: %.2e, rate: %.2f %s @%s', attr(drift, 'significance'),
+                      attr(drift, 'rate'), attr(attr(drift, 'rate'), 'units'),
+                      attr(drift, 'timestamp'))
     )
 
   p <- p + ggplot2::coord_cartesian(ylim = ylim, xlim = xlim) +
@@ -173,14 +229,14 @@ plot_drifts.refcount <- function() {
 
 #' @keywords internal
 #'
-plot_drifts <- function(x, timestamps, dr, drift, title) {
-  p.orig <- plot_drifts.original(x, timestamps)
-  p.diff <- plot_drifts.differences(dr.x = dr$x, dr.ts = dr$timestamps, drift = drift, xlim = range(timestamps))
-  p.tsdiff <- plot_drifts.timedifferences(x = x, timestamps = timestamps, hline.h = 12)
+plot_drifts <- function(x, timestamps, dr, dra, drift, title) {
+  p.orig <- plot_drifts.original(x, timestamps, dr = dr)
+  p.diff <- plot_drifts.differences(dra = dra, drift = drift, dr = dr, xlim = range(timestamps))
+  p.tsdiff <- plot_drifts.samplingrate(timestamps = timestamps, hline.h = 12)
   p.dtft.orig <- plot_drifts.dtft(x = x, timestamps = timestamps, drift = drift, remove.drift = TRUE)
-  p.dtft.diff <- plot_drifts.dtft(x = dr$x, timestamps = dr$timestamps, drift = drift, remove.drift = TRUE)
+  p.dtft.diff <- plot_drifts.dtft(x = dra$x, timestamps = dra$timestamps, drift = drift, remove.drift = TRUE)
   p.yearly.orig <- plot_drifts.yearly(x = x, timestamps = timestamps, drift = drift, remove.drift = TRUE)
-  p.yearly.diff <- plot_drifts.yearly(x = dr$x, timestamps = dr$timestamps, drift = drift, remove.drift = TRUE)
+  p.yearly.diff <- plot_drifts.yearly(x = dra$x, timestamps = dra$timestamps, drift = drift, remove.drift = TRUE)
   p.empty <- ggplot2::ggplot() + ggplot2::theme_void()
 
   layout_matrix <- rbind(c(rep(1, 4), 4, 7),

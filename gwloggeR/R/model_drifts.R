@@ -73,6 +73,13 @@ model_drifts.fit <- function(dr.x, dr.ts, ar1, dfdiff) {
   stopifnot(!any(is.na(dr.x)))
   stopifnot(length(dr.x) >= 2L) # need at least 2 observations for arima()
 
+  if (length(dr.x) < 5L) {
+    warning('Can not detect drift because differences with reference data have less than 5 observations. ' %||%
+            'Returning no drift by default.',
+            call. = FALSE, immediate. = TRUE)
+    return(arima(x = dr.x, order = c(1, 0, 0), transform.pars = FALSE, fixed = c(ar1, NA)))
+  }
+
   ts.sec <- as.numeric(dr.ts)
   ts.sec.diff <- diff(ts.sec)
 
@@ -87,7 +94,7 @@ model_drifts.fit <- function(dr.x, dr.ts, ar1, dfdiff) {
   sbasis <- fbasis(timestamps = dr.ts, frequencies = 1/(365.25*3600*24))
 
   # Models
-  M <- arima(x = dr.x, order = c(1, 0, 0), transform.pars = FALSE, fixed = c(ar1, NA))
+  M <- arima(x = dr.x, order = c(1, 0, 0), transform.pars = FALSE, xreg = sbasis, fixed = c(ar1, NA, NA, NA))
 
   # Filter out the worst case outliers so they do not result in detected drifts.
   # This has mainly an effect for drifts towards the end of the series, cased
@@ -96,37 +103,18 @@ model_drifts.fit <- function(dr.x, dr.ts, ar1, dfdiff) {
   # outlying effect was suppressed by the now removed outlier (due to AR1 effect).
   ol <- detect_outliers(as.vector(residuals(M)))
 
-  M0 <- arima(x = dr.x[!ol], order = c(1, 0, 0), transform.pars = FALSE, fixed = c(ar1, NA))
-
-  if (length(dr.x) < 5L) {
-    warning('Can not detect drift because differences with reference data have less than 5 observations. ' %||%
-            'Returning nu drift by default.',
-            call. = FALSE, immediate. = TRUE)
-    return(M0)
-  }
-
   MS <- arima(x = dr.x[!ol], order = c(1, 0, 0), transform.pars = FALSE,
               xreg = sbasis[!ol,,drop=FALSE], fixed = c(ar1, NA, NA, NA))
 
-  MD <- seekmin(M0, x = dr.x[!ol], ts = dr.ts[!ol])
-
   MDS <- seekmin(MS, x = dr.x[!ol], ts = dr.ts[!ol], xreg = sbasis[!ol,,drop=FALSE])
 
-  # Model selection
-  # p-val for seasonality component: eventually, only either sin or cos
-  # are needed in case fase is 0, so df == 1. This also produces slightly
-  # better results.
-  sp.val <- lrtest(logLik(MD), logLik(MDS), df.diff = 1L)
-  MF <- if (sp.val < 1e-2) MDS else MD # final model
-
-  MND <- if (any(grepl('sin', names(MF$coef)))) MS else M0
-  MF[['MND']] <- MND
+  MDS[['MND']] <- MS
 
   # Significance of drift component
-  MF[['drift.significance']] <-
-    lrtest(logLik(MND), logLik(MF), df.diff = dfdiff)
+  MDS[['drift.significance']] <-
+    lrtest(logLik(MS), logLik(MDS), df.diff = dfdiff)
 
-  structure(MF, class = c('ArimaExt', class(MF)))
+  structure(MDS, class = c('ArimaExt', class(MDS)))
 }
 
 # model_drifts.fit(x = x.sim, timestamps = ts.sim)

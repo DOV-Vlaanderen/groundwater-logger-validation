@@ -99,18 +99,20 @@ setGeneric(
            apriori = Apriori('air pressure', units = 'cmH2O'),
            ..., plot = FALSE, verbose = FALSE, title = NULL, alpha = 0.01) {
 
+    if (apriori$data_type != "air pressure" && apriori$units != 'cmH2O')
+      stop('Drift detection is only implemented for air pressure data in cmH2O units.')
+
     if (is.null(timestamps)) stop('Drift detection requires a timestamp for each observation x.')
     if (length(timestamps) != length(x)) stop('x and timestamps must have same length.')
 
     assert.timestamp(timestamps)
     assert.nonas(timestamps)
-    #assert.noduplicates(timestamps) # ToDo: decide to enable or disable.
+    assert.noduplicates(timestamps, warn.only = TRUE)
     assert.ordered(timestamps)
 
     assert.nonas(x)
 
-    if (apriori$data_type != "air pressure" && apriori$units != 'cmH2O')
-      stop('Drift detection is only implemented for air pressure data in cmH2O units.')
+    drift_reference.assert(reference = reference)
 
     standardGeneric('detect_drift')
   }
@@ -134,7 +136,7 @@ setMethod(
 
     if (nrow(dra) >= 2L) {
       # fit the drift model
-      model <- model_drifts.fit(dr.x = dra$x, dr.ts = dra$timestamps, ar1 = 0.9, dfdiff = 2.8)
+      model <- model_drifts.fit(dr.x = dra$x, dr.ts = dra$timestamps, ar1 = 0.85, dfdiff = 2.8)
       # convert model to Drift object which is then returned to the user
       drift <- Drift(model, timestamps, alpha = alpha)
     } else {
@@ -144,7 +146,7 @@ setMethod(
       drift <- Drift(rep(FALSE, length(x)), mu = NA)
     }
 
-    if (plot) plot_drifts(x = x, timestamps = timestamps, dr = dr, drift = drift, title = title)
+    if (plot) plot_drifts(x = x, timestamps = timestamps, dr = dr, dra = dra, drift = drift, title = title)
 
     if (verbose) drift else as.vector(drift)
 })

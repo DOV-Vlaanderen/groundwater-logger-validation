@@ -1,0 +1,2 @@
+Warning: Reference data has intervals smaller than 12h. Measurements are averaged to 12h intervals.
+Warning: Can not detect drift because differences with reference data have less than 5 observations. Returning no drift by default.

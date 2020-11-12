@@ -5,9 +5,9 @@ logger.names <- tools::file_path_sans_ext(grep('barometer/', gwloggeR.data::enum
 #logger.names <- 'BAOL528X_B_B2152.csv' # has less than 5 matching observations with KNMI data
 #logger.names <- 'BAOL544X_B_002A6.csv' # has NA values in x
 
-df.ref <- gwloggeR.data::read('KNMI_20200312_hourly')$df
+df.ref <- gwloggeR.data::read('KNMI_20201103_hourly_Westdorpe')$df
 
-ref <- list(list(x = df.ref$PRESSURE_VALUE, timestamps = df.ref$TIMESTAMP_UTC))
+ref <- list(list(x = df.ref[!is.na(PRESSURE_VALUE), PRESSURE_VALUE], timestamps = df.ref[!is.na(PRESSURE_VALUE), TIMESTAMP_UTC]))
 
 save.output <- function(f) {
 
@@ -38,16 +38,23 @@ save.output <- function(f) {
     alpha = 1,
     RESULT.PATH = paste0(ROOT.PATH, basename(f), '.result'),
     ATTRIB.PATH = paste0(ROOT.PATH, basename(f), '.attribs'),
-    IMG.PATH = paste0(ROOT.PATH, basename(f), '.png')
+    IMG.PATH = paste0(ROOT.PATH, basename(f), '.png'),
+    LOG.PATH = paste0(ROOT.PATH, basename(f), '.log')
   )
 
 }
+
+# parallel::setDefaultCluster(parallel::makeCluster(spec = 5L))
+# parallel::clusterExport(varlist = c('ref'))
+# results <- setNames(parallel::clusterApplyLB(x = logger.names, fun = save.output), logger.names)
+# names(results) <- logger.names
+# parallel::stopCluster(cl = parallel::getDefaultCluster())
 
 results <- sapply(logger.names, save.output, USE.NAMES = TRUE, simplify = FALSE)
 
 results.df <- data.table::rbindlist(lapply(names(results), function(ln) {
   c(list('name' = basename(ln)),
-    attributes(results[[ln]])[c('mu', 'timestamp', 'rate', 'significance')])
+    attributes(results[[ln]])[c('mu', 'sigma', 'timestamp', 'rate', 'significance')])
 }), use.names = TRUE, fill = TRUE)
 
 write.csv(results.df, file = './drifts/analysis_32/results.csv', row.names = FALSE)
