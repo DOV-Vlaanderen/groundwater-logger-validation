@@ -136,7 +136,7 @@ plot_drifts.original <- function(x, timestamps, xlim = range(timestamps), dr = N
 
   if (!is.null(dr))
     p <- p + ggplot2::geom_line(
-      data = dr[, .(reference.x.average = mean(reference.x)), by = timestamps],
+      data = dr[, .(reference.x.average = median(reference.x)), by = timestamps],
       mapping = ggplot2::aes(x = timestamps, y = reference.x.average),
       col = 'red3',
     )
