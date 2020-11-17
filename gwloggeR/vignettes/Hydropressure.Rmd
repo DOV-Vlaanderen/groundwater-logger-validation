@@ -273,6 +273,7 @@ In this case, a LS event is detected, but not a TC event as one might expect. Th
 * Lower threshold based on air pressure for `detect_outliers()`?
 * `detect_temporalchanges()` should flag everything until the decay is insignificant.
 * Issue #47: if intervals are not divisible by 5min and less than 5min (fixed): small 1min sample is used for $\epsilon(\Delta t)$ estimation.
+* Show thresholds on diagnostic plots for differences(x).
 
 ## References
 

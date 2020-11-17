@@ -5,9 +5,6 @@
 * Use travis-ci for website building and build testing.
 * Code documentation
 
-## Diagnostic plots
-* Show tresholds on diagnostic plots for differences(x).
-
 # Development version
 * Fixed issue #47.
 
