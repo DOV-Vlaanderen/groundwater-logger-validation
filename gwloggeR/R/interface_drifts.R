@@ -143,7 +143,7 @@ setMethod(
       warning('x and reference data have no mathcing timestamps. ' %||%
               'At least 2 matches are required for computing drift.',
               call. = FALSE, immediate. = TRUE)
-      drift <- Drift(rep(FALSE, length(x)), mu = NA)
+      drift <- Drift(rep(FALSE, length(x)), mu = NA, sigma = NA)
     }
 
     if (plot) plot_drifts(x = x, timestamps = timestamps, dr = dr, dra = dra, drift = drift, title = title)
