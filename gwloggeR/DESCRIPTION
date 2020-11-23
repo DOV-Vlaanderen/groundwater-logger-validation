@@ -34,6 +34,7 @@ Suggests:
     rmarkdown,
     testthat (>= 2.1.0),
     dplyr,
-    magrittr
+    magrittr, 
+    MASS
 BuildVignettes: True
 VignetteBuilder: knitr, rmarkdown
