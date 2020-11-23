@@ -6,7 +6,12 @@
 * Code documentation
 
 # Development version
-* Fixed issue #47.
+
+# gwloggeR 0.2.0
+
+* Issue fixed: #47.
+* Interface: `detect_drift()` implementation based on #67 and #70.
+* Documentation: [Air pressure: drift](https://dov-vlaanderen.github.io/groundwater-logger-validation/gwloggeR/docs/articles/Airpressure-drift.html).
 
 # gwloggeR 0.1.5
 
