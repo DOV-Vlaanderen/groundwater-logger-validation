@@ -42,10 +42,7 @@ plot_drifts.samplingrate <- function(timestamps, hline.h = NULL,
         transform = log12,
         inverse = log12inv)) +
     ggplot2::coord_cartesian(xlim = xlim) +
-    ggplot2::theme_light() +
-    ggplot2::theme(axis.text.y = ggplot2::element_text(angle = 90, hjust = 0.5),
-                   axis.title.y = ggplot2::element_blank(),
-                   axis.title.x = ggplot2::element_blank())
+    ggplot.theme()
 
   p
 }
@@ -90,10 +87,7 @@ plot_drifts.dtft <- function(x, timestamps, drift, remove.drift = FALSE) {
     #ggplot2::xlab('Period (days)') +
     #ggplot2::ggtitle('Discrete-Time Fourier Transform') +
     ggplot2::scale_x_continuous(breaks = round(breaks/3600/24), minor_breaks = NULL) +
-    ggplot2::theme_light() +
-    ggplot2::theme(axis.text.y = ggplot2::element_text(angle = 90, hjust = 0.5),
-                   axis.title.y = ggplot2::element_blank(),
-                   axis.title.x = ggplot2::element_blank())
+    ggplot.theme()
 }
 
 
@@ -120,10 +114,7 @@ plot_drifts.yearly <- function(x, timestamps, drift, remove.drift = FALSE,
                              xlim = c(1, 366)) +
     ggplot2::scale_x_continuous(breaks = mdaybreaks[mbreaks], labels = mbreaks,
                                 minor_breaks = NULL) +
-    ggplot2::theme_light() +
-    ggplot2::theme(axis.text.y = ggplot2::element_text(angle = 90, hjust = 0.5),
-                   axis.title.y = ggplot2::element_blank(),
-                   axis.title.x = ggplot2::element_blank())
+    ggplot.theme()
 }
 
 
@@ -144,10 +135,7 @@ plot_drifts.original <- function(x, timestamps, xlim = range(timestamps), dr = N
   p <- p + ggplot2::geom_line(mapping = ggplot2::aes(x = timestamps, y = x),
                               col = 'black', alpha = 1) +
     ggplot2::coord_cartesian(ylim = ylim, xlim = xlim) +
-    ggplot2::theme_light() +
-    ggplot2::theme(axis.text.y = ggplot2::element_text(angle = 90, hjust = 0.5),
-                   axis.title.y = ggplot2::element_blank(),
-                   axis.title.x = ggplot2::element_blank())
+    ggplot.theme()
 
   p
 }
@@ -209,10 +197,7 @@ plot_drifts.differences <- function(dra, drift, dr = NULL, xlim = range(dra$time
     )
 
   p <- p + ggplot2::coord_cartesian(ylim = ylim, xlim = xlim) +
-    ggplot2::theme_light() +
-    ggplot2::theme(axis.text.y = ggplot2::element_text(angle = 90, hjust = 0.5),
-                   axis.title.y = ggplot2::element_blank(),
-                   axis.title.x = ggplot2::element_blank())
+    ggplot.theme()
 
   p
 }
@@ -230,13 +215,18 @@ plot_drifts.refcount <- function() {
 #' @keywords internal
 #'
 plot_drifts <- function(x, timestamps, dr, dra, drift, title) {
-  p.orig <- plot_drifts.original(x, timestamps, dr = dr)
-  p.diff <- plot_drifts.differences(dra = dra, drift = drift, dr = dr, xlim = range(timestamps))
-  p.tsdiff <- plot_drifts.samplingrate(timestamps = timestamps, hline.h = 12)
-  p.dtft.orig <- plot_drifts.dtft(x = x, timestamps = timestamps, drift = drift, remove.drift = TRUE)
-  p.dtft.diff <- plot_drifts.dtft(x = dra$x, timestamps = dra$timestamps, drift = drift, remove.drift = TRUE)
-  p.yearly.orig <- plot_drifts.yearly(x = x, timestamps = timestamps, drift = drift, remove.drift = TRUE)
-  p.yearly.diff <- plot_drifts.yearly(x = dra$x, timestamps = dra$timestamps, drift = drift, remove.drift = TRUE)
+
+  xy.blank <- ggplot2::theme(axis.text.y = ggplot2::element_text(angle = 90, hjust = 0.5),
+                             axis.title.y = ggplot2::element_blank(),
+                             axis.title.x = ggplot2::element_blank())
+
+  p.orig <- plot_drifts.original(x, timestamps, dr = dr) + xy.blank
+  p.diff <- plot_drifts.differences(dra = dra, drift = drift, dr = dr, xlim = range(timestamps)) + xy.blank
+  p.tsdiff <- plot_drifts.samplingrate(timestamps = timestamps, hline.h = 12) + xy.blank
+  p.dtft.orig <- plot_drifts.dtft(x = x, timestamps = timestamps, drift = drift, remove.drift = TRUE) + xy.blank
+  p.dtft.diff <- plot_drifts.dtft(x = dra$x, timestamps = dra$timestamps, drift = drift, remove.drift = TRUE) + xy.blank
+  p.yearly.orig <- plot_drifts.yearly(x = x, timestamps = timestamps, drift = drift, remove.drift = TRUE) + xy.blank
+  p.yearly.diff <- plot_drifts.yearly(x = dra$x, timestamps = dra$timestamps, drift = drift, remove.drift = TRUE) + xy.blank
   p.empty <- ggplot2::ggplot() + ggplot2::theme_void()
 
   layout_matrix <- rbind(c(rep(1, 4), 4, 7),
