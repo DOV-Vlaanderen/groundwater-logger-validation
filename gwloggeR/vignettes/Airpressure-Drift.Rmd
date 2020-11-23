@@ -35,6 +35,9 @@ xy.errors <- function(n, mu = rep(0, 2L), Sigma = matrix(c(25, 23.9, 23.9, 25), 
     MASS::mvrnorm(n, mu = c('a.z' = mu[1], 'a.r' = mu[2]), Sigma = Sigma)
   ))
 }
+
+ggxblank <- ggplot2::theme(axis.text.y = ggplot2::element_text(angle = 90, hjust = 0.5),
+                         axis.title.x = ggplot2::element_blank())
 ```
 This is an advanced guide. It explains how `detect_drift()` works for air pressure data. Make sure you have first read the [getting started](gwloggeR.html) material.
 
@@ -45,22 +48,22 @@ In WMO-No.8 drift is defined as "a continuous or incremental change over time in
 ```{r, echo=FALSE}
 # simulated series
 set.seed(2020)
-ts <- seq(as.POSIXct('2010-01-01'), by = '12 hours', to = as.POSIXct('2020-12-31'))
-dt <- gwloggeR:::model_drifts.trend(ts, start.ts = as.POSIXct('2014-01-01'))
-z <- gwloggeR:::model_drifts.simulate(n = length(ts), mu = 1032, phi1 = 0.85, sigma = sqrt(25), xreg = as.matrix(dt), betas = c(3))
-gwloggeR:::plot_drifts.original(x = z, timestamps = ts, ylab = 'Air pressure (cmH2O)')
+ts.dr <- seq(as.POSIXct('2010-01-01'), by = '12 hours', to = as.POSIXct('2020-12-31'))
+dt <- gwloggeR:::model_drifts.trend(ts.dr, start.ts = as.POSIXct('2014-01-01'))
+zdr <- gwloggeR:::model_drifts.simulate(n = length(ts.dr), mu = 1033, phi1 = 0.85, sigma = sqrt(25), xreg = as.matrix(dt), betas = c(3))
+gwloggeR:::plot_drifts.original(x = zdr, timestamps = ts.dr) + ggplot2::ylab('Air pressure (cmH2O)') + ggxblank
 ```
 Most of the time the drifts are much more subtle than the one show, and not evident from simply looking at the barometer timeseries. Hence this methodology and accompanying algorithm that can be used to facilitate drift detection.
 
 ## Air pressure model
 
-For outlier detection in air pressure data we used a simple gaussian noise model: it is simple and easy to interpret. For drift detection this gaussian noise model is inadequate. The problem is correlation between subsequent observations, which directly affects significance calculation of the drift.
+For outlier detection in air pressure data we used a simple gaussian noise model: it is simple and easy to interpret. For drift detection this gaussian noise model is inadequate. The problem is the correlation between subsequent observations, which directly affects significance calculation of the drift.
 
 So what is a good air pressure model? In drift analysis 19/19b we did some testing with a full range of ARIMA models on all available barometer data. From that we have seen that there is a significant drop in likelihood from ARIMA(0,0,0) with non-zero mean to ARIMA(1,0,0) with non-zero mean. Subsequent more complex ARIMA models did not result in much better likelihoods -- although the AIC/BIC test sometimes suggested otherwise.
 
-A noteworthy observation was that ARIMA(0,1,0) performed almost equally well as the ARIMA(1,0,0) with non-zero mean. When $\phi$ is close to 1 these two models are equivalent, and that explains the similar performance. At the same time it must be noted that air pressure does _not_ behave like a random walk, which will be explained later.
+A noteworthy observation is that ARIMA(0,1,0) performs almost equally well as the ARIMA(1,0,0) with non-zero mean. When $\phi$ is close to 1 these two models are equivalent, and that explains the similar performance. At the same time it must be noted that air pressure does _not_ behave like a random walk, which will be explained later.
 
-So the chosen model for air pressure was ARIMA(1,0,0) with non-zero mean -- shorthand AR(1). In formulaic notation:
+So the chosen model for air pressure is ARIMA(1,0,0) with non-zero mean -- shorthand AR(1). In formulaic notation:
 
 $$
 z_t - \mu = \phi_1(z_{t-1} - \mu) + a_t
@@ -69,9 +72,21 @@ where $a_t \sim \mathcal{N}(0, \sigma^2)$. For a more succinct notation (cf. @Bo
 
 ### Estimation of $\phi$
 
-Interesting is how the autoregressive parameter $\phi$ behaves in function of $\Delta t$, the time interval between measurements. If we were to measure the air pressure each minute, we would see that subsequent measurements are almost identical -- apart from intrinsic barometer error. The series would behave almost as a random walk. Almost, because although $\phi$ would be close to 1, it would never be exactly 1. One way to see this is that the air pressure is stationary, while a random walk is not. The $\phi = 1 - \epsilon$, however small $\epsilon$ may be, will pull the series towards $\mu$, and thus result in a stationary series.
+Interesting is how the autoregressive parameter $\phi$ behaves in function of $\Delta t$, the time interval between measurements. If we were to measure the air pressure each minute, we would see that subsequent measurements are almost identical -- apart from intrinsic barometer error. The series would behave almost as a random walk. _Almost_, because although $\phi$ would be close to 1, it would never be exactly 1. One way to see this is that the air pressure is stationary, while a random walk is not. The $\phi = 1 - \epsilon$, however small $\epsilon$ may be, will pull the series towards $\mu$, and thus result in a stationary series.
 
-On the other extreme, if we would measure air pressure each 2 months (cf. drift analysis 18), we would see no correlation at all between subsequent measurements. In other words, $\phi$ would be 0 and the resulting model would be simple gaussian noise: $z_t = \mu + a_t$.
+```{r, echo=FALSE, fig.cap='Having $\\phi$ smaller than 1 (left) results in a stationary series around $\\mu$, while a random walk (right) will have no bounds. Both series have variance equal to 25.'}
+set.seed(2021)
+ts <- seq(as.POSIXct('2010-01-01'), by = '12 hours', to = as.POSIXct('2012-12-31'))
+z0 <- gwloggeR:::model_drifts.simulate(length(ts), mu = 1033, sigma = sqrt(25), phi1 = 0.85)
+zrw <- 1033 + cumsum(rnorm(length(ts), sd = sqrt(25)))
+z0.p <- gwloggeR:::plot_drifts.original(x = z0, timestamps = ts) + 
+  ggplot2::ylab('Air pressure (cmH2O)') + ggxblank + ggplot2::ggtitle('\u0394t = 12h, \u03D5 = 0.85')
+zrw.p <- gwloggeR:::plot_drifts.original(x = zrw, timestamps = ts) + 
+  ggplot2::ylab('Air pressure (cmH2O)') + ggxblank + ggplot2::ggtitle('\u0394t = 12h, \u03D5 = 1 (random walk)')
+gridExtra::grid.arrange(z0.p, zrw.p, layout_matrix = cbind(1, 2))
+```
+
+On the other extreme, if we would measure air pressure each 2 weeks (cf. drift analysis 18), we would see almost no correlation at all between subsequent measurements. In other words, $\phi$ would be 0 and the resulting model would be simple gaussian noise: $z_t = \mu + a_t$.
 
 This analysis thus suggests that $\phi$ is a function of $\Delta t$. Unfortunately, the classical ARIMA models allow only for fixed $\Delta t$. That is why the algorithm currently aggregates the measurements to 12h intervals (i.e. it is assumed that $\Delta t = 12h$).
 
@@ -79,33 +94,39 @@ Under $\Delta t = 12h$ we can estimate $\phi$ based on all available barometer d
 
 ## Difference with reference series model
 
-For drift detection we use the difference with a reference series $d_t$, not the original series $z_t$. So it begs the question: how does $\phi$ translate for $d_t$. Assume we have $r_t$ as our reference series and assume that both $z_t$ and $r_t$ are height compensated, making $\mu_z = \mu_r = \mu$. Set $b_t = a_{z,t} - a_{r,t}$. Then:
+For drift detection we use series $d_t$ wich is defined as the difference between the original series $z_t$ and a reference series $r_t$. So it begs the question: how does $\phi$ translate for $d_t$. To simplify the notation we define $\mu_d = \mu_z - \mu_r$ and $b_t = a_{z,t} - a_{r,t}$. Then:
 
 $$
 \begin{aligned}
 d_t &= z_t - r_t \\
-    &= \tilde{z}_t - \tilde{r}_t \\
-    &= b_t + \phi(\tilde{z}_{t-1} - \tilde{r}_{t-1}) \\
-    &= b_t + \phi b_{t-1} + \phi(\tilde{z}_{t-2} - \tilde{r}_{t-2}) \\
-    &= b_t + \phi b_{t-1} + \phi^2 b_{t-2} + \phi^3 b_{t-3} + \dots \\
-    &= \phi d_{t - 1} + b_t
+    &= \mu_d + b_t + \phi(\tilde{z}_{t-1} - \tilde{r}_{t-1}) \\
+    &= \mu_d + b_t + \phi b_{t-1} + \phi(\tilde{z}_{t-2} - \tilde{r}_{t-2}) \\
+    &= \mu_d + b_t + \phi b_{t-1} + \phi^2 b_{t-2} + \phi^3 b_{t-3} + \dots \\
+    &= \phi d_{t - 1} + \mu_d +  b_t
 \end{aligned}
 $$
 
-The last equivalence one can see by just expanding $\phi d_{t-1}$ recursively. TODO: If we do not assume height compensation, then ...
+The last equivalence one can see by just expanding $\phi d_{t-1}$ recursively. The $\mu_d = 0$ in case both series are height-compensated, otherwise it is their difference in height in cmH2O.
 
 Three things are worth to note here. First is that $d_t$ is still an AR(1) model. Second is that the AR(1) parameter is the same as in $z_t$ and $r_t$: just $\phi$. And the last thing is that only the error is different: $a_t - a_t$. This error-term we investigate next.
 
 ### The error term $b_t$
 
-We assumed in our model definition that $a_t \sim \mathcal{N}(0, \sigma^2)$. This makes $b_t \sim \mathcal{N}(0, 2\sigma^2 - 2\text{cov}(a_{z,t}, a_{r,t}))$. In drift analysis 19 we estimated $\sigma^2 \approx 25$ and $\text{var}(b_t) \approx 2.2$. This suggest $\text{cov}(a_{z,t}, a_{r,t}) \approx 23.9$ and thus very high correlation between $z_t$ and $r_t$. This effect can be seen in the following plot (TODO):
+We assumed in our model definition that $a_t \sim \mathcal{N}(0, \sigma^2)$. This makes $b_t \sim \mathcal{N}(0, 2\sigma^2 - 2\text{cov}(a_{z,t}, a_{r,t}))$. In drift analysis 19 we estimated $\sigma^2 \approx 25$ and $\text{var}(b_t) \approx 2.2$. This suggests that $\text{cov}(a_{z,t}, a_{r,t}) \approx 23.9$ and thus a very high correlation between $z_t$ and $r_t$. This effect can be seen in the following plot:
 
-```{r}
-# simulated series
+```{r, echo=FALSE, fig.cap='Comparison of variance for of $z_t$ (left) and $d_t$ (right) on equal scale. If $z_t$ and $r_t$ were not correlated, the variance of $d_t$ would be 2 times larger than that of $z_t$.'}
 set.seed(2020)
-N <- 1000
-list2env(xy.errors(n = N), envir = environment())
-ts <- seq(as.POSIXct('2010-01-01'), by = '12 hours', length.out = N)
+invisible(list2env(xy.errors(n = length(ts)), envir = environment()))
+z <- gwloggeR:::model_drifts.simulate(mu = 1033, sigma = sqrt(25), phi1 = 0.85, a = a.z)
+r <- gwloggeR:::model_drifts.simulate(mu = 1033, sigma = sqrt(25), phi1 = 0.85, a = a.r)
+dr <- gwloggeR:::drift_reference.differentiate(z, ts, reference = list(list(x = r, timestamps = ts)), scalefactor.sec = 3600*12)
+z.p <- gwloggeR:::plot_drifts.original(x = z, timestamps = ts, dr = dr, 
+                                       ylim = quantile(z, probs = c(0.005, 0.995))) + 
+  ggplot2::ylab('Air pressure (cmH2O)') + ggxblank + ggplot2::ggtitle(expression(z[t]*' (black) and '*r[t]*' (red) in background'))
+dr.p <- gwloggeR:::plot_drifts.differences(dra = dr, drift = gwloggeR:::Drift.logical(x = rep(FALSE, length(z)), mu = NA, sigma = NA), 
+                                           ylim = quantile(z, probs = c(0.005, 0.995)) - 1033) + 
+  ggplot2::ylab('Air pressure difference (cmH2O)') + ggxblank + ggplot2::ggtitle(expression('Difference between '*z[t]*' and '*r[t]))
+gridExtra::grid.arrange(z.p, dr.p, layout_matrix = cbind(1, 2))
 ```
 
 ## Drift detection
@@ -137,5 +158,6 @@ TODO
 * Implement $\phi(\Delta t)$ (i.e. dependence of $\phi$ on time differences.)
 * Bayesian estimation of $\delta$ and $t_\delta$.
 * Investigate the unexpected $N$-dependence in degrees of freedom of the LR test.
+* Explain what happens in theory when we have more than one reference timeseries.
 
 ## References
