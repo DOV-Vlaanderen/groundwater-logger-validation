@@ -2,7 +2,8 @@
 title: "Air pressure: drift"
 date: "`r Sys.Date()`"
 output: 
-  rmarkdown::html_vignette:
+  bookdown::html_document2:
+    base_format: rmarkdown::html_vignette
     fig_width: 7
     fig_height: 4
     toc: true
@@ -26,6 +27,7 @@ knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>"
 )
+options('max.print' = 10)
 ```
 
 ```{r, echo=FALSE}
@@ -39,18 +41,21 @@ xy.errors <- function(n, mu = rep(0, 2L), Sigma = matrix(c(25, 23.9, 23.9, 25), 
 ggxblank <- ggplot2::theme(axis.text.y = ggplot2::element_text(angle = 90, hjust = 0.5),
                          axis.title.x = ggplot2::element_blank())
 ```
+
 This is an advanced guide. It explains how `detect_drift()` works for air pressure data. Make sure you have first read the [getting started](gwloggeR.html) material.
 
 ## Drift
 
 In WMO-No.8 drift is defined as "a continuous or incremental change over time in indication due to changes in metrological properties of a measuring instrument." Here is a visual example of a clearly drifting air pressure series:
 
-```{r, echo=FALSE}
+```{r zdr, echo=FALSE, fig.cap='A drifting barometer series.'}
 # simulated series
 set.seed(2020)
 ts.dr <- seq(as.POSIXct('2010-01-01'), by = '12 hours', to = as.POSIXct('2020-12-31'))
 dt <- gwloggeR:::model_drifts.trend(ts.dr, start.ts = as.POSIXct('2014-01-01'))
-zdr <- gwloggeR:::model_drifts.simulate(n = length(ts.dr), mu = 1033, phi1 = 0.85, sigma = sqrt(25), xreg = as.matrix(dt), betas = c(3))
+invisible(list2env(xy.errors(n = length(ts.dr)), envir = environment()))
+zndr <- gwloggeR:::model_drifts.simulate(mu = 1033, phi1 = 0.85, sigma = sqrt(25), a = a.r)
+zdr <- gwloggeR:::model_drifts.simulate(mu = 1033, phi1 = 0.85, sigma = sqrt(25), xreg = as.matrix(dt), betas = c(3), a = a.z)
 gwloggeR:::plot_drifts.original(x = zdr, timestamps = ts.dr) + ggplot2::ylab('Air pressure (cmH2O)') + ggxblank
 ```
 Most of the time the drifts are much more subtle than the one show, and not evident from simply looking at the barometer timeseries. Hence this methodology and accompanying algorithm that can be used to facilitate drift detection.
@@ -74,7 +79,7 @@ where $a_t \sim \mathcal{N}(0, \sigma^2)$. For a more succinct notation (cf. @Bo
 
 Interesting is how the autoregressive parameter $\phi$ behaves in function of $\Delta t$, the time interval between measurements. If we were to measure the air pressure each minute, we would see that subsequent measurements are almost identical -- apart from intrinsic barometer error. The series would behave almost as a random walk. _Almost_, because although $\phi$ would be close to 1, it would never be exactly 1. One way to see this is that the air pressure is stationary, while a random walk is not. The $\phi = 1 - \epsilon$, however small $\epsilon$ may be, will pull the series towards $\mu$, and thus result in a stationary series.
 
-```{r, echo=FALSE, fig.cap='Having $\\phi$ smaller than 1 (left) results in a stationary series around $\\mu$, while a random walk (right) will have no bounds. Both series have variance equal to 25.'}
+```{r, echo=FALSE, fig.cap='Having $\\phi$ smaller than 1 (left) results in a stationary series around $\\mu$, while a random walk (right) will have no bounds. Both series have variance of $a_t$ fixed to 25.'}
 set.seed(2021)
 ts <- seq(as.POSIXct('2010-01-01'), by = '12 hours', to = as.POSIXct('2012-12-31'))
 z0 <- gwloggeR:::model_drifts.simulate(length(ts), mu = 1033, sigma = sqrt(25), phi1 = 0.85)
@@ -137,21 +142,49 @@ $$
 d_t - \mu_d -  \delta(t-t_\delta)I(t\ge t_\delta) - \mathbf{\beta} \mathbf{x_t} 
   = \phi[d_{t-1} - \mu_d -  \delta(t-1-t_\delta)I(t-1\ge t_\delta) - \mathbf{\beta} \mathbf{x_{t-1}} ] + b_t
 $$
-where $\mathbf{x_t}$ are the yearly seasonal sine and cosine components and $\mu_d$, $\mathbf{\beta}$, $\sigma_d^2$, $\delta$ and $t_\delta$ are to be estimated. These estimates can be recovered with the `detect_drift(verbose=TRUE)` parameter.
+where $\mathbf{x_t}$ are the exogenous yearly seasonal sine and cosine components and $\mu_d$, $\mathbf{\beta}$, $\sigma_d^2$, $\delta$ and $t_\delta$ are to be estimated.
+
+Let's use the series from Figure \@ref(fig:zdr) and show how these estimates can be recovered with the `detect_drift(verbose=TRUE)` parameter.
+
+```{r attributes, fig.width=10.5, fig.height=7.5, out.width='100%', fig.cap="Diagnostic plots. For more information, consult the 'Diagnostic plots' section in `?gwloggeR::detect_drift`"}
+# zdr is the drifting series, ts.dr are its timestamps and zndr is the reference series.
+# We focus on the attributes of returned vector when argument verbose=TRUE.
+attributes(gwloggeR::detect_drift(x = zdr, timestamps = ts.dr,
+                                  reference = list(list(x = zndr, timestamps = ts.dr)),
+                                  verbose = TRUE, plot = TRUE))
+```
+
+$t_\delta$ is the timestamp at which the drift starts. In this case it is estimated at 2013-10-26 UTC. The $\delta$ is the drift rate, here estimated as 2.9 cmH2O/year. The $\mathbf{\beta}$ expresses the yearly seasonality as sine and cosine components, here estimated as -0.09 and 0.02 respectively. And lastly, $\sigma^2 = \text{Var}(b_t)$ is here estimated as 1.48².
+
+From the output we gather that the drift significance is 0. It can be interpreted as the probability that there is no drift (i.e. the null-hypothesis). In other words, the smaller this value, the stronger the evidence that there is a drift. (cf. infra)
+
+For more information about the diagnostic plots in Figure \@ref(fig:attributes), consult the 'Diagnostic plots' section in `?gwloggeR::detect_drift`.
 
 ### Estimation of $\delta$ and $t_\delta$
 
-Parameters $\delta$ and $t_\delta$ are maximum likelihood estimates (MLE). Due to discrete and non-linear nature of $t_\delta$ the maximization of the likelihood function is not straightforward. A secondary difficulty is that the AR(1) likelihood function is not convex either (TODO REF). The `arima()` function seems to produced good results, despite the convexity. The first problem we solve brute-force by fitting the AR(1) model to specific $t_\delta$. Instead of fitting the AR(1) model for each possible $t_\delta$, we scan in steps of $\sqrt{N/2}$ where $N$ is the number of observations. Subsequently we do a local search on all $t$ in the vicinity of the optima. 
+Parameters $\delta$ and $t_\delta$ are maximum likelihood estimates (MLE). Due to discrete and non-linear nature of $t_\delta$ the maximization of the likelihood function is not straightforward. A secondary difficulty is that the AR(1) likelihood function is not convex either (cf. @White2015). The `arima()` function seems to produce good results, despite the convexity. The first problem we solve brute-force by fitting the AR(1) model to specific $t_\delta$. Instead of fitting the AR(1) model for each possible $t_\delta$, we scan in steps of $\sqrt{N/2}$ where $N$ is the number of observations. Subsequently we do a local search on all $t$ in the vicinity of the optima. 
 
 ### Drift significance
 
 Once $\hat{\delta}_{MLE}$ and $\hat{t}_{\delta_{MLE}}$ have been found, likelihood ratio test is used to test their significance. 
 
-A peculiar observation here is the fact that the optimal $\chi^2$ degrees of freedom are not equal to 2, but to some unknown $2 + f(N)$ where $0 < f(N) < 1$. For our case, where $1000 < N < 10000$, it seems that $f(N) \approx 0.8$ performs well in the sense that under $H_0$ the $p$-values are distributed uniformly. Currently it is not clear in what sense the drift model violates the Wilks theorem (TODO REF), and thus what $f$ is.
+A peculiar observation here is the fact that the optimal $\chi^2$ degrees of freedom are not equal to 2, but to some unknown $2 + f(N)$ where $0 < f(N) < 1$. For our case, where $1000 < N < 10000$, it seems that $f(N) \approx 0.8$ performs well in the sense that under $H_0$ the $p$-values are  uniformly distributed. Currently it is not clear in what sense the drift model violates the @Wilks1938 theorem, and thus what $f$ is.
 
 ## Examples
 
-TODO
+Here we discuss some real examples.
+
+```{r, echo=FALSE, fig.width=10.5, fig.height=7.5, out.width='100%', warning=FALSE}
+df <- readRDS('./airpressure-drift/BAOL842X_T1108.rds')
+data.table::setkey(df, TIMESTAMP_UTC)
+df.ref <- readRDS('./airpressure-drift/KNMI_Westdorpe.rds')
+invisible(gwloggeR::detect_drift(
+  x = df$PRESSURE_VALUE, timestamps = df$TIMESTAMP_UTC, 
+  reference = list(list(x = df.ref$PRESSURE_VALUE, timestamps = df.ref$TIMESTAMP_UTC)), 
+  plot = TRUE, title = 'BAOL842X_T1108'))
+```
+
+BAOL842X_T1108 has a strong seasonal effect and is drifting at a rate of -1.63 cm/H2O per year.
 
 ## Future work
 
