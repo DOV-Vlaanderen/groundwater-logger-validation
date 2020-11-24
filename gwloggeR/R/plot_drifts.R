@@ -73,7 +73,7 @@ plot_drifts.dtft <- function(x, timestamps, drift, remove.drift = FALSE) {
   df.peaks <- df[lup & rdown, ][order(intensity, decreasing = TRUE)]
 
   # Set x-axis breaks based on intensity peaks
-  brange <- diff(range(periods.sec))/2
+  brange <- diff(range(periods.sec))/3
   breaks <- numeric()
   while (nrow(df.peaks) > 0L) {
     breaks <- c(breaks, df.peaks[1L, periods.sec])
