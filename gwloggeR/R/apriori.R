@@ -24,6 +24,7 @@ Apriori <- function(data_type = c("air pressure", "hydrostatic pressure"), units
 
 }
 
+#' @exportClass Apriori
 setOldClass('Apriori') # for use in S4 slots and signatures
 
 #' @rdname Apriori
