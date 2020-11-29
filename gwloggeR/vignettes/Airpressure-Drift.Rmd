@@ -184,7 +184,7 @@ invisible(gwloggeR::detect_drift(
   plot = TRUE, title = 'BAOL842X_T1108'))
 ```
 
-BAOL842X_T1108 has a strong seasonal effect and is drifting at a rate of -1.63 cm/H2O per year.
+BAOL842X_T1108 has a strong seasonal effect and is drifting at a rate of -1.63 cmH2O per year.
 
 ## Future work
 
