@@ -11,7 +11,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 
 
-<meta name="date" content="2020-10-11" />
+<meta name="date" content="2020-11-29" />
 
 <title>Hydrostatic pressure</title>
 
@@ -31,6 +31,54 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 });
 </script>
+<style type="text/css">
+a.anchor-section {margin-left: 10px; visibility: hidden; color: inherit;}
+a.anchor-section::before {content: '#';}
+.hasAnchor:hover a.anchor-section {visibility: visible;}
+</style>
+<script>// Anchor sections v1.0 written by Atsushi Yasumoto on Oct 3rd, 2020.
+document.addEventListener('DOMContentLoaded', function() {
+  // Do nothing if AnchorJS is used
+  if (typeof window.anchors === 'object' && anchors.hasOwnProperty('hasAnchorJSLink')) {
+    return;
+  }
+
+  const h = document.querySelectorAll('h1, h2, h3, h4, h5, h6');
+
+  // Do nothing if sections are already anchored
+  if (Array.from(h).some(x => x.classList.contains('hasAnchor'))) {
+    return null;
+  }
+
+  // Use section id when pandoc runs with --section-divs
+  const section_id = function(x) {
+    return ((x.classList.contains('section') || (x.tagName === 'SECTION'))
+            ? x.id : '');
+  };
+
+  // Add anchors
+  h.forEach(function(x) {
+    const id = x.id || section_id(x.parentElement);
+    if (id === '') {
+      return null;
+    }
+    let anchor = document.createElement('a');
+    anchor.href = '#' + id;
+    anchor.classList = ['anchor-section'];
+    x.classList.add('hasAnchor');
+    x.appendChild(anchor);
+  });
+});
+</script>
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
 
 
 <style type="text/css">code{white-space: pre;}</style>
@@ -317,7 +365,7 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 
 
 <h1 class="title toc-ignore">Hydrostatic pressure</h1>
-<h4 class="date">2020-10-11</h4>
+<h4 class="date">2020-11-29</h4>
 
 
 <div id="TOC">
@@ -476,6 +524,7 @@ L(\mathbf{\theta} ; \mathbf{x}) = p(\mathbf{x} | \mathbf{\theta}) = \prod_{t=2}^
 <li>Lower threshold based on air pressure for <code>detect_outliers()</code>?</li>
 <li><code>detect_temporalchanges()</code> should flag everything until the decay is insignificant.</li>
 <li>Issue #47: if intervals are not divisible by 5min and less than 5min (fixed): small 1min sample is used for <span class="math inline">\(\epsilon(\Delta t)\)</span> estimation.</li>
+<li>Show thresholds on diagnostic plots for differences(x).</li>
 </ul>
 </div>
 <div id="references" class="section level2 unnumbered">
