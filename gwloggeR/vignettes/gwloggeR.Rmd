@@ -108,7 +108,7 @@ plot(x, type = 'l')
 ```
 Although in this sample the drift is very pronounced, in reality, it is much more subtle. 
 
-To improve the drift resolution, one or more reference series is needed. Lets make 2 reference series which are highly correlated with `x` and themselves, as is the case in reality.
+To improve the drift resolution, one or more reference series is needed. Reference series should ideally be good non-drifting barometer data. If you're not sure, then the more series you supply, the generally better results you can expect. For our experiment, lets make 2 non-drifting reference series which are highly correlated with `x` and themselves, as is the case in reality.
 
 ```{r}
 r1 <- as.vector(arima.sim(n = n, model = list('ar' = 0.85), innov = a + rnorm(n, sd = sqrt(3))) + 1033)
