@@ -28,25 +28,28 @@ set.seed(2019)
 options('max.print' = 10)
 ```
 
-`gwloggeR` is a package for automatized flagging of outliers, level shifts and temporal changes in raw air and hydrostatic pressure data.
+`gwloggeR` is a package for automatized flagging of outliers, level shifts, temporal changes and drift in raw air and hydrostatic pressure data.
 
 Here you find the basic building-blocks of the package. Before continuing, make sure you have correctly [installed](../index.html#installation) the last stable version of `gwloggeR`.
 
 ## Detect functions
 
-At its core `gwloggeR` consists of several [`detect_`](../reference/index.html#section-detection-functions) functions which take as input a vector of observations, and return a boolean vector of the same length specifying TRUE for each positive detection, and FALSE otherwise.
+At its core `gwloggeR` consists of several [`detect_`](../reference/index.html#section-detection-functions) functions which take as input a vector of observations, and return a boolean vector of the same length specifying `TRUE` for each positive detection, and `FALSE` otherwise.
 
-Currently, there are three `detect_` functions defined:
+Currently, there are four `detect_` functions defined:
 
 * `gwloggeR::detect_outliers()` which detects outliers.
-* `gwloggeR::detect_levelshifts()` which detects level shifts.
-* `gwloggeR::detect_temporalchanges()` which detects changes that have a temporal effect with an exponential decay.
+* `gwloggeR::detect_levelshifts()` which detects level shifts in hydrostatic pressure data.
+* `gwloggeR::detect_temporalchanges()` which detects changes that have a temporal effect with an exponential decay in hydrostatic pressure data.
+* `gwloggeR::detect_drift()` which detects barometer drift.`
 
-These functions are mainly to be used with raw air or hydrostatic pressure data.
+In the following sections we look at each of these functions in more detail.
 
 ## Air pressure
 
-The underlying assumption for air pressure data is that it is normally distributed.
+### Detect outliers
+
+The underlying assumption for outlier detection is that air pressure is normally distributed.
 
 Lets generate some sample air pressure data. Based on Belgium, our Gaussian parameter estimates for air pressure are: $\hat{\mu} = 1033 \; cmH_2O$ and $\hat{\sigma} = 9.5 \; cmH_2O$
 
@@ -57,8 +60,6 @@ sigma <- 9.5
 x <- rnorm(n, mean = mu, sd = sigma)
 plot(x, type = 'l', ylim = c(1000, 1100))
 ```
-
-### Detect outliers
 
 Now lets add an outlier to `x`. An outlier we define as a single extreme value (e.g. $6 \times \hat{\sigma}$).
 
@@ -79,14 +80,58 @@ Note the optional `plot = TRUE` argument. In that case, besides the boolean vect
 
 #### With apriori information
 
-We can improve detection methods by supplying _a-priori_ information about `x`. For example, in this case we know that `x` represents air pressure measurements in Belgium. As such, we make an `apriori` object and supply this information to the detection function.
+We can improve detection methods by supplying _a-priori_ information about `x`. For example, in this case we know that `x` represents air pressure measurements in Belgium. As such, we make an `Apriori` object and supply this information to the detection function.
 
 ```{r airpressure-ao-apr}
-apriori <- gwloggeR::apriori('air pressure', units = 'cmH2O')
+apriori <- gwloggeR::Apriori('air pressure', units = 'cmH2O')
 gwloggeR::detect_outliers(x = x, apriori = apriori, plot = TRUE)
 ```
 
-Without _a-priori_ information the `detect_outliers()` function will assume normality of `x` and estimate the $\hat{\mu}$ and $\hat{\sigma}$ parameters in a robust way. When we supply _a-priori_ information, then other extra assumptions might apply and the detection result will improve. Wonder what exact assumptions and how it all fits together? Then read the [Air pressure vignette](Airpressure.html).
+Without _a-priori_ information the `detect_outliers()` function will assume normality of `x` and estimate the $\mu$ and $\sigma$ parameters in a robust way. When we supply _a-priori_ information, then other extra assumptions might apply and the detection result will improve. Wonder what exact assumptions are and how it all fits together? Then read the [Air pressure vignette](Airpressure.html).
+
+### Detect drift
+
+Drift detection model for air pressure is based on the first-order autoregressive model with a Gaussian error term. Lets generate such a series.
+
+```{r}
+n <- 100L
+a <- rnorm(n = n, sd = sqrt(25))
+x <- as.vector(arima.sim(n = n, model = list('ar' = 0.85), innov = a) + 1033)
+plot(x, type = 'l')
+```
+This series resembles well the air pressure when sampled at 12 hours intervals. Now lets add a drift component to it as a deterministic trend, starting at observation 85.
+
+```{r}
+di <- 85
+x[di:n] <- x[di:n] + seq(n-di+1)*2
+plot(x, type = 'l')
+```
+Although in this sample the drift is very pronounced, in reality, it is much more subtle. 
+
+To improve the drift resolution, one or more reference series is needed. Lets make 2 reference series which are highly correlated with `x` and themselves, as is the case in reality.
+
+```{r}
+r1 <- as.vector(arima.sim(n = n, model = list('ar' = 0.85), innov = a + rnorm(n, sd = sqrt(3))) + 1033)
+r2 <- as.vector(arima.sim(n = n, model = list('ar' = 0.85), innov = a + rnorm(n, sd = sqrt(3))) + 1033)
+plot(r1, type = 'l', ylab = 'r1 (black), r2 (brown)')
+lines(r2, col = 'brown')
+```
+Now, to detect drift, we just supply `x` and the two reference series `r1` and `r2` to the `detect_drift()` function. Note that we also need to supply timestamps, and that the reference data is constructed as a list of `list(x, timestamps)` objects. For convenience, we supply the `plot = TRUE` to print the diagnostic plots.
+
+```{r, fig.width=10.5, fig.height=7.5, out.width='100%'}
+ts <- seq(as.POSIXct('2020-01-01'), by = '12 hours', length.out = n)
+ref <- list(list(x = r1, timestamps = ts), list(x = r2, timestamps = ts))
+result <- gwloggeR::detect_drift(x = x, timestamps = ts, reference = ref, plot = TRUE)
+```
+
+The diagnostic plot in the bottom left signifies in red once the drift is detected. For more about these plots, consult the 'Diagnostic plots' section in `?gwloggeR::detect_drift`.
+
+The output, captured in the `result` variable is as usual: a boolean vector signifying `FALSE` for no drift, and `TRUE` for all the observations once a drift is detected. In this case the drift is detected around observation `r di`.
+
+```{r}
+result[(di-5):(di+5)]
+```
+If you want to understand better how drift detection works, you can consult the [Air pressure drift detection vignette](Airpressure-drift.html).
 
 ## Hydrostatic pressure
 
@@ -113,7 +158,7 @@ plot(timestamps, x, type = 'l')
 Our `x` is not normally distributed. Remember that `detect_outliers()` without any _a-priori_ information assumes normality of `x`? So if we do not provide any _a-priori_ information about `x`, the outlier detection will be bad. To improve it, we state that `x` is hydrostatic pressure data.
 
 ```{r}
-apriori <- gwloggeR::apriori('hydrostatic pressure', units = 'cmH2O')
+apriori <- gwloggeR::Apriori('hydrostatic pressure', units = 'cmH2O')
 ```
 
 Note also, that in this case, we also need to supply `timestamps` to the detection function. This is because the underlying model also considers time-intervals between observations.
