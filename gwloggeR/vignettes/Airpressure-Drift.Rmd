@@ -62,7 +62,7 @@ Most of the time the drifts are much more subtle than the one show, and not evid
 
 ## Air pressure model
 
-For outlier detection in air pressure data we used a simple gaussian noise model: it is simple and easy to interpret. For drift detection this gaussian noise model is inadequate. The problem is the correlation between subsequent observations, which directly affects significance calculation of the drift.
+For outlier detection in air pressure data we used a simple gaussian noise model: it is simple and easy to interpret. For drift detection this gaussian noise model is inadequate. The problem is the correlation between subsequent observations, which directly affects significance calculation of the drift as shown in drift analysis 23 (#63).
 
 So what is a good air pressure model? In drift analysis 19/19b we did some testing with a full range of ARIMA models on all available barometer data. From that we have seen that there is a significant drop in likelihood from ARIMA(0,0,0) with non-zero mean to ARIMA(1,0,0) with non-zero mean. Subsequent more complex ARIMA models did not result in much better likelihoods -- although the AIC/BIC test sometimes suggested otherwise.
 
@@ -95,7 +95,7 @@ On the other extreme, if we would measure air pressure each 2 weeks (cf. drift a
 
 This analysis thus suggests that $\phi$ is a function of $\Delta t$. Unfortunately, the classical ARIMA models allow only for fixed $\Delta t$. That is why the algorithm currently aggregates the measurements to 12h intervals (i.e. it is assumed that $\Delta t = 12h$).
 
-Under $\Delta t = 12h$ we can estimate $\phi$ based on all available barometer data. This estimation suggests that $0.80 \le \phi(12h) \le 0.90$. Knowing this, it seems plausible to assume the parameter as know _a-prior_ information, instead of estimating it each time on each series separately. (Cf. drift analysis 28/29)
+Under $\Delta t = 12h$ we can estimate $\phi$ based on all available barometer data. This estimation suggests that $0.80 \le \phi(12h) \le 0.90$. Knowing this, it seems plausible to assume the parameter as know _a-prior_ information, instead of estimating it each time on each series separately. (Cf. drift analysis 28/29.)
 
 ## Difference with reference series model
 
