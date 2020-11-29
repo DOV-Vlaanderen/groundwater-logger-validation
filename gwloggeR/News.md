@@ -4,6 +4,7 @@
 * Caching of algorithm results.
 * Use travis-ci for website building and build testing.
 * Code documentation
+* Prebuild binaries so not a whole repository has to be downloaded for installation
 
 # Development version
 
