@@ -14,7 +14,7 @@ output:
   pdf_document:
     toc: true
 nocite: | 
-  @WMO8, @air-analysis
+  @WMO8, @air-analysis-reports, @drift-scripts
 bibliography: bibliography.bib
 vignette: >
   %\VignetteIndexEntry{Air pressure: drift}
@@ -58,13 +58,14 @@ zndr <- gwloggeR:::model_drifts.simulate(mu = 1033, phi1 = 0.85, sigma = sqrt(25
 zdr <- gwloggeR:::model_drifts.simulate(mu = 1033, phi1 = 0.85, sigma = sqrt(25), xreg = as.matrix(dt), betas = c(3), a = a.z)
 gwloggeR:::plot_drifts.original(x = zdr, timestamps = ts.dr) + ggplot2::ylab('Air pressure (cmH2O)') + ggxblank
 ```
+
 Most of the time the drifts are much more subtle than the one show, and not evident from simply looking at the barometer timeseries. Hence this methodology and accompanying algorithm that can be used to facilitate drift detection.
 
 ## Air pressure model
 
-For outlier detection in air pressure data we used a simple gaussian noise model: it is simple and easy to interpret. For drift detection this gaussian noise model is inadequate. The problem is the correlation between subsequent observations, which directly affects significance calculation of the drift as shown in drift analysis 23 (#63).
+For outlier detection in air pressure data we used a simple gaussian noise model: it is simple and easy to interpret. For drift detection this gaussian noise model is inadequate. The problem is the correlation between subsequent observations, which directly affects significance calculation of the drift as shown in [this](https://github.com/DOV-Vlaanderen/groundwater-logger-validation/issues/63) analysis report.
 
-So what is a good air pressure model? In drift analysis 19/19b we did some testing with a full range of ARIMA models on all available barometer data. From that we have seen that there is a significant drop in likelihood from ARIMA(0,0,0) with non-zero mean to ARIMA(1,0,0) with non-zero mean. Subsequent more complex ARIMA models did not result in much better likelihoods -- although the AIC/BIC test sometimes suggested otherwise.
+So what is a good air pressure model? In [script 19/19b](https://github.com/DOV-Vlaanderen/groundwater-logger-validation/blob/master/src/r/drifts/analysis_19.r) we did some testing with a full range of ARIMA models on all available barometer data. From that we have seen that there is a significant drop in likelihood from ARIMA(0,0,0) with non-zero mean to ARIMA(1,0,0) with non-zero mean. Subsequent more complex ARIMA models did not result in much better likelihoods -- although the AIC/BIC test sometimes suggested otherwise.
 
 A noteworthy observation is that ARIMA(0,1,0) performs almost equally well as the ARIMA(1,0,0) with non-zero mean. When $\phi$ is close to 1 these two models are equivalent, and that explains the similar performance. At the same time it must be noted that air pressure does _not_ behave like a random walk, which will be explained later.
 
@@ -91,11 +92,11 @@ zrw.p <- gwloggeR:::plot_drifts.original(x = zrw, timestamps = ts) +
 gridExtra::grid.arrange(z0.p, zrw.p, layout_matrix = cbind(1, 2))
 ```
 
-On the other extreme, if we would measure air pressure each 2 weeks (cf. drift analysis 18), we would see almost no correlation at all between subsequent measurements. In other words, $\phi$ would be 0 and the resulting model would be simple gaussian noise: $z_t = \mu + a_t$.
+On the other extreme, if we would measure air pressure each 2 weeks (cf. [script 18](https://github.com/DOV-Vlaanderen/groundwater-logger-validation/blob/master/src/r/drifts/analysis_18.r)), we would see almost no correlation at all between subsequent measurements. In other words, $\phi$ would be 0 and the resulting model would be simple gaussian noise: $z_t = \mu + a_t$.
 
 This analysis thus suggests that $\phi$ is a function of $\Delta t$. Unfortunately, the classical ARIMA models allow only for fixed $\Delta t$. That is why the algorithm currently aggregates the measurements to 12h intervals (i.e. it is assumed that $\Delta t = 12h$).
 
-Under $\Delta t = 12h$ we can estimate $\phi$ based on all available barometer data. This estimation suggests that $0.80 \le \phi(12h) \le 0.90$. Knowing this, it seems plausible to assume the parameter as know _a-prior_ information, instead of estimating it each time on each series separately. (Cf. drift analysis 28/29.)
+Under $\Delta t = 12h$ we can estimate $\phi$ based on all available barometer data. This estimation suggests that $0.80 \le \phi(12h) \le 0.90$. Knowing this, it seems plausible to assume the parameter as know _a-prior_ information, instead of estimating it each time on each series separately.
 
 ## Difference with reference series model
 
@@ -117,7 +118,7 @@ Three things are worth to note here. First is that $d_t$ is still an AR(1) model
 
 ### The error term $b_t$
 
-We assumed in our model definition that $a_t \sim \mathcal{N}(0, \sigma^2)$. This makes $b_t \sim \mathcal{N}(0, 2\sigma^2 - 2\text{cov}(a_{z,t}, a_{r,t}))$. In drift analysis 19 we estimated $\sigma^2 \approx 25$ and $\text{var}(b_t) \approx 2.2$. This suggests that $\text{cov}(a_{z,t}, a_{r,t}) \approx 23.9$ and thus a very high correlation between $z_t$ and $r_t$. This effect can be seen in the following plot:
+We assumed in our model definition that $a_t \sim \mathcal{N}(0, \sigma^2)$. This makes $b_t \sim \mathcal{N}(0, 2\sigma^2 - 2\text{cov}(a_{z,t}, a_{r,t}))$. In [script 19](https://github.com/DOV-Vlaanderen/groundwater-logger-validation/blob/master/src/r/drifts/analysis_19.r) we estimated $\sigma^2 \approx 25$ and $\text{var}(b_t) \approx 2.2$. This suggests that $\text{cov}(a_{z,t}, a_{r,t}) \approx 23.9$ and thus a very high correlation between $z_t$ and $r_t$. This effect can be seen in the following plot:
 
 ```{r, echo=FALSE, fig.cap='Comparison of variance for of $z_t$ (left) and $d_t$ (right) on equal scale. If $z_t$ and $r_t$ were not correlated, the variance of $d_t$ would be 2 times larger than that of $z_t$.'}
 set.seed(2020)
@@ -179,8 +180,8 @@ df <- readRDS('./airpressure-drift/BAOL842X_T1108.rds')
 data.table::setkey(df, TIMESTAMP_UTC)
 df.ref <- readRDS('./airpressure-drift/KNMI_Westdorpe.rds')
 invisible(gwloggeR::detect_drift(
-  x = df$PRESSURE_VALUE, timestamps = df$TIMESTAMP_UTC, 
-  reference = list(list(x = df.ref$PRESSURE_VALUE, timestamps = df.ref$TIMESTAMP_UTC)), 
+  x = df$PRESSURE_VALUE, timestamps = df$TIMESTAMP_UTC,
+  reference = list(list(x = df.ref$PRESSURE_VALUE, timestamps = df.ref$TIMESTAMP_UTC)),
   plot = TRUE, title = 'BAOL842X_T1108'))
 ```
 
