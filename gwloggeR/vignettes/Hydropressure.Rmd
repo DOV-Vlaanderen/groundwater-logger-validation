@@ -233,7 +233,7 @@ detach('package:gwloggeR.data')
 df <- gwloggeR.data::read('pp09-1_120829130801_F5474')$df
 data.table::setkey(df, TIMESTAMP_UTC)
 invisible(gwloggeR::detect_outliers(x = df$PRESSURE_VALUE, timestamps = df$TIMESTAMP_UTC, 
-                                    apriori = gwloggeR::apriori('hydrostatic pressure'), 
+                                    apriori = gwloggeR::Apriori('hydrostatic pressure'), 
                                     plot = TRUE, title = 'pp09-1_120829130801_F5474'))
 ```
 
@@ -244,7 +244,7 @@ df <- gwloggeR.data::read('DYLP006X_80773')$df
 data.table::setkey(df, TIMESTAMP_UTC)
 df <- df[TIMESTAMP_UTC > '2010-10-01' & TIMESTAMP_UTC < '2011-01-01',]
 invisible(gwloggeR::detect_outliers(x = df$PRESSURE_VALUE, timestamps = df$TIMESTAMP_UTC, 
-                                    apriori = gwloggeR::apriori('hydrostatic pressure'), 
+                                    apriori = gwloggeR::Apriori('hydrostatic pressure'), 
                                     plot = TRUE, title = 'DYLP006X_80773'))
 ```
 
@@ -255,7 +255,7 @@ df <- gwloggeR.data::read('DYLP222A_G4201')$df
 data.table::setkey(df, TIMESTAMP_UTC)
 df <- df[TIMESTAMP_UTC > '2017-01-01' & TIMESTAMP_UTC < '2017-03-01',]
 invisible(gwloggeR::detect_outliers(x = df$PRESSURE_VALUE, timestamps = df$TIMESTAMP_UTC, 
-                                    apriori = gwloggeR::apriori('hydrostatic pressure'), 
+                                    apriori = gwloggeR::Apriori('hydrostatic pressure'), 
                                     plot = TRUE, title = 'DYLP222A_G4201'))
 ```
 
