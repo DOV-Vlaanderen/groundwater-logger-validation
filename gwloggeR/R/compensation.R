@@ -6,7 +6,7 @@
 #'
 #' @return x reduced to MSL pressure.
 #'
-#' @export
+#' @keywords internal
 #'
 compensate.altitude <- function(x, altitude.m) {
   stop('Not yet implemented.')

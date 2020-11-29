@@ -15,3 +15,4 @@ x reduced to MSL pressure.
 \description{
 This function is for air pressure altitude compensation based on the barometric formula.
 }
+\keyword{internal}
