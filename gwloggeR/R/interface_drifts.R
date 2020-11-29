@@ -129,7 +129,7 @@ setMethod(
   signature = c(x = "numeric"),
   function(x, timestamps, reference, apriori, plot, verbose, title, alpha) {
 
-    # make differences of x with the reference in respect to matching timestamps: dr$x = x - referece
+    # make differences of x with the reference in respect to matching timestamps: dr$x = x - reference
     dr <- drift_reference.differentiate(x = x, timestamps = timestamps, reference = reference, scalefactor.sec = 3600*12)
 
     # aggregate dr for model fitting
