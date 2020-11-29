@@ -111,6 +111,7 @@ setGeneric(
     assert.ordered(timestamps)
 
     assert.nonas(x)
+    assert.numeric(x)
 
     drift_reference.assert(reference = reference)
 

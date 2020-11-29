@@ -27,3 +27,9 @@ assert.ordered <- function(x) {
   name <- deparse(substitute(x))
   if (!identical(sort(x), x)) stop(sprintf('Variable %s must be ordered.', name), call. = FALSE)
 }
+
+#' @keywords internal
+assert.numeric <- function(x) {
+  name <- deparse(substitute(x))
+  if (!inherits(x, 'numeric')) stop(sprintf('Variable %s must be of class numeric.', name), call. = FALSE)
+}

@@ -13,6 +13,7 @@ drift_reference.assert <- function(reference) {
 
     assert.timestamp(reference[[id]][['timestamps']])
     assert.nonas(reference[[id]][['x']])
+    assert.numeric(reference[[id]][['x']])
 
   })
 }
