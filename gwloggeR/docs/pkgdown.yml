@@ -1,11 +1,13 @@
-pandoc: 1.19.2.1
-pkgdown: 1.4.1
+pandoc: 2.9.2.1
+pkgdown: 1.6.1
 pkgdown_sha: ~
 articles:
-  Airpressure: ../../../../../../../../../Workspace/RoVaD/inbo/groundwater/gwloggeR/vignettes/Airpressure.html
-  Development: ../../../../../../../../../Workspace/RoVaD/inbo/groundwater/gwloggeR/vignettes/Development.html
-  gwloggeR: ../../../../../../../../../Workspace/RoVaD/inbo/groundwater/gwloggeR/vignettes/gwloggeR.html
-  Hydropressure: ../../../../../../../../../Workspace/RoVaD/inbo/groundwater/gwloggeR/vignettes/Hydropressure.html
+  Airpressure-Drift: Airpressure-Drift.html
+  Airpressure: Airpressure.html
+  Development: Development.html
+  gwloggeR: gwloggeR.html
+  Hydropressure: Hydropressure.html
+last_built: 2020-11-29T19:23Z
 urls:
   reference: https://dov-vlaanderen.github.io/groundwater-logger-validation/gwloggeR/docs/reference
   article: https://dov-vlaanderen.github.io/groundwater-logger-validation/gwloggeR/docs/articles
