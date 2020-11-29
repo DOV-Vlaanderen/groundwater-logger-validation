@@ -12,14 +12,15 @@ sapply(
     gwloggeR:::test.detect_function(
       fun = gwloggeR::detect_levelshifts,
       x = df$PRESSURE_VALUE,
-      apriori = gwloggeR::apriori("hydrostatic pressure", "cmH2O"),
+      apriori = gwloggeR::Apriori("hydrostatic pressure", "cmH2O"),
       timestamps = df$TIMESTAMP_UTC,
       plot = TRUE,
       title = toupper(f),
       verbose = TRUE,
       RESULT.PATH = paste0(ROOT.PATH, f, '.result'),
       ATTRIB.PATH = paste0(ROOT.PATH, f, '.attribs'),
-      IMG.PATH = paste0(ROOT.PATH, f, '.png')
+      IMG.PATH = paste0(ROOT.PATH, f, '.png'),
+      LOG.PATH = paste0(ROOT.PATH, f, '.log')
     )
   }
 )
@@ -38,14 +39,15 @@ sapply(
     gwloggeR:::test.detect_function(
       fun = gwloggeR::detect_levelshifts,
       x = df$PRESSURE_VALUE,
-      apriori = gwloggeR::apriori("hydrostatic pressure", "cmH2O"),
+      apriori = gwloggeR::Apriori("hydrostatic pressure", "cmH2O"),
       timestamps = df$TIMESTAMP_UTC,
       plot = TRUE,
       title = toupper(f),
       verbose = TRUE,
       RESULT.PATH = paste0(ROOT.PATH, f, '.result'),
       ATTRIB.PATH = paste0(ROOT.PATH, f, '.attribs'),
-      IMG.PATH = paste0(ROOT.PATH, f, '.png')
+      IMG.PATH = paste0(ROOT.PATH, f, '.png'),
+      LOG.PATH = paste0(ROOT.PATH, f, '.log')
     )
   }
 )
