@@ -135,7 +135,7 @@ The output, captured in the `result` variable is as usual: a boolean vector sign
 ```{r}
 result[(di-5):(di+5)]
 ```
-If you want to understand better how drift detection works, you can consult the [Air pressure drift detection vignette](Airpressure-drift.html).
+If you want to understand better how drift detection works, you can consult the [Air pressure drift detection vignette](Airpressure-Drift.html).
 
 ## Hydrostatic pressure
 
