@@ -4,7 +4,7 @@
 \alias{drift_reference.aggregate}
 \title{Aggregate df to specified scalefactor}
 \usage{
-drift_reference.aggregate(df, scalefactor.sec)
+drift_reference.aggregate(df, scalefactor.sec, is.reference = FALSE)
 }
 \description{
 Aggregate df to specified scalefactor

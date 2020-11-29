@@ -9,7 +9,8 @@ test.detect_function(
   ...,
   RESULT.PATH,
   ATTRIB.PATH = NULL,
-  IMG.PATH = NULL
+  IMG.PATH = NULL,
+  LOG.PATH = NULL
 )
 }
 \description{
