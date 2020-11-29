@@ -31,7 +31,7 @@ Here we describe some  general guidelines for maintenance and development of `gw
 
 `gwloggeR` is developed as part of a larger git-repository: https://github.com/DOV-Vlaanderen/groundwater-logger-validation.
 
-So first we need to checkout this repository somewhere localy.
+So first we need to checkout this repository somewhere locally.
 
 ```{}
 git checkout https://github.com/DOV-Vlaanderen/groundwater-logger-validation.git
@@ -39,24 +39,25 @@ git checkout https://github.com/DOV-Vlaanderen/groundwater-logger-validation.git
 
 ### Projects
 
-The repository consists of 2 project roots:
+The repository consists of 3 project roots:
 
-* [`src/r/groundwater.rproj`](https://github.com/DOV-Vlaanderen/groundwater-logger-validation/blob/master/src/r/groundwater.rproj) which is mainly used for data analysis with R. This project, when opened in Rstudio, will also load [`src/r/.Rprofile`](https://github.com/DOV-Vlaanderen/groundwater-logger-validation/blob/master/src/r/.Rprofile) which will setup the environment for data analysis. Note that here one can also find test-cases for specific versions of `gwloggeR`. For example, [`src/r/outliers/outliers_v0.06_inbo`](https://github.com/DOV-Vlaanderen/groundwater-logger-validation/tree/master/src/r/outliers/outliers_v0.06_inbo) contains all the results based on v0.06 (cf. [#35](https://github.com/DOV-Vlaanderen/groundwater-logger-validation/issues/35)) of the algorithm, which can be used as a manual regression test for new versions of `gwloggeR`.
-* [`gwloggeR/gwloggeR.rproj`](https://github.com/DOV-Vlaanderen/groundwater-logger-validation/blob/master/gwloggeR/gwloggeR.Rproj) used for `gwloggeR` package development and testing.
+* [`./src/r`](https://github.com/DOV-Vlaanderen/groundwater-logger-validation/tree/master/src/r) which is mainly used for data analysis with R. The project file `groundwater.rproj`, when opened in Rstudio, will also load [`src/r/.Rprofile`](https://github.com/DOV-Vlaanderen/groundwater-logger-validation/blob/master/src/r/.Rprofile) which will setup the environment for data analysis.
+* [`./gwloggeR`](https://github.com/DOV-Vlaanderen/groundwater-logger-validation/tree/master/gwloggeR) is the `gwloggeR` package source repository used for development and testing. Open `gwloggeR.Rproj` with Rstudio.
+* [`./gwloggeR.data`](https://github.com/DOV-Vlaanderen/groundwater-logger-validation/tree/master/gwloggeR.data) is a small convenience package developed for uniform data loading from the `./data/raw` directory. Currently it has no explicit Rstudio project file.
 
 Note that cross-linking of files between projects based on relative paths is allowed since all projects reside in the same repository.
 
+Always double-check the `.Rprofile` file and adjust the paths accordingly.
+
 ## Testing
 
-There are a couple of unit tests in the `tests` directory. These tests are based on [`testthat`](http://r-pkgs.had.co.nz/tests.html) and can be executed from Rstudio with `Ctrl` + `Shift` + `T`.
+There is a dedicated [README](https://github.com/DOV-Vlaanderen/groundwater-logger-validation/tree/master/gwloggeR/tests) about testing `gwloggeR`.
 
-Mainly the hydrostatic pressure tests are important since they test the detection function based on a predefined small timeseries that has clear AO, LS and TC events.
-
-Whenever you are tempted to type something into a print statement or a debugger expression, write it as a test instead.
+Before releasing a version, make sure to not only run the `testthat` procedures (`Ctrl` + `Shift` + `T`), but also the extensive _analytics_ tests to make sure that the package results conform with past expected results (i.e. the package still operates as intended on previously analyzed data).
 
 ## Documentation
 
-The documentation is built using `roxygen2`. If you are using RStudio and `roxygen2` is installed, then pressing `Ctrl` + `Shift` + `B` will generate:
+The `gwloggeR` documentation is built using `roxygen2`. If you are using RStudio and `roxygen2` is installed, then pressing `Ctrl` + `Shift` + `B` will:
 
 * Update Rd files (i.e. R documentation files)
 * Update NAMESPACE file
@@ -64,7 +65,7 @@ The documentation is built using `roxygen2`. If you are using RStudio and `roxyg
 
 This command will also install `gwloggeR` in the R `lib\` directory and restart R.
 
-On each update of `gwloggeR` source files, make sure to run this before commiting.
+On each update of `gwloggeR` source files, make sure to run this before committing.
 
 ### README.Rmd
 
@@ -74,26 +75,26 @@ This is a special case that must be knitted to `README.md`. In RStudio one can u
 
 For `gwloggeR` [website](https://dov-vlaanderen.github.io/groundwater-logger-validation/gwloggeR) we use `pkgdown`. 
 
-We do not use [`travis`](https://pkgdown.r-lib.org/reference/deploy_site_github.html) for automatic website deployment. Each time one updates files that have an impact on the website, one should manualy execute the following commands:
+We do not use [`travis`](https://pkgdown.r-lib.org/reference/deploy_site_github.html) for automatic website deployment. Each time one updates files that have an impact on the website, one should manually execute the following commands:
 
 ```{r eval=FALSE}
 pkgdown::clean_site()
 pkgdown::build_site()
 ```
 
-On each update of `gwloggeR` source files, make sure to run these commands before commiting.
+On each update of `gwloggeR` source files, make sure to run these commands before committing.
 
 ## Deployment
 
 Before deployment of a new version, certain steps need to be taken.
 
 * Update the [Documentation].
-* Make sure you complete [Testing], and also re-run the more elaborate analysis as described in [Projects].
+* Make sure you complete [Testing], and also re-run the more elaborate _analytics_ tests.
 * Update the [News.md](https://github.com/DOV-Vlaanderen/groundwater-logger-validation/blob/master/gwloggeR/News.md) file. Each new version should be a top level section, besides the _Development version_ and _Future version_ sections.
 * Update the [DESCRIPTION](https://github.com/DOV-Vlaanderen/groundwater-logger-validation/blob/master/gwloggeR/DESCRIPTION) file, mainly the `Version` and `Date` tags.
-* Rebuild the [Website] and deploy it on the `gh-pages` branch.
+* Rebuild the [Website] and deploy it on the `gh-pages` branch. (This is the branch that GitHub uses as source for this `gwloggeR` website.)
 * Push both `master` and `gh-pages` branch to github.
-* Final step is to set the tag for the current version from the shell and push it to github. 
+* Final step is to set the tag for the current version from the shell and push it to github.
 
 ```{bash eval=FALSE}
 # Note that git-shell can be opened from Rstudio.

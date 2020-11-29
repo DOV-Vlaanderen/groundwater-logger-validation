@@ -1,0 +1,24 @@
+$class
+[1] "Outliers" "logical" 
+
+$x.mean
+[1] 1033.317
+
+$x.sd
+[1] 9.586297
+
+$sigma.reject
+[1] 5.416046
+
+$alpha
+[1] 5e-04
+
+$type
+[1] "two.sided"
+
+$cutpoints
+[1]  981.3972 1085.2368
+
+$version
+[1] "0.03"
+

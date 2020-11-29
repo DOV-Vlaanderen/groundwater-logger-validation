@@ -15,7 +15,7 @@ set.seed(2018)
 
 # gwloggeR
 
-`gwloggeR` is a R-package for automatic flagging of outliers in raw air pressure data and outliers, level shifts and temporal changes in raw hydrostatic pressure data. Here is a visual example of the latter:
+`gwloggeR` is a R-package for automatic flagging of outliers and drifts in raw air pressure data and outliers, level shifts and temporal changes in raw hydrostatic pressure data. Here is a visual example of the latter:
 
 ```{r example, echo=FALSE, fig.height=6, fig.width=14}
 n <- 1000L
@@ -50,11 +50,11 @@ Note the `ref = "x.x.x"` option. Replace it with the version you want to install
 
 ## Usage
 
-For general use, consult the [getting started](articles/gwloggeR.html) tutorial.
+For general use, consult the [getting started](https://dov-vlaanderen.github.io/groundwater-logger-validation/gwloggeR/docs/articles/gwloggeR.html) tutorial.
 
 For advanced understanding, consult the specific vignettes in the Articles section.
 
 ## Development
 
-Developers and maintainers of this package can find some general guidelines in the [Development guide](articles/Development.html).
+Developers and maintainers of this package can find some general guidelines in the [Development guide](https://dov-vlaanderen.github.io/groundwater-logger-validation/gwloggeR/docs/articles/Development.html).
 

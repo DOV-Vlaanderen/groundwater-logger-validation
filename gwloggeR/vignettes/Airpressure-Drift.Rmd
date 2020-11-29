@@ -1,0 +1,200 @@
+---
+title: "Air pressure: drift"
+date: "`r Sys.Date()`"
+output: 
+  bookdown::html_document2: 
+    base_format: rmarkdown::html_vignette
+    fig_width: 7
+    fig_height: 4
+    toc: true
+    toc_depth: 4
+    number_sections: false
+    df_print: paged # default, kable, tibble
+    fig_caption: true
+  pdf_document:
+    toc: true
+pkgdown:
+  as_is: true # to allow pkgdown use cross-references from bookdown.
+link-citations: yes
+nocite: | 
+  @WMO8, @air-analysis-reports, @drift-scripts
+bibliography: bibliography.bib
+vignette: >
+  %\VignetteIndexEntry{Air pressure: drift}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+options('max.print' = 10)
+```
+
+```{r, echo=FALSE}
+# helper functions
+xy.errors <- function(n, mu = rep(0, 2L), Sigma = matrix(c(25, 23.9, 23.9, 25), ncol = 2)) {
+  as.list(data.frame(
+    MASS::mvrnorm(n, mu = c('a.z' = mu[1], 'a.r' = mu[2]), Sigma = Sigma)
+  ))
+}
+
+ggxblank <- ggplot2::theme(axis.text.y = ggplot2::element_text(angle = 90, hjust = 0.5),
+                           axis.title.x = ggplot2::element_blank())
+```
+
+This is an advanced guide. It explains how `detect_drift()` works for air pressure data. Make sure you first read the [getting started](gwloggeR.html) material.
+
+## Drift
+
+In WMO-No.8 drift is defined as "a continuous or incremental change over time in indication due to changes in metrological properties of a measuring instrument." Here is a visual example of a clearly drifting air pressure series:
+
+```{r zdr, echo=FALSE, fig.cap='A drifting barometer series.'}
+# simulated series
+set.seed(2020)
+ts.dr <- seq(as.POSIXct('2010-01-01'), by = '12 hours', to = as.POSIXct('2020-12-31'))
+dt <- gwloggeR:::model_drifts.trend(ts.dr, start.ts = as.POSIXct('2014-01-01'))
+invisible(list2env(xy.errors(n = length(ts.dr)), envir = environment()))
+zndr <- gwloggeR:::model_drifts.simulate(mu = 1033, phi1 = 0.85, sigma = sqrt(25), a = a.r)
+zdr <- gwloggeR:::model_drifts.simulate(mu = 1033, phi1 = 0.85, sigma = sqrt(25), xreg = as.matrix(dt), betas = c(3), a = a.z)
+gwloggeR:::plot_drifts.original(x = zdr, timestamps = ts.dr) + ggplot2::ylab('Air pressure (cmH2O)') + ggxblank
+```
+
+Most of the time the drifts are much more subtle than the one show, and not evident from simply looking at the barometer timeseries. Hence this methodology and accompanying algorithm that can be used to facilitate drift detection.
+
+## Air pressure model
+
+For outlier detection in air pressure data we used a simple gaussian noise model: it is simple and easy to interpret. For drift detection this gaussian noise model is inadequate. The problem is the correlation between subsequent observations, which directly affects significance calculation of the drift as shown in [this](https://github.com/DOV-Vlaanderen/groundwater-logger-validation/issues/63) analysis report.
+
+So what is a good air pressure model? In [script 19/19b](https://github.com/DOV-Vlaanderen/groundwater-logger-validation/blob/master/src/r/drifts/analysis_19.r) we did some testing with a full range of ARIMA models on all available barometer data. From that we have seen that there is a significant drop in likelihood from ARIMA(0,0,0) with non-zero mean to ARIMA(1,0,0) with non-zero mean. Subsequent more complex ARIMA models did not result in much better likelihoods -- although the AIC/BIC test sometimes suggested otherwise.
+
+A noteworthy observation is that ARIMA(0,1,0) performs almost equally well as the ARIMA(1,0,0) with non-zero mean. When $\phi$ is close to 1 these two models are equivalent, and that explains the similar performance. At the same time it must be noted that air pressure does _not_ behave like a random walk, which will be explained later.
+
+So the chosen model for air pressure is ARIMA(1,0,0) with non-zero mean -- shorthand AR(1). In formulaic notation:
+
+$$
+z_t - \mu = \phi_1(z_{t-1} - \mu) + a_t
+$$
+where $a_t \sim \mathcal{N}(0, \sigma^2)$. For a more succinct notation (cf. @Box2016) one can use $\tilde{z}_t = z_t - \mu$.
+
+### Estimation of $\phi$
+
+Interesting is how the autoregressive parameter $\phi$ behaves in function of $\Delta t$, the time interval between measurements. If we were to measure the air pressure each minute, we would see that subsequent measurements are almost identical -- apart from intrinsic barometer error. The series would behave almost as a random walk. _Almost_, because although $\phi$ would be close to 1, it would never be exactly 1. One way to see this is that the air pressure is stationary, while a random walk is not. The $\phi = 1 - \epsilon$, however small $\epsilon$ may be, will pull the series towards $\mu$, and thus result in a stationary series.
+
+```{r, echo=FALSE, fig.cap='Having $\\phi$ smaller than 1 (left) results in a stationary series around $\\mu$, while a random walk (right) will have no bounds. Both series have variance of $a_t$ fixed to 25.'}
+set.seed(2021)
+ts <- seq(as.POSIXct('2010-01-01'), by = '12 hours', to = as.POSIXct('2012-12-31'))
+z0 <- gwloggeR:::model_drifts.simulate(length(ts), mu = 1033, sigma = sqrt(25), phi1 = 0.85)
+zrw <- 1033 + cumsum(rnorm(length(ts), sd = sqrt(25)))
+z0.p <- gwloggeR:::plot_drifts.original(x = z0, timestamps = ts) + 
+  ggplot2::ylab('Air pressure (cmH2O)') + ggxblank + ggplot2::ggtitle('\u0394t = 12h, \u03D5 = 0.85')
+zrw.p <- gwloggeR:::plot_drifts.original(x = zrw, timestamps = ts) + 
+  ggplot2::ylab('Air pressure (cmH2O)') + ggxblank + ggplot2::ggtitle('\u0394t = 12h, \u03D5 = 1 (random walk)')
+gridExtra::grid.arrange(z0.p, zrw.p, layout_matrix = cbind(1, 2))
+```
+
+On the other extreme, if we would measure air pressure each 2 weeks (cf. [script 18](https://github.com/DOV-Vlaanderen/groundwater-logger-validation/blob/master/src/r/drifts/analysis_18.r)), we would see almost no correlation at all between subsequent measurements. In other words, $\phi$ would be 0 and the resulting model would be simple gaussian noise: $z_t = \mu + a_t$.
+
+This analysis thus suggests that $\phi$ is a function of $\Delta t$. Unfortunately, the classical ARIMA models allow only for fixed $\Delta t$. That is why the algorithm currently aggregates the measurements to 12h intervals (i.e. it is assumed that $\Delta t = 12h$).
+
+Under $\Delta t = 12h$ we can estimate $\phi$ based on all available barometer data. This estimation suggests that $0.80 \le \phi(12h) \le 0.90$. Knowing this, it seems plausible to assume the parameter as know _a-prior_ information, instead of estimating it each time on each series separately.
+
+## Difference with reference series model
+
+For drift detection we use series $d_t$ wich is defined as the difference between the original series $z_t$ and a reference series $r_t$. So it begs the question: how does $\phi$ translate for $d_t$. To simplify the notation we define $\mu_d = \mu_z - \mu_r$ and $b_t = a_{z,t} - a_{r,t}$. Then:
+
+$$
+\begin{aligned}
+d_t &= z_t - r_t \\
+    &= \mu_d + b_t + \phi(\tilde{z}_{t-1} - \tilde{r}_{t-1}) \\
+    &= \mu_d + b_t + \phi b_{t-1} + \phi(\tilde{z}_{t-2} - \tilde{r}_{t-2}) \\
+    &= \mu_d + b_t + \phi b_{t-1} + \phi^2 b_{t-2} + \phi^3 b_{t-3} + \dots \\
+    &= \phi d_{t - 1} + \mu_d +  b_t
+\end{aligned}
+$$
+
+The last equivalence one can see by just expanding $\phi d_{t-1}$ recursively. The $\mu_d = 0$ in case both series are height-compensated, otherwise it is their difference in height in cmH2O.
+
+Three things are worth to note here. First is that $d_t$ is still an AR(1) model. Second is that the AR(1) parameter is the same as in $z_t$ and $r_t$: just $\phi$. And the last thing is that only the error is different: $a_t - a_t$. This error-term we investigate next.
+
+### The error term $b_t$
+
+We assumed in our model definition that $a_t \sim \mathcal{N}(0, \sigma^2)$. This makes $b_t \sim \mathcal{N}(0, 2\sigma^2 - 2\text{cov}(a_{z,t}, a_{r,t}))$. In [script 19](https://github.com/DOV-Vlaanderen/groundwater-logger-validation/blob/master/src/r/drifts/analysis_19.r) we estimated $\sigma^2 \approx 25$ and $\text{var}(b_t) \approx 2.2$. This suggests that $\text{cov}(a_{z,t}, a_{r,t}) \approx 23.9$ and thus a very high correlation between $z_t$ and $r_t$. This effect can be seen in the following plot:
+
+```{r, echo=FALSE, fig.cap='Comparison of variance for of $z_t$ (left) and $d_t$ (right) on equal scale. If $z_t$ and $r_t$ were not correlated, the variance of $d_t$ would be 2 times larger than that of $z_t$.'}
+set.seed(2020)
+invisible(list2env(xy.errors(n = length(ts)), envir = environment()))
+z <- gwloggeR:::model_drifts.simulate(mu = 1033, sigma = sqrt(25), phi1 = 0.85, a = a.z)
+r <- gwloggeR:::model_drifts.simulate(mu = 1033, sigma = sqrt(25), phi1 = 0.85, a = a.r)
+dr <- gwloggeR:::drift_reference.differentiate(z, ts, reference = list(list(x = r, timestamps = ts)), scalefactor.sec = 3600*12)
+z.p <- gwloggeR:::plot_drifts.original(x = z, timestamps = ts, dr = dr, 
+                                       ylim = quantile(z, probs = c(0.005, 0.995))) + 
+  ggplot2::ylab('Air pressure (cmH2O)') + ggxblank + ggplot2::ggtitle(expression(z[t]*' (black) and '*r[t]*' (red) in background'))
+dr.p <- gwloggeR:::plot_drifts.differences(dra = dr, drift = gwloggeR:::Drift.logical(x = rep(FALSE, length(z)), mu = NA, sigma = NA), 
+                                           ylim = quantile(z, probs = c(0.005, 0.995)) - 1033) + 
+  ggplot2::ylab('Air pressure difference (cmH2O)') + ggxblank + ggplot2::ggtitle(expression('Difference between '*z[t]*' and '*r[t]))
+gridExtra::grid.arrange(z.p, dr.p, layout_matrix = cbind(1, 2))
+```
+
+## Drift detection
+
+For drift detection we use the series $d_t$. This is because $b_t$ has much lower variance than $a_t$, making drift detection much more sensitive. The resulting drift detection model is this:
+
+$$
+d_t - \mu_d -  \delta(t-t_\delta)I(t\ge t_\delta) - \mathbf{\beta} \mathbf{x_t} 
+  = \phi[d_{t-1} - \mu_d -  \delta(t-1-t_\delta)I(t-1\ge t_\delta) - \mathbf{\beta} \mathbf{x_{t-1}} ] + b_t
+$$
+where $\mathbf{x_t}$ are the exogenous yearly seasonal sine and cosine components and $\mu_d$, $\mathbf{\beta}$, $\sigma_d^2$, $\delta$ and $t_\delta$ are to be estimated.
+
+Let's use the series from Figure \@ref(fig:zdr) and show how these estimates can be recovered with the `detect_drift(verbose=TRUE)` parameter.
+
+```{r attributes, fig.width=10.5, fig.height=7.5, out.width='100%', fig.cap="Diagnostic plots. For more information, consult the 'Diagnostic plots' section in `?gwloggeR::detect_drift`"}
+# zdr is the drifting series, ts.dr are its timestamps and zndr is the reference series.
+# We focus on the attributes of returned vector when argument verbose=TRUE.
+attributes(gwloggeR::detect_drift(x = zdr, timestamps = ts.dr,
+                                  reference = list(list(x = zndr, timestamps = ts.dr)),
+                                  verbose = TRUE, plot = TRUE))
+```
+
+$t_\delta$ is the timestamp at which the drift starts. In this case it is estimated at 2013-10-26 UTC. The $\delta$ is the drift rate, here estimated as 2.9 cmH2O/year. The $\mathbf{\beta}$ expresses the yearly seasonality as sine and cosine components, here estimated as -0.09 and 0.02 respectively. And lastly, $\sigma^2 = \text{Var}(b_t)$ is here estimated as 1.48².
+
+From the output we gather that the drift significance is 0. It can be interpreted as the probability that there is no drift (i.e. the null-hypothesis). In other words, the smaller this value, the stronger the evidence that there is a drift. (cf. infra)
+
+For more information about the diagnostic plots in Figure \@ref(fig:attributes), consult the 'Diagnostic plots' section in `?gwloggeR::detect_drift`.
+
+### Estimation of $\delta$ and $t_\delta$
+
+Parameters $\delta$ and $t_\delta$ are maximum likelihood estimates (MLE). Due to discrete and non-linear nature of $t_\delta$ the maximization of the likelihood function is not straightforward. A secondary difficulty is that the AR(1) likelihood function is not convex either (cf. @White2015). The `arima()` function seems to produce good results, despite the convexity. The first problem we solve brute-force by fitting the AR(1) model to specific $t_\delta$. Instead of fitting the AR(1) model for each possible $t_\delta$, we scan in steps of $\sqrt{N/2}$ where $N$ is the number of observations. Subsequently we do a local search on all $t$ in the vicinity of the optima. 
+
+### Drift significance
+
+Once $\hat{\delta}_{MLE}$ and $\hat{t}_{\delta_{MLE}}$ have been found, likelihood ratio test is used to test their significance. 
+
+A peculiar observation here is the fact that the optimal $\chi^2$ degrees of freedom are not equal to 2, but to some unknown $2 + f(N)$ where $0 < f(N) < 1$. For our case, where $1000 < N < 10000$, it seems that $f(N) \approx 0.8$ performs well in the sense that under $H_0$ the $p$-values are  uniformly distributed. Currently it is not clear in what sense the drift model violates the @Wilks1938 theorem, and thus what $f$ is.
+
+## Examples
+
+Here we discuss some real examples.
+
+```{r, echo=FALSE, fig.width=10.5, fig.height=7.5, out.width='100%', warning=FALSE}
+df <- readRDS('./airpressure-drift/BAOL842X_T1108.rds')
+data.table::setkey(df, TIMESTAMP_UTC)
+df.ref <- readRDS('./airpressure-drift/KNMI_Westdorpe.rds')
+invisible(gwloggeR::detect_drift(
+  x = df$PRESSURE_VALUE, timestamps = df$TIMESTAMP_UTC,
+  reference = list(list(x = df.ref$PRESSURE_VALUE, timestamps = df.ref$TIMESTAMP_UTC)),
+  plot = TRUE, title = 'BAOL842X_T1108'))
+```
+
+BAOL842X_T1108 has a strong seasonal effect and is drifting at a rate of -1.63 cmH2O per year.
+
+## Future work
+
+* Implement $\phi(\Delta t)$ (i.e. dependence of $\phi$ on time differences.)
+* Bayesian estimation of $\delta$ and $t_\delta$.
+* Investigate the unexpected $N$-dependence in degrees of freedom of the LR test.
+* Explain what happens in theory when we have more than one reference timeseries.
+
+## References

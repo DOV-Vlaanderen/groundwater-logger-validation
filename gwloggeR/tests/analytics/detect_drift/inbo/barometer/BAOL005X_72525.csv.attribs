@@ -1,0 +1,27 @@
+$class
+[1] "Drift"   "logical"
+
+$is.drifting
+[1] TRUE
+
+$mu
+[1] -2.260612
+
+$sigma
+[1] 1.474913
+
+$year.seasonality
+      sine     cosine 
+ 0.1117390 -0.2796914 
+
+$timestamp
+[1] "2009-06-30 UTC"
+
+$rate
+[1] 1.083349
+attr(,"units")
+[1] "cmH2O/year"
+
+$significance
+[1] 2.00914e-10
+

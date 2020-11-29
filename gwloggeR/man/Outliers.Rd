@@ -8,8 +8,16 @@
 \usage{
 Outliers(x, ...)
 
-\method{Outliers}{logical}(x.rejects, x.mean, x.sd, sigma.reject, alpha,
-  type, fun.density, cutpoints)
+\method{Outliers}{logical}(
+  x.rejects,
+  x.mean,
+  x.sd,
+  sigma.reject,
+  alpha,
+  type,
+  fun.density,
+  cutpoints
+)
 
 \method{Outliers}{Events}(events)
 }

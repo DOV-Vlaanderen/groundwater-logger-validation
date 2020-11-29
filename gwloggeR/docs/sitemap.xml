@@ -7,7 +7,16 @@
     <loc>https://dov-vlaanderen.github.io/groundwater-logger-validation/gwloggeR/docs/reference/apriori.hydropressure.difference.samples.html</loc>
   </url>
   <url>
-    <loc>https://dov-vlaanderen.github.io/groundwater-logger-validation/gwloggeR/docs/reference/apriori.html</loc>
+    <loc>https://dov-vlaanderen.github.io/groundwater-logger-validation/gwloggeR/docs/reference/Apriori.html</loc>
+  </url>
+  <url>
+    <loc>https://dov-vlaanderen.github.io/groundwater-logger-validation/gwloggeR/docs/reference/coalesce.html</loc>
+  </url>
+  <url>
+    <loc>https://dov-vlaanderen.github.io/groundwater-logger-validation/gwloggeR/docs/reference/compensate.altitude.html</loc>
+  </url>
+  <url>
+    <loc>https://dov-vlaanderen.github.io/groundwater-logger-validation/gwloggeR/docs/reference/concat.html</loc>
   </url>
   <url>
     <loc>https://dov-vlaanderen.github.io/groundwater-logger-validation/gwloggeR/docs/reference/CONST.ALPHA.html</loc>
@@ -17,6 +26,9 @@
   </url>
   <url>
     <loc>https://dov-vlaanderen.github.io/groundwater-logger-validation/gwloggeR/docs/reference/detect.html</loc>
+  </url>
+  <url>
+    <loc>https://dov-vlaanderen.github.io/groundwater-logger-validation/gwloggeR/docs/reference/detect_drift.html</loc>
   </url>
   <url>
     <loc>https://dov-vlaanderen.github.io/groundwater-logger-validation/gwloggeR/docs/reference/detect_duplicates.html</loc>
@@ -34,7 +46,28 @@
     <loc>https://dov-vlaanderen.github.io/groundwater-logger-validation/gwloggeR/docs/reference/detect_temporalchanges.html</loc>
   </url>
   <url>
+    <loc>https://dov-vlaanderen.github.io/groundwater-logger-validation/gwloggeR/docs/reference/dft.html</loc>
+  </url>
+  <url>
+    <loc>https://dov-vlaanderen.github.io/groundwater-logger-validation/gwloggeR/docs/reference/Drift.html</loc>
+  </url>
+  <url>
+    <loc>https://dov-vlaanderen.github.io/groundwater-logger-validation/gwloggeR/docs/reference/drift_reference.aggregate.html</loc>
+  </url>
+  <url>
+    <loc>https://dov-vlaanderen.github.io/groundwater-logger-validation/gwloggeR/docs/reference/drift_reference.differentiate.html</loc>
+  </url>
+  <url>
+    <loc>https://dov-vlaanderen.github.io/groundwater-logger-validation/gwloggeR/docs/reference/dtft.html</loc>
+  </url>
+  <url>
     <loc>https://dov-vlaanderen.github.io/groundwater-logger-validation/gwloggeR/docs/reference/Events.html</loc>
+  </url>
+  <url>
+    <loc>https://dov-vlaanderen.github.io/groundwater-logger-validation/gwloggeR/docs/reference/fbasis.html</loc>
+  </url>
+  <url>
+    <loc>https://dov-vlaanderen.github.io/groundwater-logger-validation/gwloggeR/docs/reference/gr_vectorsize.inch.html</loc>
   </url>
   <url>
     <loc>https://dov-vlaanderen.github.io/groundwater-logger-validation/gwloggeR/docs/reference/gwloggeR-package.html</loc>
@@ -44,6 +77,9 @@
   </url>
   <url>
     <loc>https://dov-vlaanderen.github.io/groundwater-logger-validation/gwloggeR/docs/reference/Levelshifts.html</loc>
+  </url>
+  <url>
+    <loc>https://dov-vlaanderen.github.io/groundwater-logger-validation/gwloggeR/docs/reference/model_drifts.fit.html</loc>
   </url>
   <url>
     <loc>https://dov-vlaanderen.github.io/groundwater-logger-validation/gwloggeR/docs/reference/Optimizer.html</loc>
@@ -70,7 +106,13 @@
     <loc>https://dov-vlaanderen.github.io/groundwater-logger-validation/gwloggeR/docs/reference/Temporalchanges.html</loc>
   </url>
   <url>
+    <loc>https://dov-vlaanderen.github.io/groundwater-logger-validation/gwloggeR/docs/reference/test.detect_function.html</loc>
+  </url>
+  <url>
     <loc>https://dov-vlaanderen.github.io/groundwater-logger-validation/gwloggeR/docs/reference/Version.html</loc>
+  </url>
+  <url>
+    <loc>https://dov-vlaanderen.github.io/groundwater-logger-validation/gwloggeR/docs/articles/Airpressure-Drift.html</loc>
   </url>
   <url>
     <loc>https://dov-vlaanderen.github.io/groundwater-logger-validation/gwloggeR/docs/articles/Airpressure.html</loc>

@@ -40,7 +40,7 @@ Outliers.Events <- function(events) {
 #' @description
 #' This function marks outliers in the input vector.
 #' @param x numeric vector of values
-#' @param apriori \link{apriori} class
+#' @param apriori \link{Apriori} class
 #' @param ... optional parameters, depending on signature:
 #' @param plot prints comprehensive plots
 #' @param verbose prints comprehensive information
@@ -92,8 +92,8 @@ setMethod(
   signature = c(x = "numeric", apriori = "missing"),
   function(x, plot, verbose, title, timestamps) {
 
-    x.mean <- median(x, na.rm = TRUE)
-    x.sd <- mad(x, na.rm = TRUE)
+    x.mean <- stats::median(x, na.rm = TRUE)
+    x.sd <- stats::mad(x, na.rm = TRUE)
     outliers <- detect_outliers_norm(x, x.mean = x.mean, x.sd = x.sd)
     set.version(outliers, Version('0.01'))
 
@@ -114,7 +114,7 @@ setMethod(
 #'
 setMethod(
   'detect_outliers',
-  signature = c(x = "numeric", apriori = "apriori"),
+  signature = c(x = "numeric", apriori = "Apriori"),
   function(x, apriori, plot, verbose, title, timestamps) {
 
     if (apriori$data_type == "air pressure") return ({

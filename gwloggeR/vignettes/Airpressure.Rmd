@@ -12,6 +12,7 @@ output:
     fig_caption: true
   pdf_document:
     toc: true
+link-citations: yes
 bibliography: bibliography.bib
 vignette: >
   %\VignetteIndexEntry{Air pressure}
@@ -26,7 +27,7 @@ knitr::opts_chunk$set(
 )
 ```
 
-This is an advanced guide. It explains how `detect_outliers()` works for air pressure data. Make sure you have first read the [getting started](gwloggeR.html) material.
+This is an advanced guide. It explains how `detect_outliers()` works for air pressure data. Make sure you first read the [getting started](gwloggeR.html) material.
 
 ## Outlier detection
 
@@ -156,7 +157,7 @@ We can improve the outlier detection by providing _a-priori_ information about $
 
 ```{r detect_outliers-apriori-plot}
 x <- c(990:999)
-gwloggeR::detect_outliers(x, apriori = gwloggeR::apriori("air pressure", "cmH2O"), plot = TRUE)
+gwloggeR::detect_outliers(x, apriori = gwloggeR::Apriori("air pressure", "cmH2O"), plot = TRUE)
 ```
 
 Top left is again the histogram of $\mathbf{x}$. But the green density this time is not a robust normal estimate based on $\mathbf{x}$. Instead it is the hard-coded _a-priori_ density distribution of air pressure ($cmH_2O$) in Belgium. Given the $10$ points and assuming that we want to detect falsely one or more outliers in $1$ of $2000$ tests, we set the red cutoffs appropriately. This results in first $4$ points being identified as outliers.

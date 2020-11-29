@@ -1,8 +1,8 @@
 Package: gwloggeR
 Type: Package
 Title: Validate and annotate raw logger air and hydrostatic pressure time series
-Version: 0.1.5
-Date: 2019-10-23
+Version: 0.2.0
+Date: 2020-11-29
 Authors@R: c(person("Davor", "Josipovic", email = "davor.josipovic@inbo.be", role = c("cre", "aut"), 
                     comment = c(ORCID = "0000-0003-1204-8637"))) 
 Description: Groundwater divers measure hydrostatic pressure, air pressure and
@@ -18,7 +18,7 @@ URL: https://dov-vlaanderen.github.io/groundwater-logger-validation/gwloggeR/doc
 BugReports: https://github.com/DOV-Vlaanderen/groundwater-logger-validation/issues
 LazyData: true
 NeedsCompilation: no
-RoxygenNote: 6.1.1
+RoxygenNote: 7.1.1
 Roxygen: list(markdown = TRUE)
 Depends: 
     R (>= 2.10)
@@ -31,9 +31,10 @@ Imports:
     digest
 Suggests: 
     knitr,
-    rmarkdown,
+    bookdown,
     testthat (>= 2.1.0),
     dplyr,
-    magrittr
+    magrittr, 
+    MASS
 BuildVignettes: True
 VignetteBuilder: knitr, rmarkdown

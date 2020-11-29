@@ -7,3 +7,5 @@
 ^README\.Rmd$
 ^News.md$
 ^index.html$
+^tests/analytics$
+^tests/analytics.r$

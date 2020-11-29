@@ -10,7 +10,7 @@ reference:
   - title: Apriori information
     desc: Functions for defining apriori information.
     contents:
-      - apriori
+      - Apriori
   - title: Detection functions
     desc: Functions for detecting annomalies in data.
     contents:
@@ -28,6 +28,12 @@ toc:
 development:
   mode: auto
 
+repo:
+  url:
+    home: "https://github.com/DOV-Vlaanderen/groundwater-logger-validation/"
+    issues: "https://github.com/DOV-Vlaanderen/groundwater-logger-validation/issues/"
+    source: "https://github.com/DOV-Vlaanderen/groundwater-logger-validation/tree/master/gwloggeR/"
+
 navbar:
   components:
     articles:
@@ -35,9 +41,19 @@ navbar:
       menu:
       - text: 'Algorithms'
       - text: 'Air pressure'
-        href: articles/Airpressure.html
+        menu:
+        - text: 'Outliers'
+          href: articles/Airpressure.html
+        - text: 'Drifts'
+          href: articles/Airpressure-Drift.html
       - text: 'Hydrostatic pressure'
-        href: articles/Hydropressure.html
+        menu:
+        - text: 'Outliers'
+          href: articles/Hydropressure.html#outliers
+        - text: 'Levelshifts'
+          href: articles/Hydropressure.html#levelshifts
+        - text: 'Temporal changes'
+          href: articles/Hydropressure.html#temporal-changes
     news:
       text: Development
       menu:
