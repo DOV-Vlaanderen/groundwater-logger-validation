@@ -28,6 +28,12 @@ toc:
 development:
   mode: auto
 
+repo:
+  url:
+    home: "https://github.com/DOV-Vlaanderen/groundwater-logger-validation/"
+    issues: "https://github.com/DOV-Vlaanderen/groundwater-logger-validation/issues/"
+    source: "https://github.com/DOV-Vlaanderen/groundwater-logger-validation/tree/master/gwloggeR/"
+
 navbar:
   components:
     articles:
@@ -35,7 +41,7 @@ navbar:
       menu:
       - text: 'Algorithms'
       - text: 'Air pressure'
-        href: articles/Airpressure.html
+          href: articles/Airpressure.html
       - text: 'Hydrostatic pressure'
         href: articles/Hydropressure.html
     news:
