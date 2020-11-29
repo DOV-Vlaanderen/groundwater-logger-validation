@@ -41,9 +41,19 @@ navbar:
       menu:
       - text: 'Algorithms'
       - text: 'Air pressure'
+        menu:
+        - text: 'Outliers'
           href: articles/Airpressure.html
+        - text: 'Drifts'
+          href: articles/Airpressure-Drift.html
       - text: 'Hydrostatic pressure'
-        href: articles/Hydropressure.html
+        menu:
+        - text: 'Outliers'
+          href: articles/Hydropressure.html#outliers
+        - text: 'Levelshifts'
+          href: articles/Hydropressure.html#levelshifts
+        - text: 'Temporal changes'
+          href: articles/Hydropressure.html#temporal-changes
     news:
       text: Development
       menu:
