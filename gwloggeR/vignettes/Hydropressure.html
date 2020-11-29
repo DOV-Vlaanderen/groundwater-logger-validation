@@ -15,6 +15,19 @@
 
 <title>Hydrostatic pressure</title>
 
+<script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
+// be compatible with the behavior of Pandoc < 2.8).
+document.addEventListener('DOMContentLoaded', function(e) {
+  var hs = document.querySelectorAll("div.section[class*='level'] > :first-child");
+  var i, h, a;
+  for (i = 0; i < hs.length; i++) {
+    h = hs[i];
+    if (!/^h[1-6]$/i.test(h.tagName)) continue;  // it should be a header h1-h6
+    a = h.attributes;
+    while (a.length > 0) h.removeAttribute(a[0].name);
+  }
+});
+</script>
 <script>// Hide empty <a> tag within highlighted CodeBlock for screen reader accessibility (see https://github.com/jgm/pandoc/issues/6352#issuecomment-626106786) -->
 // v0.0.1
 // Written by JooYoung Seo (jooyoung@psu.edu) and Atsushi Yasumoto on June 1st, 2020.
@@ -83,19 +96,18 @@ document.addEventListener('DOMContentLoaded', function() {
 
 <style type="text/css">code{white-space: pre;}</style>
 <style type="text/css" data-origin="pandoc">
-code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
 code.sourceCode > span { color: inherit; text-decoration: inherit; }
-code.sourceCode > span:empty { height: 1.2em; }
-.sourceCode { overflow: visible; }
-code.sourceCode { white-space: pre; position: relative; }
 div.sourceCode { margin: 1em 0; }
 pre.sourceCode { margin: 0; }
 @media screen {
 div.sourceCode { overflow: auto; }
 }
 @media print {
-code.sourceCode { white-space: pre-wrap; }
-code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
 }
 pre.numberSource code
   { counter-reset: source-line 0; }
@@ -115,7 +127,7 @@ pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-le
 div.sourceCode
   {   }
 @media screen {
-code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
 code span.al { color: #ff0000; font-weight: bold; } /* Alert */
 code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
@@ -370,16 +382,19 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 
 <div id="TOC">
 <ul>
-<li><a href="#hydrostatic-pressure-model">Hydrostatic pressure model</a><ul>
+<li><a href="#hydrostatic-pressure-model">Hydrostatic pressure model</a>
+<ul>
 <li><a href="#error-function">Error function</a></li>
 <li><a href="#distribution-of-errors">Distribution of errors</a></li>
 </ul></li>
-<li><a href="#extensions">Extensions</a><ul>
+<li><a href="#extensions">Extensions</a>
+<ul>
 <li><a href="#outliers">Outliers</a></li>
 <li><a href="#levelshifts">Levelshifts</a></li>
 <li><a href="#temporal-changes">Temporal changes</a></li>
 </ul></li>
-<li><a href="#model-building">Model building</a><ul>
+<li><a href="#model-building">Model building</a>
+<ul>
 <li><a href="#likelihood-function">Likelihood function</a></li>
 <li><a href="#stepwise-model-selection">Stepwise model selection</a></li>
 <li><a href="#likelihood-optimization">Likelihood optimization</a></li>
@@ -391,7 +406,7 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 </ul>
 </div>
 
-<p>This is an advanced guide. It explains how the <a href="../reference/index.html#section-detection-functions"><code>detect_</code></a> functions work for hydrostatic pressure data. Make sure you have first read the <a href="gwloggeR.html">getting started</a> material.</p>
+<p>This is an advanced guide. It explains how the <a href="../reference/index.html#section-detection-functions"><code>detect_</code></a> functions work for hydrostatic pressure data. Make sure you first read the <a href="gwloggeR.html">getting started</a> material.</p>
 <div id="hydrostatic-pressure-model" class="section level2">
 <h2>Hydrostatic pressure model</h2>
 <p>We assume that the hydrostatic pressure behaves according to the following model:</p>
@@ -415,7 +430,7 @@ z_t = z_{t-1} + \epsilon(\Delta t)
 </div>
 <div id="extensions" class="section level2">
 <h2>Extensions</h2>
-<p>The main idea is that <span class="math inline">\(z_t\)</span> is polluted by different kinds of events. We define each of these events separately. Inspiration for these definitions is mainly taken from the works of <span class="citation">Fox (1972)</span> and more recent papers by <span class="citation">Chen and Liu (1993)</span> and <span class="citation">Galeano and Pena (2013)</span>. Furthermore, an R implementation by <span class="citation">López-de-Lacalle (2019)</span> was used for the initial evaluation of these ideas.</p>
+<p>The main idea is that <span class="math inline">\(z_t\)</span> is polluted by different kinds of events. We define each of these events separately. Inspiration for these definitions is mainly taken from the works of <span class="citation">Fox (<a href="#ref-Fox1972" role="doc-biblioref">1972</a>)</span> and more recent papers by <span class="citation">Chen and Liu (<a href="#ref-Chen1993" role="doc-biblioref">1993</a>)</span> and <span class="citation">Galeano and Pena (<a href="#ref-Galeano2013" role="doc-biblioref">2013</a>)</span>. Furthermore, an R implementation by <span class="citation">López-de-Lacalle (<a href="#ref-tsoutliers" role="doc-biblioref">2019</a>)</span> was used for the initial evaluation of these ideas.</p>
 <div id="outliers" class="section level3">
 <h3>Outliers</h3>
 <p>An additive outlier (AO) at time <span class="math inline">\(t_{AO}\)</span> is defined as an exogenous change of a single observation.</p>
@@ -528,8 +543,8 @@ L(\mathbf{\theta} ; \mathbf{x}) = p(\mathbf{x} | \mathbf{\theta}) = \prod_{t=2}^
 </ul>
 </div>
 <div id="references" class="section level2 unnumbered">
-<h2>References</h2>
-<div id="refs" class="references">
+<h2 class="unnumbered">References</h2>
+<div id="refs" class="references hanging-indent">
 <div id="ref-Chen1993">
 <p>Chen, Chung, and Lon-Mu Liu. 1993. “Joint Estimation of Model Parameters and Outlier Effects in Time Series.” <em>Journal of the American Statistical Association</em> 88 (421): 284–97. <a href="https://doi.org/10.1080/01621459.1993.10594321">https://doi.org/10.1080/01621459.1993.10594321</a>.</p>
 </div>

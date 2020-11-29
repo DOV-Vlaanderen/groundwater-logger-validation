@@ -12,6 +12,7 @@ output:
     fig_caption: true
   pdf_document:
     toc: true
+link-citations: yes
 bibliography: bibliography.bib
 vignette: >
   %\VignetteIndexEntry{Hydrostatic pressure}
@@ -27,7 +28,7 @@ knitr::opts_chunk$set(
 loadNamespace("data.table")
 ```
 
-This is an advanced guide. It explains how the [`detect_`](../reference/index.html#section-detection-functions) functions work for hydrostatic pressure data. Make sure you have first read the [getting started](gwloggeR.html) material.
+This is an advanced guide. It explains how the [`detect_`](../reference/index.html#section-detection-functions) functions work for hydrostatic pressure data. Make sure you first read the [getting started](gwloggeR.html) material.
 
 ## Hydrostatic pressure model
 

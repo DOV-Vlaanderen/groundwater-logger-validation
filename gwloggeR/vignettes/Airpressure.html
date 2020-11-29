@@ -15,6 +15,19 @@
 
 <title>Air pressure</title>
 
+<script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
+// be compatible with the behavior of Pandoc < 2.8).
+document.addEventListener('DOMContentLoaded', function(e) {
+  var hs = document.querySelectorAll("div.section[class*='level'] > :first-child");
+  var i, h, a;
+  for (i = 0; i < hs.length; i++) {
+    h = hs[i];
+    if (!/^h[1-6]$/i.test(h.tagName)) continue;  // it should be a header h1-h6
+    a = h.attributes;
+    while (a.length > 0) h.removeAttribute(a[0].name);
+  }
+});
+</script>
 <script>// Hide empty <a> tag within highlighted CodeBlock for screen reader accessibility (see https://github.com/jgm/pandoc/issues/6352#issuecomment-626106786) -->
 // v0.0.1
 // Written by JooYoung Seo (jooyoung@psu.edu) and Atsushi Yasumoto on June 1st, 2020.
@@ -83,19 +96,18 @@ document.addEventListener('DOMContentLoaded', function() {
 
 <style type="text/css">code{white-space: pre;}</style>
 <style type="text/css" data-origin="pandoc">
-code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
 code.sourceCode > span { color: inherit; text-decoration: inherit; }
-code.sourceCode > span:empty { height: 1.2em; }
-.sourceCode { overflow: visible; }
-code.sourceCode { white-space: pre; position: relative; }
 div.sourceCode { margin: 1em 0; }
 pre.sourceCode { margin: 0; }
 @media screen {
 div.sourceCode { overflow: auto; }
 }
 @media print {
-code.sourceCode { white-space: pre-wrap; }
-code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
 }
 pre.numberSource code
   { counter-reset: source-line 0; }
@@ -115,7 +127,7 @@ pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-le
 div.sourceCode
   {   }
 @media screen {
-code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
 code span.al { color: #ff0000; font-weight: bold; } /* Alert */
 code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
@@ -370,8 +382,10 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 
 <div id="TOC">
 <ul>
-<li><a href="#outlier-detection">Outlier detection</a><ul>
-<li><a href="#estimation-of-cutoff-lines">Estimation of cutoff lines</a><ul>
+<li><a href="#outlier-detection">Outlier detection</a>
+<ul>
+<li><a href="#estimation-of-cutoff-lines">Estimation of cutoff lines</a>
+<ul>
 <li><a href="#example">Example</a></li>
 <li><a href="#simulation">Simulation</a></li>
 </ul></li>
@@ -383,7 +397,7 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 </ul>
 </div>
 
-<p>This is an advanced guide. It explains how <code>detect_outliers()</code> works for air pressure data. Make sure you have first read the <a href="gwloggeR.html">getting started</a> material.</p>
+<p>This is an advanced guide. It explains how <code>detect_outliers()</code> works for air pressure data. Make sure you first read the <a href="gwloggeR.html">getting started</a> material.</p>
 <div id="outlier-detection" class="section level2">
 <h2>Outlier detection</h2>
 <p>Outliers are single measurements that are considered very unlikely to occur. The <code>detect_outliers()</code> function takes in a vector of observations and returns a boolean vector of outlier indicators:</p>
@@ -410,8 +424,8 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 #&gt; [1] &quot;two.sided&quot;
 #&gt; attr(,&quot;fun.density&quot;)
 #&gt; function(x) stats::dnorm(x, x.mean, x.sd)
-#&gt; &lt;bytecode: 0x000000001d8e3620&gt;
-#&gt; &lt;environment: 0x000000001ddbe250&gt;
+#&gt; &lt;bytecode: 0x000000001d11ff78&gt;
+#&gt; &lt;environment: 0x000000001d5fa900&gt;
 #&gt; attr(,&quot;cutpoints&quot;)
 #&gt; [1]  990.2239 1013.7761
 #&gt; attr(,&quot;version&quot;)
@@ -459,8 +473,8 @@ c = -\Phi^{-1} \left( \frac{1-(1-\alpha)^\frac{1}{n}}{2} \right)
 <div id="estimation-of-mu-and-sigma" class="section level3">
 <h3>Estimation of <span class="math inline">\(\mu\)</span> and <span class="math inline">\(\sigma\)</span></h3>
 <p>In calculating <span class="math inline">\(c\)</span> we assumed <span class="math inline">\(x_i\)</span> being normal with <span class="math inline">\(\mu = 0\)</span> and <span class="math inline">\(\sigma = 1\)</span>. To make the above also work for <span class="math inline">\(y_i\)</span> from any normal distribution, we need to estimate <span class="math inline">\(\mu\)</span> and <span class="math inline">\(\sigma\)</span>. Once we have the estimates, then we can standardize <span class="math inline">\(y_i\)</span> using <span class="math inline">\((y_i - \mu)/\sigma = x_i\)</span> and use the previous results on <span class="math inline">\(x_i\)</span>.</p>
-<p>Mean and square root of variance give the most efficient estimators for <span class="math inline">\(\mu\)</span> and <span class="math inline">\(\sigma\)</span> as long as <span class="math inline">\(\forall i : y_i \sim \mathcal{N}(\mu, \sigma^2)\)</span> and mutually independent. Under influence of real outliers, these estimators get easily biased. <span class="citation">(cf. Leys et al. 2013)</span> So we need more robust estimators for <span class="math inline">\(\mu\)</span> and <span class="math inline">\(\sigma\)</span>.</p>
-<p>In case of outliers, a way to measure robustness is the breakdown point. The maximum attainable breakdown point is <span class="math inline">\(50 \%\)</span>, meaning that <span class="math inline">\(50 \%\)</span> of observations can be replaced by arbitrary large numbers, without breaking the estimator. For <span class="math inline">\(\mu\)</span>, the obvious choice is the median. For <span class="math inline">\(\sigma\)</span> it is the median absolute deviation (MAD). They both have a <span class="math inline">\(50 \%\)</span> breakdown point. A problem with the latter is its efficiency (cf. simulation). There exist more efficient <span class="math inline">\(\sigma\)</span>-estimators than the MAD. For example the <span class="math inline">\(Qn\)</span>-estimator <span class="citation">(cf. Rousseeuw and Croux 1993)</span>. Currently, MAD suffices because we usually have lots of data (<span class="math inline">\(n &gt; 5000\)</span>) so efficiency suffers less.</p>
+<p>Mean and square root of variance give the most efficient estimators for <span class="math inline">\(\mu\)</span> and <span class="math inline">\(\sigma\)</span> as long as <span class="math inline">\(\forall i : y_i \sim \mathcal{N}(\mu, \sigma^2)\)</span> and mutually independent. Under influence of real outliers, these estimators get easily biased. <span class="citation">(cf. Leys et al. <a href="#ref-Leys2013" role="doc-biblioref">2013</a>)</span> So we need more robust estimators for <span class="math inline">\(\mu\)</span> and <span class="math inline">\(\sigma\)</span>.</p>
+<p>In case of outliers, a way to measure robustness is the breakdown point. The maximum attainable breakdown point is <span class="math inline">\(50 \%\)</span>, meaning that <span class="math inline">\(50 \%\)</span> of observations can be replaced by arbitrary large numbers, without breaking the estimator. For <span class="math inline">\(\mu\)</span>, the obvious choice is the median. For <span class="math inline">\(\sigma\)</span> it is the median absolute deviation (MAD). They both have a <span class="math inline">\(50 \%\)</span> breakdown point. A problem with the latter is its efficiency (cf. simulation). There exist more efficient <span class="math inline">\(\sigma\)</span>-estimators than the MAD. For example the <span class="math inline">\(Qn\)</span>-estimator <span class="citation">(cf. Rousseeuw and Croux <a href="#ref-Rousseeuw1993" role="doc-biblioref">1993</a>)</span>. Currently, MAD suffices because we usually have lots of data (<span class="math inline">\(n &gt; 5000\)</span>) so efficiency suffers less.</p>
 </div>
 <div id="apriori-air-pressure-information" class="section level3">
 <h3>Apriori air pressure information</h3>
@@ -480,8 +494,8 @@ c = -\Phi^{-1} \left( \frac{1-(1-\alpha)^\frac{1}{n}}{2} \right)
 </ul>
 </div>
 <div id="references" class="section level2 unnumbered">
-<h2>References</h2>
-<div id="refs" class="references">
+<h2 class="unnumbered">References</h2>
+<div id="refs" class="references hanging-indent">
 <div id="ref-Leys2013">
 <p>Leys, Christophe, Christophe Ley, Olivier Klein, Philippe Bernard, and Laurent Licata. 2013. “Detecting Outliers: Do Not Use Standard Deviation Around the Mean, Use Absolute Deviation Around the Median.” <em>Journal of Experimental Social Psychology</em> 49 (4): 764–66. <a href="https://doi.org/10.1016/j.jesp.2013.03.013">https://doi.org/10.1016/j.jesp.2013.03.013</a>.</p>
 </div>

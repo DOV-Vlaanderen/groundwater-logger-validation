@@ -12,6 +12,7 @@ output:
     fig_caption: true
   pdf_document:
     toc: true
+link-citations: yes
 bibliography: bibliography.bib
 vignette: >
   %\VignetteIndexEntry{Introduction to gwloggeR}
@@ -99,6 +100,7 @@ a <- rnorm(n = n, sd = sqrt(25))
 x <- as.vector(arima.sim(n = n, model = list('ar' = 0.85), innov = a) + 1033)
 plot(x, type = 'l')
 ```
+
 This series resembles well the air pressure when sampled at 12 hours intervals. Now lets add a drift component to it as a deterministic trend, starting at observation 85.
 
 ```{r}
@@ -106,7 +108,8 @@ di <- 85
 x[di:n] <- x[di:n] + seq(n-di+1)*2
 plot(x, type = 'l')
 ```
-Although in this sample the drift is very pronounced, in reality, it is much more subtle. 
+
+Although in this example the drift is very pronounced, in reality, it is much more subtle. 
 
 To improve the drift resolution, one or more reference series is needed. Reference series should ideally be good non-drifting barometer data. If you're not sure, then the more series you supply, the generally better results you can expect. For our experiment, lets make 2 non-drifting reference series which are highly correlated with `x` and themselves, as is the case in reality.
 
@@ -116,6 +119,7 @@ r2 <- as.vector(arima.sim(n = n, model = list('ar' = 0.85), innov = a + rnorm(n,
 plot(r1, type = 'l', ylab = 'r1 (black), r2 (brown)')
 lines(r2, col = 'brown')
 ```
+
 Now, to detect drift, we just supply `x` and the two reference series `r1` and `r2` to the `detect_drift()` function. Note that we also need to supply timestamps, and that the reference data is constructed as a list of `list(x, timestamps)` objects. For convenience, we supply the `plot = TRUE` to print the diagnostic plots.
 
 ```{r, fig.width=10.5, fig.height=7.5, out.width='100%'}
