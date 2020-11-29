@@ -244,31 +244,36 @@ the results.</p></td>
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
     <p>Logical vector with same length as x, specifying TRUE for drifting observations.</p>
+    <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
+
+    
+<h3 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Diagnostic plots</h3>
+
+
+<p>Top plot shows the time differences (hours) between measurements. 12 hours is
+signified by the red horizontal line. Note that the y-scale is logarithmic.</p>
+<p>The middle left plot is the original series (black) overlaying the reference (darkred).
+In case more than one reference is supplied, only their median is shown.</p>
+<p>The bottom left plot is the difference between the original and the reference series
+(or their median in case more than 1 reference is supplied) and is best suited for drift detection.
+The vertical dotted line signifies the most likely drift start date.
+Subsequently, three colors are used based on the significance: red (p &lt; 0.001), orange and green (p &gt; 0.01).</p>
+<p>The right 4 smaller plots are DFTF and Year plots for the original series x (top) and differences (bottom).
+They are mainly used for the visualization of the seasonality patterns. The DFTF plot is in days while the
+yearly plot is in months.
+Note that the DTFT and Year plots have the drift effect subtracted. In the Year plots
+this results to a more pronounced seasonal pattern, and in the DTFT plot this results in
+lower amplitude of low frequencies (high periods).</p>
+
     <h2 class="hasAnchor" id="functions"><a class="anchor" href="#functions"></a>Functions</h2>
 
     
 <ul>
 <li><p><code>detect_drift,numeric-method</code>:</p></li>
 </ul>
-    <h2 class="hasAnchor" id="diagnostic-plots"><a class="anchor" href="#diagnostic-plots"></a>Diagnostic plots</h2>
-
-    <p>Top plot shows the time differences (hours) between measurements. 12 hours is
-signified by the red horizontal line. Note that the y-scale is logarithmic.
-The middle left plot is the original series (black) overlaying the reference (darkred).
-In case more than one reference is supplied, only their median is shown.
-The bottom left plot is the difference between the original and the reference series
-(or their median in case more than 1 reference is supplied) and is best suited for drift detection.
-The vertical dotted line signifies the most likely drift start date.
-Subsequently, three colors are used based on the significance: red (p &lt; 0.001), orange and green (p &gt; 0.01).
-The right 4 smaller plots are DFTF and Year plots for the original series x (top) and differences (bottom).
-They are mainly used for the visualization of the seasonality patterns. The DFTF plot is in days while the
-yearly plot is in months.
-Note that the DTFT and Year plots have the drift effect subtracted. In the Year plots
-this results to a more pronounced seasonal pattern, and in the DTFT plot this results in
-lower amplitude of low frequencies (high periods).</p>
     <h2 class="hasAnchor" id="references"><a class="anchor" href="#references"></a>References</h2>
 
-    <p><a href='https://dov-vlaanderen.github.io/groundwater-logger-validation/gwloggeR/docs/articles/Airpressure.html'>Air pressure vignette</a></p>
+    <p><a href='https://dov-vlaanderen.github.io/groundwater-logger-validation/gwloggeR/docs/articles/Airpressure-Drift.html'>Air pressure drift vignette</a></p>
 
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">

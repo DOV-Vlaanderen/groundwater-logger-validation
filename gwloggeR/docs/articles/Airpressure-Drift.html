@@ -145,21 +145,21 @@
 <div id="drift" class="section level2">
 <h2 class="hasAnchor">
 <a href="#drift" class="anchor"></a>Drift</h2>
-<p>In WMO-No.8 drift is defined as “a continuous or incremental change over time in indication due to changes in metrological properties of a measuring instrument.” Here is a visual example of a clearly drifting air pressure series:</p>
+<p>In <span class="citation">WMO (<a href="#ref-WMO8" role="doc-biblioref">2018</a>)</span> drift is defined as “a continuous or incremental change over time in indication due to changes in metrological properties of a measuring instrument.” Here is a visual example of a clearly drifting air pressure series:</p>
 <div class="figure">
 <span id="fig:zdr"></span>
 <img src="Airpressure-Drift_files/figure-html/zdr-1.png" alt="A drifting barometer series."><p class="caption">
 Figure 1: A drifting barometer series.
 </p>
 </div>
-<p>Most of the time the drifts are much more subtle than the one show, and not evident from simply looking at the barometer timeseries. Hence this methodology and accompanying algorithm that can be used to facilitate drift detection.</p>
+<p>Most of the time the drifts are much more subtle and not evident from simply looking at the barometer timeseries. Hence this methodology and accompanying algorithm that can be used to facilitate drift detection.</p>
 </div>
 <div id="air-pressure-model" class="section level2">
 <h2 class="hasAnchor">
 <a href="#air-pressure-model" class="anchor"></a>Air pressure model</h2>
-<p>For outlier detection in air pressure data we used a simple gaussian noise model: it is simple and easy to interpret. For drift detection this gaussian noise model is inadequate. The problem is the correlation between subsequent observations, which directly affects significance calculation of the drift as shown in <a href="https://github.com/DOV-Vlaanderen/groundwater-logger-validation/issues/63">this</a> analysis report.</p>
+<p>For <a href="Airpressure.html">outlier detection</a> in air pressure data we used a simple Gaussian noise model: it is simple and easy to interpret. For drift detection this Gaussian noise model is inadequate. The problem is the correlation between subsequent observations, which directly affects significance calculation of the drift as shown in <a href="https://github.com/DOV-Vlaanderen/groundwater-logger-validation/issues/63">this</a> analysis report.</p>
 <p>So what is a good air pressure model? In <a href="https://github.com/DOV-Vlaanderen/groundwater-logger-validation/blob/master/src/r/drifts/analysis_19.r">script 19/19b</a> we did some testing with a full range of ARIMA models on all available barometer data. From that we have seen that there is a significant drop in likelihood from ARIMA(0,0,0) with non-zero mean to ARIMA(1,0,0) with non-zero mean. Subsequent more complex ARIMA models did not result in much better likelihoods – although the AIC/BIC test sometimes suggested otherwise.</p>
-<p>A noteworthy observation is that ARIMA(0,1,0) performs almost equally well as the ARIMA(1,0,0) with non-zero mean. When <span class="math inline">\(\phi\)</span> is close to 1 these two models are equivalent, and that explains the similar performance. At the same time it must be noted that air pressure does <em>not</em> behave like a random walk, which will be explained later.</p>
+<p>A noteworthy observation is that ARIMA(0,1,0) performs almost equally well as the ARIMA(1,0,0) with non-zero mean. When <span class="math inline">\(\phi\)</span> is close to 1 these two models are equivalent, and that explains the similar performance. At the same time it must be noted that air pressure does <em>not</em> behave like a random walk for reasons outlined further below.</p>
 <p>So the chosen model for air pressure is ARIMA(1,0,0) with non-zero mean – shorthand AR(1). In formulaic notation:</p>
 <p><span class="math display">\[
 z_t - \mu = \phi_1(z_{t-1} - \mu) + a_t
@@ -169,16 +169,16 @@ where <span class="math inline">\(a_t \sim \mathcal{N}(0, \sigma^2)\)</span>. Fo
 <h3 class="hasAnchor">
 <a href="#estimation-of-phi" class="anchor"></a>Estimation of <span class="math inline">\(\phi\)</span>
 </h3>
-<p>Interesting is how the autoregressive parameter <span class="math inline">\(\phi\)</span> behaves in function of <span class="math inline">\(\Delta t\)</span>, the time interval between measurements. If we were to measure the air pressure each minute, we would see that subsequent measurements are almost identical – apart from intrinsic barometer error. The series would behave almost as a random walk. <em>Almost</em>, because although <span class="math inline">\(\phi\)</span> would be close to 1, it would never be exactly 1. One way to see this is that the air pressure is stationary, while a random walk is not. The <span class="math inline">\(\phi = 1 - \epsilon\)</span>, however small <span class="math inline">\(\epsilon\)</span> may be, will pull the series towards <span class="math inline">\(\mu\)</span>, and thus result in a stationary series.</p>
+<p>Interesting is how the autoregressive parameter <span class="math inline">\(\phi\)</span> behaves in function of <span class="math inline">\(\Delta t\)</span>, the time interval between measurements. If we were to measure the air pressure each minute, we would see that subsequent measurements are almost identical – apart from intrinsic barometer error resulting in a very small <span class="math inline">\(\sigma^2\)</span>. The series would behave almost as a random walk. <em>Almost</em>, because although <span class="math inline">\(\phi\)</span> would be close to 1, it would never be exactly 1. One way to see this is that the air pressure is stationary, while a random walk is not. The <span class="math inline">\(\phi = 1 - \epsilon\)</span>, however small <span class="math inline">\(\epsilon\)</span> may be, will pull the series towards <span class="math inline">\(\mu\)</span>, and thus result in a stationary series.</p>
 <div class="figure">
 <span id="fig:unnamed-chunk-3"></span>
 <img src="Airpressure-Drift_files/figure-html/unnamed-chunk-3-1.png" alt="Having $\phi$ smaller than 1 (left) results in a stationary series around $\mu$, while a random walk (right) will have no bounds. Both series have variance of $a_t$ fixed to 25."><p class="caption">
 Figure 2: Having <span class="math inline">\(\phi\)</span> smaller than 1 (left) results in a stationary series around <span class="math inline">\(\mu\)</span>, while a random walk (right) will have no bounds. Both series have variance of <span class="math inline">\(a_t\)</span> fixed to 25.
 </p>
 </div>
-<p>On the other extreme, if we would measure air pressure each 2 weeks (cf. <a href="https://github.com/DOV-Vlaanderen/groundwater-logger-validation/blob/master/src/r/drifts/analysis_18.r">script 18</a>), we would see almost no correlation at all between subsequent measurements. In other words, <span class="math inline">\(\phi\)</span> would be 0 and the resulting model would be simple gaussian noise: <span class="math inline">\(z_t = \mu + a_t\)</span>.</p>
-<p>This analysis thus suggests that <span class="math inline">\(\phi\)</span> is a function of <span class="math inline">\(\Delta t\)</span>. Unfortunately, the classical ARIMA models allow only for fixed <span class="math inline">\(\Delta t\)</span>. That is why the algorithm currently aggregates the measurements to 12h intervals (i.e. it is assumed that <span class="math inline">\(\Delta t = 12h\)</span>).</p>
-<p>Under <span class="math inline">\(\Delta t = 12h\)</span> we can estimate <span class="math inline">\(\phi\)</span> based on all available barometer data. This estimation suggests that <span class="math inline">\(0.80 \le \phi(12h) \le 0.90\)</span>. Knowing this, it seems plausible to assume the parameter as know <em>a-prior</em> information, instead of estimating it each time on each series separately.</p>
+<p>On the other extreme, if we would measure air pressure each 2 weeks (cf. <a href="https://github.com/DOV-Vlaanderen/groundwater-logger-validation/blob/master/src/r/drifts/analysis_18.r">script 18</a>), we would see almost no correlation at all between subsequent measurements. In other words, <span class="math inline">\(\phi\)</span> would be 0 and the resulting model would be simple Gaussian noise: <span class="math inline">\(z_t = \mu + a_t\)</span> with <span class="math inline">\(\sigma^2 \sim 100\)</span>.</p>
+<p>This analysis thus suggests that <span class="math inline">\(\phi\)</span> is a function of <span class="math inline">\(\Delta t\)</span>, just like <span class="math inline">\(\sigma^2\)</span>. Unfortunately, the classical ARIMA models allow only for fixed <span class="math inline">\(\Delta t\)</span>. That is why the algorithm currently aggregates the measurements to 12h intervals (i.e. it is assumed that <span class="math inline">\(\Delta t = 12h\)</span>).</p>
+<p>Under <span class="math inline">\(\Delta t = 12h\)</span> we can estimate <span class="math inline">\(\phi\)</span> based on all available barometer data. This estimation suggests that <span class="math inline">\(0.80 \le \phi(12h) \le 0.90\)</span>. Knowing this, it seems plausible to assume the parameter as <em>a-prior</em> known information, instead of estimating it each time on each series separately.</p>
 </div>
 </div>
 <div id="difference-with-reference-series-model" class="section level2">
@@ -195,7 +195,7 @@ d_t &amp;= z_t - r_t \\
 \end{aligned}
 \]</span></p>
 <p>The last equivalence one can see by just expanding <span class="math inline">\(\phi d_{t-1}\)</span> recursively. The <span class="math inline">\(\mu_d = 0\)</span> in case both series are height-compensated, otherwise it is their difference in height in cmH2O.</p>
-<p>Three things are worth to note here. First is that <span class="math inline">\(d_t\)</span> is still an AR(1) model. Second is that the AR(1) parameter is the same as in <span class="math inline">\(z_t\)</span> and <span class="math inline">\(r_t\)</span>: just <span class="math inline">\(\phi\)</span>. And the last thing is that only the error is different: <span class="math inline">\(a_t - a_t\)</span>. This error-term we investigate next.</p>
+<p>Three things are worth noting here. First is that <span class="math inline">\(d_t\)</span> is still an AR(1) model. Second is that the AR(1) parameter is the same as in <span class="math inline">\(z_t\)</span> and <span class="math inline">\(r_t\)</span>: just <span class="math inline">\(\phi\)</span>. And the last thing is that only the error is different: <span class="math inline">\(b_t = a_{z,t} - a_{r,t}\)</span>. This error-term we investigate next.</p>
 <div id="the-error-term-b_t" class="section level3">
 <h3 class="hasAnchor">
 <a href="#the-error-term-b_t" class="anchor"></a>The error term <span class="math inline">\(b_t\)</span>
@@ -203,8 +203,8 @@ d_t &amp;= z_t - r_t \\
 <p>We assumed in our model definition that <span class="math inline">\(a_t \sim \mathcal{N}(0, \sigma^2)\)</span>. This makes <span class="math inline">\(b_t \sim \mathcal{N}(0, 2\sigma^2 - 2\text{cov}(a_{z,t}, a_{r,t}))\)</span>. In <a href="https://github.com/DOV-Vlaanderen/groundwater-logger-validation/blob/master/src/r/drifts/analysis_19.r">script 19</a> we estimated <span class="math inline">\(\sigma^2 \approx 25\)</span> and <span class="math inline">\(\text{var}(b_t) \approx 2.2\)</span>. This suggests that <span class="math inline">\(\text{cov}(a_{z,t}, a_{r,t}) \approx 23.9\)</span> and thus a very high correlation between <span class="math inline">\(z_t\)</span> and <span class="math inline">\(r_t\)</span>. This effect can be seen in the following plot:</p>
 <div class="figure">
 <span id="fig:unnamed-chunk-4"></span>
-<img src="Airpressure-Drift_files/figure-html/unnamed-chunk-4-1.png" alt="Comparison of variance for of $z_t$ (left) and $d_t$ (right) on equal scale. If $z_t$ and $r_t$ were not correlated, the variance of $d_t$ would be 2 times larger than that of $z_t$."><p class="caption">
-Figure 3: Comparison of variance for of <span class="math inline">\(z_t\)</span> (left) and <span class="math inline">\(d_t\)</span> (right) on equal scale. If <span class="math inline">\(z_t\)</span> and <span class="math inline">\(r_t\)</span> were not correlated, the variance of <span class="math inline">\(d_t\)</span> would be 2 times larger than that of <span class="math inline">\(z_t\)</span>.
+<img src="Airpressure-Drift_files/figure-html/unnamed-chunk-4-1.png" alt="Comparison of variance for of $z_t$ and $r_t$ (left) and $d_t$ (right) on equal scale. If $z_t$ and $r_t$ were not correlated, then the variance of $d_t$ (blue) would be 2 times larger than that of $z_t$ (black)."><p class="caption">
+Figure 3: Comparison of variance for of <span class="math inline">\(z_t\)</span> and <span class="math inline">\(r_t\)</span> (left) and <span class="math inline">\(d_t\)</span> (right) on equal scale. If <span class="math inline">\(z_t\)</span> and <span class="math inline">\(r_t\)</span> were not correlated, then the variance of <span class="math inline">\(d_t\)</span> (blue) would be 2 times larger than that of <span class="math inline">\(z_t\)</span> (black).
 </p>
 </div>
 </div>
@@ -220,8 +220,8 @@ d_t - \mu_d -  \delta(t-t_\delta)I(t\ge t_\delta) - \mathbf{\beta} \mathbf{x_t}
 where <span class="math inline">\(\mathbf{x_t}\)</span> are the exogenous yearly seasonal sine and cosine components and <span class="math inline">\(\mu_d\)</span>, <span class="math inline">\(\mathbf{\beta}\)</span>, <span class="math inline">\(\sigma_d^2\)</span>, <span class="math inline">\(\delta\)</span> and <span class="math inline">\(t_\delta\)</span> are to be estimated.</p>
 <p>Let’s use the series from Figure <a href="#fig:zdr">1</a> and show how these estimates can be recovered with the <code><a href="../reference/detect_drift.html">detect_drift(verbose=TRUE)</a></code> parameter.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit">
-<span class="co"># zdr is the drifting series, ts.dr are its timestamps and zndr is the reference series.</span>
-<span class="co"># We focus on the attributes of returned vector when argument verbose=TRUE.</span>
+<span class="co"># zdr is the drifting series and zndr is the reference series. ts.dr are the corresponding timestamps </span>
+<span class="co"># We focus on the attributes of the returned vector when verbose=TRUE.</span>
 <span class="fu"><a href="https://rdrr.io/r/base/attributes.html">attributes</a></span>(<span class="kw">gwloggeR</span>::<span class="fu"><a href="../reference/detect_drift.html">detect_drift</a></span>(x = <span class="kw">zdr</span>, timestamps = <span class="kw">ts.dr</span>,
                                   reference = <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span>(x = <span class="kw">zndr</span>, timestamps = <span class="kw">ts.dr</span>)),
                                   verbose = <span class="fl">TRUE</span>, plot = <span class="fl">TRUE</span>))
@@ -258,20 +258,21 @@ Figure 4: Diagnostic plots. For more information, consult the ‘Diagnostic plot
 #&gt; 
 #&gt; $significance
 #&gt; [1] 0</code></pre>
-<p><span class="math inline">\(t_\delta\)</span> is the timestamp at which the drift starts. In this case it is estimated at 2013-10-26 UTC. The <span class="math inline">\(\delta\)</span> is the drift rate, here estimated as 2.9 cmH2O/year. The <span class="math inline">\(\mathbf{\beta}\)</span> expresses the yearly seasonality as sine and cosine components, here estimated as -0.09 and 0.02 respectively. And lastly, <span class="math inline">\(\sigma^2 = \text{Var}(b_t)\)</span> is here estimated as 1.48².</p>
-<p>From the output we gather that the drift significance is 0. It can be interpreted as the probability that there is no drift (i.e. the null-hypothesis). In other words, the smaller this value, the stronger the evidence that there is a drift. (cf. infra)</p>
+<p><span class="math inline">\(t_\delta\)</span> is the timestamp at which the drift starts. In this case it is estimated at 2013-10-26 UTC. The <span class="math inline">\(\delta\)</span> is the drift rate, here estimated as 2.9 cmH2O/year. The <span class="math inline">\(\mathbf{\beta}\)</span> expresses the yearly seasonality as sine and cosine components, here estimated as -0.09 and 0.02 respectively. And lastly, <span class="math inline">\(\sigma^2 = \text{Var}(b_t)\)</span> is here estimated as 1.49².</p>
+<p>From the output we gather that the drift significance is 0. It can be interpreted as the probability that there is no drift (i.e. the null-hypothesis). In other words, the smaller this value, the stronger the evidence that there is a drift. So what is a good threshold (i.e. alpha) for the significance? By default alpha is set to 1/100 which can be interpreted as one wrong detection of drift out of 100 non-drifting cases. One can modify alpha by supplying is as a parameter (e.g. <code><a href="../reference/detect_drift.html">detect_drift(alpha=0.001)</a></code>).</p>
 <p>For more information about the diagnostic plots in Figure <a href="#fig:attributes">4</a>, consult the ‘Diagnostic plots’ section in <code><a href="../reference/detect_drift.html">?gwloggeR::detect_drift</a></code>.</p>
 <div id="estimation-of-delta-and-t_delta" class="section level3">
 <h3 class="hasAnchor">
 <a href="#estimation-of-delta-and-t_delta" class="anchor"></a>Estimation of <span class="math inline">\(\delta\)</span> and <span class="math inline">\(t_\delta\)</span>
 </h3>
-<p>Parameters <span class="math inline">\(\delta\)</span> and <span class="math inline">\(t_\delta\)</span> are maximum likelihood estimates (MLE). Due to discrete and non-linear nature of <span class="math inline">\(t_\delta\)</span> the maximization of the likelihood function is not straightforward. A secondary difficulty is that the AR(1) likelihood function is not convex either (cf. <span class="citation">White et al. (<a href="#ref-White2015" role="doc-biblioref">2015</a>)</span>). The <code><a href="https://rdrr.io/r/stats/arima.html">arima()</a></code> function seems to produce good results, despite the convexity. The first problem we solve brute-force by fitting the AR(1) model to specific <span class="math inline">\(t_\delta\)</span>. Instead of fitting the AR(1) model for each possible <span class="math inline">\(t_\delta\)</span>, we scan in steps of <span class="math inline">\(\sqrt{N/2}\)</span> where <span class="math inline">\(N\)</span> is the number of observations. Subsequently we do a local search on all <span class="math inline">\(t\)</span> in the vicinity of the optima.</p>
+<p>Parameters <span class="math inline">\(\delta\)</span> and <span class="math inline">\(t_\delta\)</span> are maximum likelihood estimates (MLE). Due to discrete and non-linear nature of <span class="math inline">\(t_\delta\)</span> the maximization of the likelihood function is not straightforward. A secondary difficulty is that the AR(1) likelihood function is not convex either (cf. <span class="citation">White et al. (<a href="#ref-White2015" role="doc-biblioref">2015</a>)</span>). The <code><a href="https://rdrr.io/r/stats/arima.html">arima()</a></code> function seems to produce good results, despite the non-convexity. The first problem we solve brute-force by fitting the AR(1) model to specific <span class="math inline">\(t_\delta\)</span>s. Instead of fitting the AR(1) model for each possible <span class="math inline">\(t_\delta\)</span>, we scan in steps of <span class="math inline">\(\sqrt{N/2}\)</span> where <span class="math inline">\(N\)</span> is the number of observations. Subsequently we do a local search on all <span class="math inline">\(t\)</span> in the vicinity of the optima.</p>
 </div>
 <div id="drift-significance" class="section level3">
 <h3 class="hasAnchor">
 <a href="#drift-significance" class="anchor"></a>Drift significance</h3>
-<p>Once <span class="math inline">\(\hat{\delta}_{MLE}\)</span> and <span class="math inline">\(\hat{t}_{\delta_{MLE}}\)</span> have been found, likelihood ratio test is used to test their significance.</p>
-<p>A peculiar observation here is the fact that the optimal <span class="math inline">\(\chi^2\)</span> degrees of freedom are not equal to 2, but to some unknown <span class="math inline">\(2 + f(N)\)</span> where <span class="math inline">\(0 &lt; f(N) &lt; 1\)</span>. For our case, where <span class="math inline">\(1000 &lt; N &lt; 10000\)</span>, it seems that <span class="math inline">\(f(N) \approx 0.8\)</span> performs well in the sense that under <span class="math inline">\(H_0\)</span> the <span class="math inline">\(p\)</span>-values are uniformly distributed. Currently it is not clear in what sense the drift model violates the <span class="citation">Wilks (<a href="#ref-Wilks1938" role="doc-biblioref">1938</a>)</span> theorem, and thus what <span class="math inline">\(f\)</span> is.</p>
+<p>Once <span class="math inline">\(\hat{\delta}_{MLE}\)</span> and <span class="math inline">\(\hat{t}_{\delta_{MLE}}\)</span> have been found, likelihood ratio (LR) test is used to test their significance.</p>
+<p>A peculiar observation here is the fact that the <span class="math inline">\(\chi^2\)</span> degrees of freedom – required by the LR test – are not equal to 2, but to some unknown <span class="math inline">\(2 + f(N)\)</span> where <span class="math inline">\(0 &lt; f(N) &lt; 1\)</span>. For our case, where <span class="math inline">\(1000 &lt; N &lt; 10000\)</span>, it seems that <span class="math inline">\(f(N) \approx 0.8\)</span> performs well in the sense that under <span class="math inline">\(H_0\)</span> the <span class="math inline">\(p\)</span>-values are uniformly distributed. Currently it is not clear in what sense the drift model violates the <span class="citation">Wilks (<a href="#ref-Wilks1938" role="doc-biblioref">1938</a>)</span> theorem, and thus what <span class="math inline">\(f\)</span> is.</p>
+<p>A second problem is the fact that <span class="math inline">\(b_t\)</span> is not completely uncorrelated and also that its distribution has slightly larger tails than a true normal distribution. This results in the algorithm being more sensitive towards the end of a series, where a few outlying points could be detected as the start of a drift.</p>
 </div>
 </div>
 <div id="examples" class="section level2">
@@ -285,7 +286,7 @@ Figure 4: Diagnostic plots. For more information, consult the ‘Diagnostic plot
 <h2 class="hasAnchor">
 <a href="#future-work" class="anchor"></a>Future work</h2>
 <ul>
-<li>Implement <span class="math inline">\(\phi(\Delta t)\)</span> (i.e. dependence of <span class="math inline">\(\phi\)</span> on time differences.)</li>
+<li>Implement <span class="math inline">\(\phi(\Delta t)\)</span> (i.e. dependence of <span class="math inline">\(\phi\)</span> on time differences). Note that <span class="math inline">\(a_t\)</span> is also dependent on <span class="math inline">\(\Delta(t)\)</span> for the same reasons.</li>
 <li>Bayesian estimation of <span class="math inline">\(\delta\)</span> and <span class="math inline">\(t_\delta\)</span>.</li>
 <li>Investigate the unexpected <span class="math inline">\(N\)</span>-dependence in degrees of freedom of the LR test.</li>
 <li>Explain what happens in theory when we have more than one reference timeseries.</li>
@@ -304,14 +305,14 @@ Figure 4: Diagnostic plots. For more information, consult the ‘Diagnostic plot
 <div id="ref-drift-scripts">
 <p>“<a href="https://github.com/DOV-Vlaanderen/groundwater-logger-validation/tree/master/src/r/drifts">Drift Analysis Scripts</a>.” n.d.</p>
 </div>
-<div id="ref-WMO8">
-<p><em><a href="https://library.wmo.int/index.php?lvl=notice_display&amp;id=12407">Guide to Instruments and Methods of Observation</a></em>. 2018. Vols. I - Measurement of Meteorological Variables. WHO-No. 8. World Meteorological Organization.</p>
-</div>
 <div id="ref-White2015">
 <p>White, Martha, Junfeng Wen, Michael Bowling, and Dale Schuurmans. 2015. “Optimal Estimation of Multivariate Arma Models.” In <em>Proceedings of the Twenty-Ninth Aaai Conference on Artificial Intelligence</em>, 3080–6. AAAI’15. Austin, Texas: AAAI Press. <a href="https://doi.org/10.5555/2888116.2888145">https://doi.org/10.5555/2888116.2888145</a>.</p>
 </div>
 <div id="ref-Wilks1938">
 <p>Wilks, S. S. 1938. “The Large-Sample Distribution of the Likelihood Ratio for Testing Composite Hypotheses.” <em>Ann. Math. Statist.</em> 9 (1): 60–62. <a href="https://doi.org/10.1214/aoms/1177732360">https://doi.org/10.1214/aoms/1177732360</a>.</p>
+</div>
+<div id="ref-WMO8">
+<p>WMO. 2018. <em><a href="https://library.wmo.int/index.php?lvl=notice_display&amp;id=12407">Guide to Instruments and Methods of Observation</a></em>. Vols. I - Measurement of Meteorological Variables. WMO-No. 8. World Meteorological Organization.</p>
 </div>
 </div>
 </div>
