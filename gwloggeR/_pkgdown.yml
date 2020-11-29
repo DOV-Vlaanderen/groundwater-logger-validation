@@ -10,7 +10,7 @@ reference:
   - title: Apriori information
     desc: Functions for defining apriori information.
     contents:
-      - apriori
+      - Apriori
   - title: Detection functions
     desc: Functions for detecting annomalies in data.
     contents:
