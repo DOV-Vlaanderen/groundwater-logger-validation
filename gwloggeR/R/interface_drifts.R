@@ -72,8 +72,7 @@ Drift.ArimaExt <- function(model, timestamps, alpha) {
 #' @param timestamps timestamp vector
 #' @param reference a list of list(x, timestamps) pairs that are to be used as
 #' reference for drift detection. The more data is supplied here, the better
-#' the results. Note also that the barometer data supplied here should be
-#' compensated for altitude.
+#' the results.
 #' @param apriori \link{Apriori} class. Defaults to air pressure in cmH2O.
 #' @param ... optional parameters, depending on signature:
 #' @param plot prints diagnostic plots. Consult the dedicated section below for more information.
@@ -82,9 +81,20 @@ Drift.ArimaExt <- function(model, timestamps, alpha) {
 #' @param alpha significance level at which to detect drift. Defaults to 0.01.
 #' @return Logical vector with same length as x, specifying TRUE for drifting observations.
 #' @details # Diagnostic plots
+#' Top plot shows the time differences (hours) between measurements. 12 hours is
+#' signified by the red horizontal line. Note that the y-scale is logarithmic.
+#' The middle left plot is the original series (black) overlaying the reference (darkred).
+#' In case more than one reference is supplied, only their median is shown.
+#' The bottom left plot is the difference between the original and the reference series
+#' (or their median in case more than 1 reference is supplied) and is best suited for drift detection.
+#' The vertical dotted line signifies the most likely drift start date.
+#' Subsequently, three colors are used based on the significance: red (p < 0.001), orange and green (p > 0.01).
+#' The right 4 smaller plots are DFTF and Year plots for the original series x (top) and differences (bottom).
+#' They are mainly used for the visualization of the seasonality patterns. The DFTF plot is in days while the
+#' yearly plot is in months.
 #' Note that the DTFT and Year plots have the drift effect subtracted. In the Year plots
-#' this results to a more pronounced seasonal pattern, and in the DTFT plot the
-#' amplitude of low frequencies (high periods) is tuned down.
+#' this results to a more pronounced seasonal pattern, and in the DTFT plot this results in
+#' lower amplitude of low frequencies (high periods).
 #' @references
 #' \href{https://dov-vlaanderen.github.io/groundwater-logger-validation/gwloggeR/docs/articles/Airpressure.html}{Air pressure vignette}
 #' @importFrom methods setGeneric
