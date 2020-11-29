@@ -27,16 +27,18 @@ drift_reference.aggregate <- function(df, scalefactor.sec, is.reference = FALSE)
   stopifnot(is.list(df) || is.data.frame(df))
 
   df <- data.table::as.data.table(df) # in case df is a reference (i.e. list)
-  df.new <- df[, .(x = mean(x)), by = .(timestamps = round.timestamp(timestamps, scalefactor.sec = scalefactor.sec))]
+  data.table::setkey(df, 'timestamps')
+
+  df.new <- df[, .('x' = mean(x)), by = .('timestamps' = round.timestamp(timestamps, scalefactor.sec = scalefactor.sec))]
   data.table::setkey(df.new, 'timestamps')
 
-  if (nrow(df) != nrow(df.new))
-    warning(sprintf('%s has intervals smaller than %ih. ',
-                    if (is.reference) 'Reference data' else 'Timeserie',
-                    scalefactor.sec/3600) %||%
-            sprintf('Measurements are averaged to %ih intervals.',
-                    scalefactor.sec/3600),
-            call. = FALSE, immediate. = TRUE)
+  # If x has intervals smaller than scalefactor.sec, then it is also not a
+  # problem since the aggregated will be used.
+
+  # Reference data should have intervals smaller or equal to scalefactor.sec
+  # If reference data has intervals larger than scalefactor.sec,
+  # then it will not be possible to calculate the difference with original
+  # series for these observations.
 
   df.new
 }
