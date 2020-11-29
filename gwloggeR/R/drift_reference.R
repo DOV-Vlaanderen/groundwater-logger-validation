@@ -63,27 +63,25 @@ drift_reference.differentiate <- function(x, timestamps, reference, scalefactor.
     use.names = TRUE, fill = TRUE, idcol = 'reference.id')
   data.table::setkey(df.ref, 'timestamps')
 
-  df.diff <- df.x[J(df.ref), .('x' = x.x - i.x, timestamps, reference.id, reference.x = i.x), nomatch = NULL][!is.na(x), ]
-  data.table::setkey(df.diff, 'timestamps')
+  df.diff <- df.ref[J(df.x), .('x' = i.x - x.x, timestamps, reference.id, reference.x = x.x)]
 
   # Missing reference (mr) data
-  df.diff.N <- df.diff[J(df.x),][, .(nref = sum(!is.na(reference.id))), by = timestamps][, .N, by = nref]
-  stopifnot(sum(df.diff.N$N) == nrow(df.x))
-  mr.prop <- sum(df.diff.N[nref != length(reference), N])/df.diff.N[nref == length(reference), N]
-  if (mr.prop > 0.05)
-    warning(sprintf('Given the %i reference timeserie%s, ' %||%
-                      'there is for %.2f %% of barometer observations missing reference data.',
-                    length(reference), if (length(reference) > 1L) 's' else '', mr.prop*100),
+  mr.prop <- sum(is.na(df.diff$x))/nrow(df.diff)
+  if (mr.prop > 0.001)
+    warning(sprintf('There is for %.2f %% of barometer observations not a single reference data.', mr.prop*100),
             call. = FALSE, immediate. = TRUE)
 
+  df.diff <- df.diff[!is.na(x), ] # remove observations that have no reference data
+  data.table::setkey(df.diff, 'timestamps')
+
   # Left side
-  if (df.x[1L, timestamps] < df.diff[1L, timestamps])
+  if (df.x[1L, timestamps] < df.ref[1L, timestamps])
     stop(sprintf('Reference data starts at %s while the barometer data starts sooner: %s. ' %||%
                    'Either provide the barometer data only from %1$s, or add reference data down till %s.',
                  min(df.ref$timestamps), min(timestamps), df.x[1L, timestamps]), call. = FALSE)
 
   # Right side
-  if (df.x[.N, timestamps] > df.diff[.N, timestamps])
+  if (df.x[.N, timestamps] > df.ref[.N, timestamps])
     stop(sprintf('Reference data ends at %s while the barometer data ends later: %s. ' %||%
                    'Either provide the barometer data only till %1$s, or add reference data up till %s.',
                  max(df.ref$timestamps), max(timestamps), df.x[.N, timestamps]), call. = FALSE)
