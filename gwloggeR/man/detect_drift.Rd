@@ -46,20 +46,20 @@ Logical vector with same length as x, specifying TRUE for drifting observations.
 \description{
 This function marks a drift in the input vector.
 }
-\section{Functions}{
-\itemize{
-\item \code{detect_drift,numeric-method}: 
-}}
+\details{
+\subsection{Diagnostic plots}{
 
-\section{Diagnostic plots}{
 Top plot shows the time differences (hours) between measurements. 12 hours is
 signified by the red horizontal line. Note that the y-scale is logarithmic.
+
 The middle left plot is the original series (black) overlaying the reference (darkred).
 In case more than one reference is supplied, only their median is shown.
+
 The bottom left plot is the difference between the original and the reference series
 (or their median in case more than 1 reference is supplied) and is best suited for drift detection.
 The vertical dotted line signifies the most likely drift start date.
 Subsequently, three colors are used based on the significance: red (p < 0.001), orange and green (p > 0.01).
+
 The right 4 smaller plots are DFTF and Year plots for the original series x (top) and differences (bottom).
 They are mainly used for the visualization of the seasonality patterns. The DFTF plot is in days while the
 yearly plot is in months.
@@ -67,7 +67,12 @@ Note that the DTFT and Year plots have the drift effect subtracted. In the Year 
 this results to a more pronounced seasonal pattern, and in the DTFT plot this results in
 lower amplitude of low frequencies (high periods).
 }
+}
+\section{Functions}{
+\itemize{
+\item \code{detect_drift,numeric-method}: 
+}}
 
 \references{
-\href{https://dov-vlaanderen.github.io/groundwater-logger-validation/gwloggeR/docs/articles/Airpressure.html}{Air pressure vignette}
+\href{https://dov-vlaanderen.github.io/groundwater-logger-validation/gwloggeR/docs/articles/Airpressure-Drift.html}{Air pressure drift vignette}
 }
