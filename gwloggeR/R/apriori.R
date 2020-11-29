@@ -31,6 +31,6 @@ setOldClass('Apriori') # for use in S4 slots and signatures
 #' @export
 #'
 apriori <- function(data_type = c("air pressure", "hydrostatic pressure"), units = c("cmH2O")) {
-  warning('apriori() function is deprecated: please rename it to Apriori().', call. = FALSE, immediate. = TRUE)
+  warning('apriori() function is deprecated and will be removed in the next release: please rename it to Apriori().', call. = FALSE, immediate. = TRUE)
   Apriori(data_type = data_type, units = units)
 }
