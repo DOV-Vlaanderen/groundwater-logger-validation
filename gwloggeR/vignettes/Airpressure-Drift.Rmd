@@ -39,7 +39,7 @@ xy.errors <- function(n, mu = rep(0, 2L), Sigma = matrix(c(25, 23.9, 23.9, 25), 
 }
 
 ggxblank <- ggplot2::theme(axis.text.y = ggplot2::element_text(angle = 90, hjust = 0.5),
-                         axis.title.x = ggplot2::element_blank())
+                           axis.title.x = ggplot2::element_blank())
 ```
 
 This is an advanced guide. It explains how `detect_drift()` works for air pressure data. Make sure you have first read the [getting started](gwloggeR.html) material.
