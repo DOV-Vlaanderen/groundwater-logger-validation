@@ -90,6 +90,7 @@ Before deployment of a new version, certain steps need to be taken.
 
 * Update the [Documentation].
 * Make sure you complete [Testing], and also re-run the more elaborate _analytics_ tests.
+* Make binary: `devtools::build(path = './release/bin/win', binary = TRUE)`
 * Update the [News.md](https://github.com/DOV-Vlaanderen/groundwater-logger-validation/blob/master/gwloggeR/News.md) file. Each new version should be a top level section, besides the _Development version_ and _Future version_ sections.
 * Update the [DESCRIPTION](https://github.com/DOV-Vlaanderen/groundwater-logger-validation/blob/master/gwloggeR/DESCRIPTION) file, mainly the `Version` and `Date` tags.
 * Rebuild the [Website] and deploy it on the `gh-pages` branch. (This is the branch that GitHub uses as source for this `gwloggeR` website.)
