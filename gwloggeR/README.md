@@ -15,8 +15,21 @@ Keep reading to learn how to start using `gwloggeR`.
 ## Installation
 
 `gwloggeR` package is not available on CRAN, only on GitHub. The easiest
-way to install it is with the `devtools` package and referring to the
-git repository holding the `gwloggeR` source code:
+way to install it is to get the released binary with the following
+command:
+
+``` r
+install.packages('https://github.com/DOV-Vlaanderen/groundwater-logger-validation/raw/master/gwloggeR/release/bin/win/gwloggeR_0.2.0.zip', repos = NULL)
+```
+
+For all released binaries, see the
+[release](https://github.com/DOV-Vlaanderen/groundwater-logger-validation/tree/master/gwloggeR/release)
+folder. More information about these releases one can find in the
+[News](News.md) section.
+
+More experienced users can install from source with the `devtools`
+package and referring to the git repository holding the `gwloggeR`
+source code:
 
 ``` r
 devtools::install_github("DOV-Vlaanderen/groundwater-logger-validation", subdir = "gwloggeR", ref = "x.x.x")
@@ -24,10 +37,8 @@ devtools::install_github("DOV-Vlaanderen/groundwater-logger-validation", subdir 
 
 Note the `ref = "x.x.x"` option. Replace it with the version you want to
 install. Normally this will be the number of the latest stable release
-as displayed in the top left corner of this page. Alternatively, one can
-also install previous releases documented in the [News](News.md)
-section. By omitting the `ref` option the latest development version
-will be installed.
+as displayed in the top left corner of this page. By omitting the `ref`
+option the latest development version will be installed.
 
 ## Usage
 
