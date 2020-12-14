@@ -178,6 +178,18 @@ A second problem is the fact that $b_t$ is not completely uncorrelated and also 
 
 ## Examples
 
+```{r, eval=FALSE, echo=FALSE}
+# This code is not to be executed during vignette compilation, but only used 
+# to make the airpressure-drift rds files which are to be loaded during
+# vignette compilation.
+# version = 2 to be compatible with R version <= 3.5
+options(logger.root.data.path = './../../data/raw')
+try(devtools::load_all('./../../gwloggeR.data', export_all = FALSE))
+try(detach('package:gwloggeR.data'))
+saveRDS(gwloggeR.data::read('BAOL842X_T1108')$df, './airpressure-drift/BAOL842X_T1108.rds', version = 2)
+saveRDS(gwloggeR.data::read('KNMI_20201103_hourly_Westdorpe')$df[!is.na(PRESSURE_VALUE), ], './airpressure-drift/KNMI_Westdorpe.rds', version = 2)
+```
+
 Here we discuss some real examples.
 
 ```{r, echo=FALSE, fig.width=10.5, fig.height=7.5, out.width='100%', warning=FALSE}
