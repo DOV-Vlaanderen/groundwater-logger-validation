@@ -132,7 +132,7 @@
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>Development guide</h1>
             
-            <h4 class="date">2020-11-29</h4>
+            <h4 class="date">2020-12-14</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/DOV-Vlaanderen/groundwater-logger-validation/tree/master/gwloggeR/vignettes/Development.Rmd"><code>vignettes/Development.Rmd</code></a></small>
       <div class="hidden name"><code>Development.Rmd</code></div>
@@ -205,6 +205,8 @@
 <ul>
 <li>Update the <a href="#documentation">Documentation</a>.</li>
 <li>Make sure you complete <a href="#testing">Testing</a>, and also re-run the more elaborate <em>analytics</em> tests.</li>
+<li>Make binary: <code><a href="https://devtools.r-lib.org//reference/build.html">devtools::build(path = './release/bin/win', binary = TRUE)</a></code>
+</li>
 <li>Update the <a href="https://github.com/DOV-Vlaanderen/groundwater-logger-validation/blob/master/gwloggeR/News.md">News.md</a> file. Each new version should be a top level section, besides the <em>Development version</em> and <em>Future version</em> sections.</li>
 <li>Update the <a href="https://github.com/DOV-Vlaanderen/groundwater-logger-validation/blob/master/gwloggeR/DESCRIPTION">DESCRIPTION</a> file, mainly the <code>Version</code> and <code>Date</code> tags.</li>
 <li>Rebuild the <a href="#website">Website</a> and deploy it on the <code>gh-pages</code> branch. (This is the branch that GitHub uses as source for this <code>gwloggeR</code> website.)</li>
