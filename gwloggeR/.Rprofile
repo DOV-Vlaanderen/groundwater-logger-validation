@@ -1,6 +1,9 @@
 cat("#########################################################\n");
 cat(".Rprofile file is loading...\n");
 
+# renv
+source("renv/activate.R")
+
 # RTools
 local({
   rtools.path <- paste0(R.home(), '/../../../rtools/program/v3.5.0.4')
