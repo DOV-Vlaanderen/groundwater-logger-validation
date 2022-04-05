@@ -1,6 +1,24 @@
 cat("#########################################################\n");
 cat("Hello!\n.Rprofile file is loading...\n");
 
+# RTools
+local({
+  rtools.path <- paste0(R.home(), '/../../../rtools/program/v3.5.0.4')
+  if (dir.exists(rtools.path)) {
+    Sys.setenv('PATH' = paste(paste0(rtools.path, '/mingw_64/bin'),
+                            Sys.getenv('PATH'), sep = .Platform$path.sep))
+    Sys.setenv('PATH' = paste(paste0(rtools.path, '/bin'),
+                            Sys.getenv('PATH'), sep = .Platform$path.sep))
+    # As of R 3.3 you need to set the path to the compiler using the BINPREF
+    # variable. This is because we ship two separate versions of gcc, one
+    # targeting win32 and one targeting win64. If you compile R packages you need both at
+    # the same time. Hence the "$(WIN)" variable in the BINPREF.
+    Sys.setenv('BINPREF' = paste0(rtools.path, '/mingw_64/bin/'))
+
+    try(cat(paste('RTools installed:', pkgbuild::has_build_tools(debug = TRUE), '\n')))
+  }
+})
+
 # Needed for rmarkdown which uses pdflatex.exe.
 Sys.setenv(PATH = paste(Sys.getenv("PATH"), "W:\\Tools\\miktex\\program\\miktex\\bin", sep=.Platform$path.sep));
 
