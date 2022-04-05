@@ -6,12 +6,7 @@
 \alias{gwloggeR-package}
 \title{gwloggeR: Validate and annotate raw logger air and hydrostatic pressure time series}
 \description{
-Groundwater divers measure hydrostatic pressure, air pressure and
-    temperature. These raw time series contain issues such as outliers,
-    drift,... This package provides functions to facilitate the validation
-    workflow of groundwater related time series. Each of the functions takes
-    a time series and annotates problematic observations with a 
-    controlled vocabulary of flags.
+Groundwater divers measure hydrostatic pressure, air pressure and temperature. These raw time series contain issues such as outliers, drift,... This package provides functions to facilitate the validation workflow of groundwater related time series. Each of the functions takes a time series and annotates problematic observations with a controlled vocabulary of flags.
 }
 \details{
 TODO: package details.

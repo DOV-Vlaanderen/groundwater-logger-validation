@@ -18,7 +18,7 @@ URL: https://dov-vlaanderen.github.io/groundwater-logger-validation/gwloggeR/doc
 BugReports: https://github.com/DOV-Vlaanderen/groundwater-logger-validation/issues
 LazyData: true
 NeedsCompilation: no
-RoxygenNote: 7.1.1
+RoxygenNote: 7.1.2
 Roxygen: list(markdown = TRUE)
 Depends: 
     R (>= 2.10)
