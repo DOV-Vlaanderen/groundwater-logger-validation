@@ -25,16 +25,14 @@ Depends:
 Imports:
     stats,
     methods,
-    ggplot2,
-    gridExtra,
-    data.table,
-    digest
+    data.table
 Suggests: 
     knitr,
     bookdown,
     testthat (>= 2.1.0),
     dplyr,
     magrittr, 
-    MASS
-BuildVignettes: True
-VignetteBuilder: knitr, rmarkdown
+    MASS,
+    digest,
+    ggplot2,
+    gridExtra
