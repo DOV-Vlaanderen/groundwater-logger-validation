@@ -3,7 +3,7 @@ source("./data.R")
 local({
   print(Sys.time())
   pdf(file = './levelshifts/tsoutliers_agg_auto.pdf', width = 14, height = 7, compress = FALSE)
-  for (f in gwloggeR.data:::enumerate((partner = 'inbo')) {
+  for (f in gwloggeR.data:::enumerate((partner = 'inbo'))) {
     print(basename(f))
     df <- gwloggeR.data::read(f)$df
 
