@@ -1,12 +1,9 @@
 cat("#########################################################\n");
 cat(".Rprofile file is loading...\n");
 
-# renv
-source("renv/activate.R")
-
 # RTools
 local({
-  rtools.path <- paste0(R.home(), '/../../../rtools/program/v3.5.0.4')
+  rtools.path <- paste0(R.home(), '/../../../rtools/program/v3.3.0.1959')
   if (dir.exists(rtools.path)) {
     Sys.setenv('PATH' = paste(paste0(rtools.path, '/mingw_64/bin'),
                             Sys.getenv('PATH'), sep = .Platform$path.sep))
