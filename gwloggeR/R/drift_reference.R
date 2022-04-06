@@ -63,7 +63,12 @@ drift_reference.differentiate <- function(x, timestamps, reference, scalefactor.
     use.names = TRUE, fill = TRUE, idcol = 'reference.id')
   data.table::setkey(df.ref, 'timestamps')
 
-  df.diff <- df.ref[J(df.x), .('x' = i.x - x.x, timestamps, reference.id, reference.x = x.x)]
+  # For compatibility with data.table 1.9.6 issue #2313: object 'x.x' not found
+  # df.diff <- df.ref[J(df.x), .('x' = i.x - x.x, timestamps, reference.id, reference.x = x.x)]
+  df.diff <- merge(x = df.ref, y = df.x, by = 'timestamps', all.y = TRUE)
+  df.diff[, x := x.y - x.x]
+  df.diff[, x.y := NULL]
+  data.table::setnames(df.diff, old = 'x.x', new = 'reference.x')
 
   # Missing reference (mr) data
   mr.prop <- sum(is.na(df.diff$x))/nrow(df.diff)
