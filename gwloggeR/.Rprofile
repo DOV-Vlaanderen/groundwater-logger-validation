@@ -15,13 +15,13 @@ local({
     # the same time. Hence the "$(WIN)" variable in the BINPREF.
     Sys.setenv('BINPREF' = paste0(rtools.path, '/mingw_64/bin/'))
 
-    try(cat(paste('RTools installed:', pkgbuild::has_build_tools(debug = TRUE), '\n')))
+    # try(cat(paste('RTools installed:', pkgbuild::has_build_tools(debug = TRUE), '\n')))
   }
 })
 
 # MiKTeX: Needed for rmarkdown which uses pdflatex.exe.
 Sys.setenv(PATH = paste(Sys.getenv("PATH"), "W:/Tools/miktex/program/miktex/bin", sep=.Platform$path.sep));
-try(cat(paste("LaTeX installed:", pkgbuild::has_latex(), "\n")))
+# try(cat(paste("LaTeX installed:", pkgbuild::has_latex(), "\n")))
 
 # Pandoc: Needed by pkgdown when run from console.
 Sys.setenv(PATH = paste("W:/Tools/pandoc/program",
