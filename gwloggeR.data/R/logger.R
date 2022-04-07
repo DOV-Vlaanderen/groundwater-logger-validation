@@ -54,8 +54,8 @@ Logger <- function(name) {
     df <- data.table::fread(mov.file, dec = ".", skip = nrowskip + 1L, nrows = nlines, sep = " ")
     df[, MEASUREMENT_ID := 1:.N]
     df[, TIMESTAMP_UTC := as.POSIXct(paste(V1, V2),
-                                     tryFormats = c("%Y/%m/%d %H:%M:%OS",
-                                                    "%Y-%m-%d %H:%M:%OS"),
+                                     format = c("%Y/%m/%d %H:%M:%OS",
+                                                "%Y-%m-%d %H:%M:%OS"),
                                      tz = 'UTC')]
     df[, PRESSURE_VALUE := V3]
     df[, PRESSURE_UNIT := "cmH2O"]
@@ -74,7 +74,7 @@ Logger <- function(name) {
     df <- data.table::fread(txt.file, dec = ".", skip = nrowskip + 1L, sep = ",")
     df[, MEASUREMENT_ID := 1:.N]
     df[, TIMESTAMP_UTC := as.POSIXct(paste(V2, V3),
-                                     tryFormats = c("%Y%m%d %H"),
+                                     format = c("%Y%m%d %H"),
                                      tz = 'UTC')]
     df[, PRESSURE_VALUE := P.Pa_to_cmH2O(V5*10)] # hPa = 100Pa, but data is in 0.1hPa
     df[, PRESSURE_UNIT := "cmH2O"]
