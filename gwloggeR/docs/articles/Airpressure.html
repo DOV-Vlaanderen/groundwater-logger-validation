@@ -21,6 +21,8 @@
 <![endif]-->
 </head>
 <body data-spy="scroll" data-target="#toc">
+    
+
     <div class="container template-article">
       <header><div class="navbar navbar-default navbar-fixed-top" role="navigation">
   <div class="container">
@@ -39,12 +41,6 @@
 
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
-<li>
-  <a href="../index.html">
-    <span class="fas fa-home fa-lg"></span>
-     
-  </a>
-</li>
 <li>
   <a href="../articles/gwloggeR.html">Get started</a>
 </li>
@@ -97,7 +93,8 @@
       <a href="../articles/Development.html">Guide</a>
     </li>
     <li class="divider">
-    <li>
+    </li>
+<li>
       <a href="../News.html">Change log</a>
     </li>
   </ul>
@@ -105,7 +102,7 @@
       </ul>
 <ul class="nav navbar-nav navbar-right">
 <li>
-  <a href="https://github.com/DOV-Vlaanderen/groundwater-logger-validation/">
+  <a href="https://github.com/DOV-Vlaanderen/groundwater-logger-validation/" class="external-link">
     <span class="fab fa-github fa-lg"></span>
      
   </a>
@@ -126,14 +123,14 @@
 
       
 
-      </header><script src="Airpressure_files/header-attrs-2.13/header-attrs.js"></script><script src="Airpressure_files/accessible-code-block-0.0.1/empty-anchor.js"></script><div class="row">
+      </header><script src="Airpressure_files/accessible-code-block-0.0.1/empty-anchor.js"></script><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>Air pressure</h1>
             
-            <h4 class="date">2019-9-20</h4>
+            <h4 data-toc-skip class="date">2019-9-20</h4>
       
-      <small class="dont-index">Source: <a href="https://github.com/DOV-Vlaanderen/groundwater-logger-validation/tree/master/gwloggeR/vignettes/Airpressure.Rmd"><code>vignettes/Airpressure.Rmd</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/DOV-Vlaanderen/groundwater-logger-validation/tree/master/gwloggeR/vignettes/Airpressure.Rmd" class="external-link"><code>vignettes/Airpressure.Rmd</code></a></small>
       <div class="hidden name"><code>Airpressure.Rmd</code></div>
 
     </div>
@@ -141,12 +138,12 @@
     
     
 <p>This is an advanced guide. It explains how <code><a href="../reference/detect_outliers.html">detect_outliers()</a></code> works for air pressure data. Make sure you first read the <a href="gwloggeR.html">getting started</a> material.</p>
-<div id="outlier-detection" class="section level2">
-<h2 class="hasAnchor">
-<a href="#outlier-detection" class="anchor"></a>Outlier detection</h2>
+<div class="section level2">
+<h2 id="outlier-detection">Outlier detection<a class="anchor" aria-label="anchor" href="#outlier-detection"></a>
+</h2>
 <p>Outliers are single measurements that are considered very unlikely to occur. The <code><a href="../reference/detect_outliers.html">detect_outliers()</a></code> function takes in a vector of observations and returns a boolean vector of outlier indicators:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">x</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">1000</span><span class="op">:</span><span class="fl">1005</span>, <span class="fl">975</span><span class="op">)</span>
+<code class="sourceCode R"><span class="va">x</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1000</span><span class="op">:</span><span class="fl">1005</span>, <span class="fl">975</span><span class="op">)</span>
 <span class="va">x</span>
 <span class="co">#&gt; [1] 1000 1001 1002 1003 1004 1005  975</span>
 <span class="fu">gwloggeR</span><span class="fu">::</span><span class="fu"><a href="../reference/detect_outliers.html">detect_outliers</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span>
@@ -155,32 +152,32 @@
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu">gwloggeR</span><span class="fu">::</span><span class="fu"><a href="../reference/detect_outliers.html">detect_outliers</a></span><span class="op">(</span><span class="va">x</span>, plot <span class="op">=</span> <span class="cn">TRUE</span>, verbose <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></code></pre></div>
 <p><img src="Airpressure_files/figure-html/detect_outliers-plot-1.png" width="700"></p>
-<pre><code>#&gt; [1] FALSE FALSE FALSE FALSE FALSE FALSE  TRUE
-#&gt; attr(,"class")
-#&gt; [1] "Outliers" "logical" 
-#&gt; attr(,"x.mean")
-#&gt; [1] 1002
-#&gt; attr(,"x.sd")
-#&gt; [1] 2.9652
-#&gt; attr(,"sigma.reject")
-#&gt; [1] 3.971425
-#&gt; attr(,"alpha")
-#&gt; [1] 5e-04
-#&gt; attr(,"type")
-#&gt; [1] "two.sided"
-#&gt; attr(,"fun.density")
-#&gt; function (x) 
-#&gt; stats::dnorm(x, x.mean, x.sd)
-#&gt; &lt;bytecode: 0x00000000201f8fe8&gt;
-#&gt; &lt;environment: 0x00000000203ded10&gt;
-#&gt; attr(,"cutpoints")
-#&gt; [1]  990.2239 1013.7761
-#&gt; attr(,"version")
-#&gt; [1] "0.01"</code></pre>
+<pre><code><span class="co">#&gt; [1] FALSE FALSE FALSE FALSE FALSE FALSE  TRUE</span>
+<span class="co">#&gt; attr(,"class")</span>
+<span class="co">#&gt; [1] "Outliers" "logical" </span>
+<span class="co">#&gt; attr(,"x.mean")</span>
+<span class="co">#&gt; [1] 1002</span>
+<span class="co">#&gt; attr(,"x.sd")</span>
+<span class="co">#&gt; [1] 2.9652</span>
+<span class="co">#&gt; attr(,"sigma.reject")</span>
+<span class="co">#&gt; [1] 3.971425</span>
+<span class="co">#&gt; attr(,"alpha")</span>
+<span class="co">#&gt; [1] 5e-04</span>
+<span class="co">#&gt; attr(,"type")</span>
+<span class="co">#&gt; [1] "two.sided"</span>
+<span class="co">#&gt; attr(,"fun.density")</span>
+<span class="co">#&gt; function (x) </span>
+<span class="co">#&gt; stats::dnorm(x, x.mean, x.sd)</span>
+<span class="co">#&gt; &lt;bytecode: 0x00000000205f6b30&gt;</span>
+<span class="co">#&gt; &lt;environment: 0x0000000016067dc8&gt;</span>
+<span class="co">#&gt; attr(,"cutpoints")</span>
+<span class="co">#&gt; [1]  990.2239 1013.7761</span>
+<span class="co">#&gt; attr(,"version")</span>
+<span class="co">#&gt; [1] "0.01"</span></code></pre>
 <p>The underlying assumption for outlier detection is normality of <span class="math inline">\(x_i\)</span>. Top left plot shows the histogram of the data points. The green curve is the best-fit normal distribution, based on robust estimates of <span class="math inline">\(\mu\)</span> and <span class="math inline">\(\sigma\)</span>. The cutoff points are signified by red vertical lines. The top right is the QQ-plot with cutoff points as horizontal lines. The bottom plot is the sequential data, with outliers in red.</p>
-<div id="estimation-of-cutoff-lines" class="section level3">
-<h3 class="hasAnchor">
-<a href="#estimation-of-cutoff-lines" class="anchor"></a>Estimation of cutoff lines</h3>
+<div class="section level3">
+<h3 id="estimation-of-cutoff-lines">Estimation of cutoff lines<a class="anchor" aria-label="anchor" href="#estimation-of-cutoff-lines"></a>
+</h3>
 <p>How do we determine where to place the red cutoff lines? Well, for start, we want to minimize false positives. Suppose that we take <span class="math inline">\(100\)</span> random points from a standard normal distribution. If we place the cutoff lines at <span class="math inline">\(c = \pm 1.96\)</span> then we expect to find <span class="math inline">\(5\)</span> outliers on average. But these are not real outliers! Remember our assumption that all the points in this set are from the standard normal distribution. So we want to set the cutoff lines at the optimal place: not too small, so we don’t flag points as outliers incorrectly, but also not too big either, because in that case we might miss real outliers.</p>
 <p>Let us formalize the above intuition. Assume that <span class="math inline">\(\mathbf{x}\)</span> consists of <span class="math inline">\(n\)</span> independent and identically distributed observations <span class="math inline">\((x_1, x_2, \dots, x_n)\)</span> taken from a standard normal distribution with fixed <span class="math inline">\(\mu = 0\)</span> and <span class="math inline">\(\sigma = 1\)</span>. Now we choose some <span class="math inline">\(c\)</span> as the cutoff line. We can then calculate the probability of at least one outlier detected in the <code>detect_outliers(x)</code> process:</p>
 <p><span class="math display">\[
@@ -199,14 +196,14 @@ P(|x_1| &gt; c \lor |x_2| &gt; c \lor \; \dots \; \lor |x_n| &gt; c) = \alpha \\
 c = -\Phi^{-1} \left( \frac{1-(1-\alpha)^\frac{1}{n}}{2} \right)
 \]</span></p>
 <p>where <span class="math inline">\(\Phi^{-1}(\cdot)\)</span> is the standard normal quantile function.</p>
-<div id="example" class="section level4">
-<h4 class="hasAnchor">
-<a href="#example" class="anchor"></a>Example</h4>
+<div class="section level4">
+<h4 id="example">Example<a class="anchor" aria-label="anchor" href="#example"></a>
+</h4>
 <p>This is how <span class="math inline">\(c\)</span> behaves in function of <span class="math inline">\(n\)</span> with fixed <span class="math inline">\(\alpha = 1/2000\)</span>.</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span>data <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html">data.frame</a></span><span class="op">(</span>n <span class="op">=</span> <span class="fl">5</span><span class="op">:</span><span class="fl">10000</span><span class="op">)</span>, mapping <span class="op">=</span> <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">n</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span> 
-  <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_function.html">stat_function</a></span><span class="op">(</span>fun <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">n</span><span class="op">)</span> <span class="op">-</span><span class="fu"><a href="https://rdrr.io/r/stats/Normal.html">qnorm</a></span><span class="op">(</span><span class="op">(</span><span class="fl">1</span><span class="op">-</span><span class="op">(</span><span class="fl">1</span><span class="op">-</span><span class="fl">1</span><span class="op">/</span><span class="fl">2000</span><span class="op">)</span><span class="op">^</span><span class="op">(</span><span class="fl">1</span><span class="op">/</span><span class="va">n</span><span class="op">)</span><span class="op">)</span><span class="op">/</span><span class="fl">2</span><span class="op">)</span>, col <span class="op">=</span> <span class="st">'black'</span><span class="op">)</span> <span class="op">+</span> 
-  <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html">theme_light</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span> <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html">ylab</a></span><span class="op">(</span><span class="st">'c'</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span>data <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>n <span class="op">=</span> <span class="fl">5</span><span class="op">:</span><span class="fl">10000</span><span class="op">)</span>, mapping <span class="op">=</span> <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">n</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span> 
+  <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_function.html" class="external-link">stat_function</a></span><span class="op">(</span>fun <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">n</span><span class="op">)</span> <span class="op">-</span><span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">qnorm</a></span><span class="op">(</span><span class="op">(</span><span class="fl">1</span><span class="op">-</span><span class="op">(</span><span class="fl">1</span><span class="op">-</span><span class="fl">1</span><span class="op">/</span><span class="fl">2000</span><span class="op">)</span><span class="op">^</span><span class="op">(</span><span class="fl">1</span><span class="op">/</span><span class="va">n</span><span class="op">)</span><span class="op">)</span><span class="op">/</span><span class="fl">2</span><span class="op">)</span>, col <span class="op">=</span> <span class="st">'black'</span><span class="op">)</span> <span class="op">+</span> 
+  <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_light</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span> <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">ylab</a></span><span class="op">(</span><span class="st">'c'</span><span class="op">)</span></code></pre></div>
 <p><img src="Airpressure_files/figure-html/c.norm.optimal-plot-1.png" width="700"></p>
 <p>Note that this function is implemented in <code>gwloggeR:::c.norm.optimal(alpha, n)</code>. So as long as we set <span class="math inline">\(c\)</span> to the optimal value we make sure that we will make a wrong <code>detect_outliers(x)</code> run (i.e. detect falsely one or more ouliers) in <span class="math inline">\(1/2000\)</span> of time.</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
@@ -214,52 +211,51 @@ c = -\Phi^{-1} \left( \frac{1-(1-\alpha)^\frac{1}{n}}{2} \right)
 <span class="fu">gwloggeR</span><span class="fu">:::</span><span class="fu">c.norm.optimal</span><span class="op">(</span>alpha <span class="op">=</span> <span class="fl">1</span><span class="op">/</span><span class="fl">2000</span>, n <span class="op">=</span> <span class="fl">5000</span>, type <span class="op">=</span> <span class="st">"two.sided"</span><span class="op">)</span>
 <span class="co">#&gt; [1] 5.326678</span></code></pre></div>
 </div>
-<div id="simulation" class="section level4">
-<h4 class="hasAnchor">
-<a href="#simulation" class="anchor"></a>Simulation</h4>
+<div class="section level4">
+<h4 id="simulation">Simulation<a class="anchor" aria-label="anchor" href="#simulation"></a>
+</h4>
 <p>Here we simulate data from a normal distribution with random <span class="math inline">\(\mu\)</span> and <span class="math inline">\(\sigma\)</span>. We set <span class="math inline">\(\alpha = 1/100\)</span> and by varying <span class="math inline">\(n\)</span>, estimate the proportion of wrong <code>detect_outliers(x)</code> runs (i.e. runs in which we falsely identify one or more outliers).</p>
 <p>Black horizontal line represents the expected <span class="math inline">\(0.01\)</span> failure rate. The blue curve is the failure rate estimate based on mean and standard deviation, which are most efficient estimators in case there are no outliers. The red curve is the failure rate based on median and MAD. In case <span class="math inline">\(n &lt; 500\)</span>, the MAD approach is very optimistic: it is <span class="math inline">\(2\)</span> to <span class="math inline">\(3\)</span> times more likely to detect falsely one or more outliers. The green curve is based on the the <span class="math inline">\(Q_n\)</span> scale estimator (TODO).</p>
 <p><img src="Airpressure_files/figure-html/detect_outliers_norm_power-1.png" width="700"></p>
 </div>
 </div>
-<div id="estimation-of-mu-and-sigma" class="section level3">
-<h3 class="hasAnchor">
-<a href="#estimation-of-mu-and-sigma" class="anchor"></a>Estimation of <span class="math inline">\(\mu\)</span> and <span class="math inline">\(\sigma\)</span>
+<div class="section level3">
+<h3 id="estimation-of-mu-and-sigma">Estimation of <span class="math inline">\(\mu\)</span> and <span class="math inline">\(\sigma\)</span><a class="anchor" aria-label="anchor" href="#estimation-of-mu-and-sigma"></a>
 </h3>
 <p>In calculating <span class="math inline">\(c\)</span> we assumed <span class="math inline">\(x_i\)</span> being normal with <span class="math inline">\(\mu = 0\)</span> and <span class="math inline">\(\sigma = 1\)</span>. To make the above also work for <span class="math inline">\(y_i\)</span> from any normal distribution, we need to estimate <span class="math inline">\(\mu\)</span> and <span class="math inline">\(\sigma\)</span>. Once we have the estimates, then we can standardize <span class="math inline">\(y_i\)</span> using <span class="math inline">\((y_i - \mu)/\sigma = x_i\)</span> and use the previous results on <span class="math inline">\(x_i\)</span>.</p>
 <p>Mean and square root of variance give the most efficient estimators for <span class="math inline">\(\mu\)</span> and <span class="math inline">\(\sigma\)</span> as long as <span class="math inline">\(\forall i : y_i \sim \mathcal{N}(\mu, \sigma^2)\)</span> and mutually independent. Under influence of real outliers, these estimators get easily biased. <span class="citation">(cf. Leys et al. <a href="#ref-Leys2013" role="doc-biblioref">2013</a>)</span> So we need more robust estimators for <span class="math inline">\(\mu\)</span> and <span class="math inline">\(\sigma\)</span>.</p>
 <p>In case of outliers, a way to measure robustness is the breakdown point. The maximum attainable breakdown point is <span class="math inline">\(50 \%\)</span>, meaning that <span class="math inline">\(50 \%\)</span> of observations can be replaced by arbitrary large numbers, without breaking the estimator. For <span class="math inline">\(\mu\)</span>, the obvious choice is the median. For <span class="math inline">\(\sigma\)</span> it is the median absolute deviation (MAD). They both have a <span class="math inline">\(50 \%\)</span> breakdown point. A problem with the latter is its efficiency (cf. simulation). There exist more efficient <span class="math inline">\(\sigma\)</span>-estimators than the MAD. For example the <span class="math inline">\(Qn\)</span>-estimator <span class="citation">(cf. Rousseeuw and Croux <a href="#ref-Rousseeuw1993" role="doc-biblioref">1993</a>)</span>. Currently, MAD suffices because we usually have lots of data (<span class="math inline">\(n &gt; 5000\)</span>) so efficiency suffers less.</p>
 </div>
-<div id="apriori-air-pressure-information" class="section level3">
-<h3 class="hasAnchor">
-<a href="#apriori-air-pressure-information" class="anchor"></a>Apriori air pressure information</h3>
+<div class="section level3">
+<h3 id="apriori-air-pressure-information">Apriori air pressure information<a class="anchor" aria-label="anchor" href="#apriori-air-pressure-information"></a>
+</h3>
 <p>We can improve the outlier detection by providing <em>a-priori</em> information about <span class="math inline">\(\mathbf{x}\)</span>. For example:</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">x</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">990</span><span class="op">:</span><span class="fl">999</span><span class="op">)</span>
+<code class="sourceCode R"><span class="va">x</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">990</span><span class="op">:</span><span class="fl">999</span><span class="op">)</span>
 <span class="fu">gwloggeR</span><span class="fu">::</span><span class="fu"><a href="../reference/detect_outliers.html">detect_outliers</a></span><span class="op">(</span><span class="va">x</span>, apriori <span class="op">=</span> <span class="fu">gwloggeR</span><span class="fu">::</span><span class="fu"><a href="../reference/Apriori.html">Apriori</a></span><span class="op">(</span><span class="st">"air pressure"</span>, <span class="st">"cmH2O"</span><span class="op">)</span>, plot <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></code></pre></div>
 <p><img src="Airpressure_files/figure-html/detect_outliers-apriori-plot-1.png" width="700"></p>
-<pre><code>#&gt;  [1]  TRUE  TRUE  TRUE  TRUE  TRUE FALSE FALSE FALSE FALSE FALSE</code></pre>
+<pre><code><span class="co">#&gt;  [1]  TRUE  TRUE  TRUE  TRUE  TRUE FALSE FALSE FALSE FALSE FALSE</span></code></pre>
 <p>Top left is again the histogram of <span class="math inline">\(\mathbf{x}\)</span>. But the green density this time is not a robust normal estimate based on <span class="math inline">\(\mathbf{x}\)</span>. Instead it is the hard-coded <em>a-priori</em> density distribution of air pressure (<span class="math inline">\(cmH_2O\)</span>) in Belgium. Given the <span class="math inline">\(10\)</span> points and assuming that we want to detect falsely one or more outliers in <span class="math inline">\(1\)</span> of <span class="math inline">\(2000\)</span> tests, we set the red cutoffs appropriately. This results in first <span class="math inline">\(4\)</span> points being identified as outliers.</p>
 </div>
 </div>
-<div id="future-work" class="section level2">
-<h2 class="hasAnchor">
-<a href="#future-work" class="anchor"></a>Future work</h2>
+<div class="section level2">
+<h2 id="future-work">Future work<a class="anchor" aria-label="anchor" href="#future-work"></a>
+</h2>
 <ul>
 <li>
 <code>detect_outliers(x)</code> based on <span class="math inline">\(Q_n\)</span> estimator for variance.</li>
 <li>Option to supply elevation of the air pressure logger.</li>
 </ul>
 </div>
-<div id="references" class="section level2 unnumbered">
-<h2 class="hasAnchor">
-<a href="#references" class="anchor"></a>References</h2>
+<div class="section level2 unnumbered">
+<h2 class="unnumbered" id="references">References<a class="anchor" aria-label="anchor" href="#references"></a>
+</h2>
 <div id="refs" class="references hanging-indent">
 <div id="ref-Leys2013">
-<p>Leys, Christophe, Christophe Ley, Olivier Klein, Philippe Bernard, and Laurent Licata. 2013. “Detecting Outliers: Do Not Use Standard Deviation Around the Mean, Use Absolute Deviation Around the Median.” <em>Journal of Experimental Social Psychology</em> 49 (4): 764–66. <a href="https://doi.org/10.1016/j.jesp.2013.03.013">https://doi.org/10.1016/j.jesp.2013.03.013</a>.</p>
+<p>Leys, Christophe, Christophe Ley, Olivier Klein, Philippe Bernard, and Laurent Licata. 2013. “Detecting Outliers: Do Not Use Standard Deviation Around the Mean, Use Absolute Deviation Around the Median.” <em>Journal of Experimental Social Psychology</em> 49 (4): 764–66. <a href="https://doi.org/10.1016/j.jesp.2013.03.013" class="external-link">https://doi.org/10.1016/j.jesp.2013.03.013</a>.</p>
 </div>
 <div id="ref-Rousseeuw1993">
-<p>Rousseeuw, Peter J., and Christophe Croux. 1993. “Alternatives to the Median Absolute Deviation.” <em>Journal of the American Statistical Association</em> 88 (424): 1273–83. <a href="https://doi.org/10.1080/01621459.1993.10476408">https://doi.org/10.1080/01621459.1993.10476408</a>.</p>
+<p>Rousseeuw, Peter J., and Christophe Croux. 1993. “Alternatives to the Median Absolute Deviation.” <em>Journal of the American Statistical Association</em> 88 (424): 1273–83. <a href="https://doi.org/10.1080/01621459.1993.10476408" class="external-link">https://doi.org/10.1080/01621459.1993.10476408</a>.</p>
 </div>
 </div>
 </div>
@@ -276,11 +272,13 @@ c = -\Phi^{-1} \left( \frac{1-(1-\alpha)^\frac{1}{n}}{2} \right)
 
 
       <footer><div class="copyright">
-  <p>Developed by Davor Josipovic.</p>
+  <p></p>
+<p>Developed by Davor Josipovic.</p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
+  <p></p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.2.</p>
 </div>
 
       </footer>

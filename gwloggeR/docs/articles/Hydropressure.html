@@ -21,6 +21,8 @@
 <![endif]-->
 </head>
 <body data-spy="scroll" data-target="#toc">
+    
+
     <div class="container template-article">
       <header><div class="navbar navbar-default navbar-fixed-top" role="navigation">
   <div class="container">
@@ -39,12 +41,6 @@
 
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
-<li>
-  <a href="../index.html">
-    <span class="fas fa-home fa-lg"></span>
-     
-  </a>
-</li>
 <li>
   <a href="../articles/gwloggeR.html">Get started</a>
 </li>
@@ -97,7 +93,8 @@
       <a href="../articles/Development.html">Guide</a>
     </li>
     <li class="divider">
-    <li>
+    </li>
+<li>
       <a href="../News.html">Change log</a>
     </li>
   </ul>
@@ -105,7 +102,7 @@
       </ul>
 <ul class="nav navbar-nav navbar-right">
 <li>
-  <a href="https://github.com/DOV-Vlaanderen/groundwater-logger-validation/">
+  <a href="https://github.com/DOV-Vlaanderen/groundwater-logger-validation/" class="external-link">
     <span class="fab fa-github fa-lg"></span>
      
   </a>
@@ -126,14 +123,14 @@
 
       
 
-      </header><script src="Hydropressure_files/header-attrs-2.13/header-attrs.js"></script><script src="Hydropressure_files/accessible-code-block-0.0.1/empty-anchor.js"></script><div class="row">
+      </header><script src="Hydropressure_files/accessible-code-block-0.0.1/empty-anchor.js"></script><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>Hydrostatic pressure</h1>
             
-            <h4 class="date">2019-9-22</h4>
+            <h4 data-toc-skip class="date">2019-9-22</h4>
       
-      <small class="dont-index">Source: <a href="https://github.com/DOV-Vlaanderen/groundwater-logger-validation/tree/master/gwloggeR/vignettes/Hydropressure.Rmd"><code>vignettes/Hydropressure.Rmd</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/DOV-Vlaanderen/groundwater-logger-validation/tree/master/gwloggeR/vignettes/Hydropressure.Rmd" class="external-link"><code>vignettes/Hydropressure.Rmd</code></a></small>
       <div class="hidden name"><code>Hydropressure.Rmd</code></div>
 
     </div>
@@ -141,23 +138,23 @@
     
     
 <p>This is an advanced guide. It explains how the <a href="../reference/index.html#section-detection-functions"><code>detect_</code></a> functions work for hydrostatic pressure data. Make sure you first read the <a href="gwloggeR.html">getting started</a> material.</p>
-<div id="hydrostatic-pressure-model" class="section level2">
-<h2 class="hasAnchor">
-<a href="#hydrostatic-pressure-model" class="anchor"></a>Hydrostatic pressure model</h2>
+<div class="section level2">
+<h2 id="hydrostatic-pressure-model">Hydrostatic pressure model<a class="anchor" aria-label="anchor" href="#hydrostatic-pressure-model"></a>
+</h2>
 <p>We assume that the hydrostatic pressure behaves according to the following model:</p>
 <p><span class="math display">\[
 z_t = z_{t-1} + \epsilon(\Delta t)
 \]</span></p>
 <p>In literature this also goes by the name of a pure random walk: the next point starts from the previous and jumps with a random deviation <span class="math inline">\(\epsilon(\Delta t)\)</span>.</p>
-<div id="error-function" class="section level3">
-<h3 class="hasAnchor">
-<a href="#error-function" class="anchor"></a>Error function</h3>
+<div class="section level3">
+<h3 id="error-function">Error function<a class="anchor" aria-label="anchor" href="#error-function"></a>
+</h3>
 <p>The error <span class="math inline">\(\epsilon\)</span> is a function of time difference between <span class="math inline">\(t\)</span> and <span class="math inline">\(t-1\)</span>. The underlying idea is that the larger this time-interval <span class="math inline">\(\Delta t\)</span>, the larger the variance of <span class="math inline">\(\epsilon\)</span>. Based on <span class="math inline">\(\epsilon\)</span> analysis of “correct” <em>a-priori</em> hydrostatic pressure timeseries, the following density gradients are extracted in function of <span class="math inline">\(\Delta t\)</span>.</p>
 <p><img src="Hydropressure_files/figure-html/unnamed-chunk-3-1.png" width="700"></p>
 </div>
-<div id="distribution-of-errors" class="section level3">
-<h3 class="hasAnchor">
-<a href="#distribution-of-errors" class="anchor"></a>Distribution of errors</h3>
+<div class="section level3">
+<h3 id="distribution-of-errors">Distribution of errors<a class="anchor" aria-label="anchor" href="#distribution-of-errors"></a>
+</h3>
 <p>Based on the “correct” <em>a-priori</em> timeseries, the densities do not seem to be normal. For example, for <span class="math inline">\(\Delta t = 5 \text{min}\)</span> we have:</p>
 <p><img src="Hydropressure_files/figure-html/hydropressure-5min-hist-1.png" width="384"></p>
 <p>On the other hand, without tidal effect, the normality seems much more pronounced. For example, <span class="math inline">\(\Delta t = 12 \text{h} 25 \text{min}\)</span>:</p>
@@ -165,13 +162,13 @@ z_t = z_{t-1} + \epsilon(\Delta t)
 <p>This suggest that the model should be adjusted for tidal effects.</p>
 </div>
 </div>
-<div id="extensions" class="section level2">
-<h2 class="hasAnchor">
-<a href="#extensions" class="anchor"></a>Extensions</h2>
+<div class="section level2">
+<h2 id="extensions">Extensions<a class="anchor" aria-label="anchor" href="#extensions"></a>
+</h2>
 <p>The main idea is that <span class="math inline">\(z_t\)</span> is polluted by different kinds of events. We define each of these events separately. Inspiration for these definitions is mainly taken from the works of <span class="citation">Fox (<a href="#ref-Fox1972" role="doc-biblioref">1972</a>)</span> and more recent papers by <span class="citation">Chen and Liu (<a href="#ref-Chen1993" role="doc-biblioref">1993</a>)</span> and <span class="citation">Galeano and Pena (<a href="#ref-Galeano2013" role="doc-biblioref">2013</a>)</span>. Furthermore, an R implementation by <span class="citation">López-de-Lacalle (<a href="#ref-tsoutliers" role="doc-biblioref">2019</a>)</span> was used for the initial evaluation of these ideas.</p>
-<div id="outliers" class="section level3">
-<h3 class="hasAnchor">
-<a href="#outliers" class="anchor"></a>Outliers</h3>
+<div class="section level3">
+<h3 id="outliers">Outliers<a class="anchor" aria-label="anchor" href="#outliers"></a>
+</h3>
 <p>An additive outlier (AO) at time <span class="math inline">\(t_{AO}\)</span> is defined as an exogenous change of a single observation.</p>
 <p><span class="math display">\[
 x_t = z_t + \omega I(t = t_{AO})
@@ -182,9 +179,9 @@ x_t = x_{t-1} + \epsilon(\Delta t) + \omega \left[I(t=t_{AO}) - I(t = t_{AO} + 1
 \]</span></p>
 <p>These equations without <span class="math inline">\(z\)</span> we need later for likelihood maximization.</p>
 </div>
-<div id="levelshifts" class="section level3">
-<h3 class="hasAnchor">
-<a href="#levelshifts" class="anchor"></a>Levelshifts</h3>
+<div class="section level3">
+<h3 id="levelshifts">Levelshifts<a class="anchor" aria-label="anchor" href="#levelshifts"></a>
+</h3>
 <p>A level shift (LS) is an exogenous change that lasts. Its definition is as follows:</p>
 <p><span class="math display">\[
 x_t = z_t + \frac{\omega I(t = t_{LS})}{1-B}
@@ -194,9 +191,9 @@ x_t = z_t + \frac{\omega I(t = t_{LS})}{1-B}
 x_t = x_{t-1} + \epsilon(\Delta t) + \omega I(t=t_{LS})
 \]</span></p>
 </div>
-<div id="temporal-changes" class="section level3">
-<h3 class="hasAnchor">
-<a href="#temporal-changes" class="anchor"></a>Temporal changes</h3>
+<div class="section level3">
+<h3 id="temporal-changes">Temporal changes<a class="anchor" aria-label="anchor" href="#temporal-changes"></a>
+</h3>
 <p>A temporal change (TC) is an event that decays exponentially with factor <span class="math inline">\(\delta\)</span>.</p>
 <p><span class="math display">\[
 x_t = z_t + \frac{\omega I(t = t_{TC})}{1-\delta B}
@@ -214,38 +211,38 @@ x_t = x_{t-1} + \epsilon(\Delta t) + \omega \left[ I(t=t_{TC}) - \frac{(1-\delta
 \]</span></p>
 </div>
 </div>
-<div id="model-building" class="section level2">
-<h2 class="hasAnchor">
-<a href="#model-building" class="anchor"></a>Model building</h2>
+<div class="section level2">
+<h2 id="model-building">Model building<a class="anchor" aria-label="anchor" href="#model-building"></a>
+</h2>
 <p>Based on AO, LS and TC written in function of <span class="math inline">\(x\)</span> only, one sees that the difference <span class="math inline">\(x_t - x_{t-1} = \epsilon (\Delta t)\)</span> unless AO, LS or TC occurred. Thus our first step in optimization is to take the differences <span class="math inline">\(x_t - x_{t-1}\)</span> and test how likely they are under the distribution of <span class="math inline">\(\epsilon (\Delta t)\)</span>. If very unlikely (cf. TODO), then consider the observation a candidate for AO, LS or TC.</p>
 <p>These three events can come in all kinds of combinations. It seems difficult, if not impossible, to write a decent if-else structure to catch all the possible configurations. That is why we chose a likelihood based approach.</p>
-<div id="likelihood-function" class="section level3">
-<h3 class="hasAnchor">
-<a href="#likelihood-function" class="anchor"></a>Likelihood function</h3>
+<div class="section level3">
+<h3 id="likelihood-function">Likelihood function<a class="anchor" aria-label="anchor" href="#likelihood-function"></a>
+</h3>
 <p>Assuming independence of the error term we write:</p>
 <p><span class="math display">\[
 L(\mathbf{\theta} ; \mathbf{x}) = p(\mathbf{x} | \mathbf{\theta}) = \prod_{t=2}^{n} p(x_t, x_{t-1} | \mathbf{\theta})
 \]</span></p>
 <p>where <span class="math inline">\(\mathbf{x} = (x_1, \dots, x_n)\)</span> and <span class="math inline">\(\mathbf{\theta}\)</span> is the vector of parameters <span class="math inline">\(\omega\)</span>’s and <span class="math inline">\(\delta\)</span>’s accompanied by their corresponding indexes <span class="math inline">\(t_{AO}\)</span>, <span class="math inline">\(t_{LS}\)</span> and <span class="math inline">\(t_{TC}\)</span>.</p>
 </div>
-<div id="stepwise-model-selection" class="section level3">
-<h3 class="hasAnchor">
-<a href="#stepwise-model-selection" class="anchor"></a>Stepwise model selection</h3>
+<div class="section level3">
+<h3 id="stepwise-model-selection">Stepwise model selection<a class="anchor" aria-label="anchor" href="#stepwise-model-selection"></a>
+</h3>
 <p>First problem is that we do not know how many AO, LS and TC events there are. Thus we are naturally led to some form of model selection. Model <span class="math inline">\(M_0\)</span> is a model in which no event occurred (i.e. 0 stands for zero-parameter model). <span class="math inline">\(M_1\)</span> is a model in which an AO or LS event occurred (i.e. a one-parameter model). How do we choose between the two? Well, the one that is more likely wins (i.e. the one for which the likelihood function <span class="math inline">\(L(\mathbf{\theta} ; \mathbf{x})\)</span> results in the highest likelihood.)</p>
 <p>In the next step we test whether this <span class="math inline">\(M_1\)</span> model is significantly better than the <span class="math inline">\(M_0\)</span> model. We do this with the likelihood ratio (LR) test. If <span class="math inline">\(M_1\)</span> is significantly better than <span class="math inline">\(M_0\)</span> we continue with <span class="math inline">\(M_1\)</span> and add one extra AO or LS parameter which results in a <span class="math inline">\(M_2\)</span> model. This model also competes with a model in which only one TC event occurred. (This is because a TC event has two parameters <span class="math inline">\(\omega\)</span> and <span class="math inline">\(\delta\)</span>, and thus an empty model with a TC event added is automatically a <span class="math inline">\(M_2\)</span> model.) Then the best <span class="math inline">\(M_2\)</span> model is tested for significance against the best <span class="math inline">\(M_1\)</span> model, etc.</p>
 <p>Note that <span class="math inline">\(\delta\)</span> varies between <span class="math inline">\(0\)</span> and <span class="math inline">\(1\)</span>. If <span class="math inline">\(\delta = 0\)</span> we have an outlier (AO), and if <span class="math inline">\(\delta = 1\)</span> we have a level shift (LS). How do we choose between a TC with <span class="math inline">\(\delta = 0\)</span> and an AO model? Since the TC model uses two parameters to explain the same event as AO with one parameter, an AO model is more parsimonious and thus more likely. Thus, a TC will only be chosen if <span class="math inline">\(\delta\)</span> is significantly different from <span class="math inline">\(0\)</span> and <span class="math inline">\(1\)</span>.</p>
 <p>In case we have a tie between multiple <span class="math inline">\(M_m\)</span> models with <span class="math inline">\(m\)</span> parameters, then the one for which the sum of the absolute values of parameters is smallest is taken as winner. This is a poor man’s simulation of a prior on the parameters: the smaller the parameter, the more likely it is, under equal likelihood.</p>
 <p>This model selection procedure is quite involved. Programmaticaly, we define an object <code>ProgressTable</code> which keeps track of all the best models <span class="math inline">\(M_0\)</span> up till the last significant one. Besides the forward model selection, we also make use of backward selection (cf. TODO) because adding a parameter sometimes makes an existing parameter insignificant, which opens a new path of possibilities in case the insignificant parameter is removed. The best model <span class="math inline">\(M_m\)</span> is the most likely model with <span class="math inline">\(m\)</span> parameters of all the ones tested, but not necessarily the most likely of all the possible configurations. In practice, although this maxima might be local (i.e. not global), it is taken as a good compromise between computational speed and maximization accuracy.</p>
 </div>
-<div id="likelihood-optimization" class="section level3">
-<h3 class="hasAnchor">
-<a href="#likelihood-optimization" class="anchor"></a>Likelihood optimization</h3>
+<div class="section level3">
+<h3 id="likelihood-optimization">Likelihood optimization<a class="anchor" aria-label="anchor" href="#likelihood-optimization"></a>
+</h3>
 <p>Each time we add a parameter, our likelihood function changes and must be optimized for most likely <span class="math inline">\(\mathbf{\theta}\)</span>. Using a smoothing kernel for <span class="math inline">\(\epsilon(\Delta t)\)</span> more often than not results in a non-convex likelihood. Assuming <span class="math inline">\(\epsilon(\Delta t)\)</span> to be normal has several advantages: speed, numerical stability (due to <span class="math inline">\(logL(\mathbf{\theta} ; \mathbf{x})\)</span>) and “mostly” convexity. Experience shows that mixing AO, LS and TC events sometimes results in non-convex likelihoods.</p>
 <p>Further optimization is also made by noting the effect of AO, LS and TC events on <span class="math inline">\(x\)</span>. For example, an LS event on <span class="math inline">\(t_{LS}\)</span> has only impact on <span class="math inline">\(x_{t_{LS}}\)</span>. An AO event has only impact on <span class="math inline">\(x_{t_{AO}}\)</span> and <span class="math inline">\(x_{t_{AO} + 1}\)</span>. And a TC event has only impact on <span class="math inline">\(x_{t_{TC}}\)</span> up until the effect dies out. In other words, we can limit the likelihood optimization to a window of only a few points. (cf. TODO)</p>
 </div>
-<div id="summary" class="section level3">
-<h3 class="hasAnchor">
-<a href="#summary" class="anchor"></a>Summary</h3>
+<div class="section level3">
+<h3 id="summary">Summary<a class="anchor" aria-label="anchor" href="#summary"></a>
+</h3>
 <p>Algorithm for hydrostatic pressure AO, LS and TC detection can be summarized in pseudo-code as follows:</p>
 <ul>
 <li>Compute <span class="math inline">\(x_t - x_{t-1}\)</span>
@@ -267,21 +264,21 @@ L(\mathbf{\theta} ; \mathbf{x}) = p(\mathbf{x} | \mathbf{\theta}) = \prod_{t=2}^
 <span class="math inline">\(M_m\)</span> is the best model: extract AO, LS and TC indexes and parameters.</li>
 </ul>
 </div>
-<div id="examples" class="section level3">
-<h3 class="hasAnchor">
-<a href="#examples" class="anchor"></a>Examples</h3>
+<div class="section level3">
+<h3 id="examples">Examples<a class="anchor" aria-label="anchor" href="#examples"></a>
+</h3>
 <p>The following case shows nicely the “creativity” of the algorithm in selecting the events.</p>
 <p><img src="Hydropressure_files/figure-html/hydropressure-interesting-example-1.png" width="700"></p>
 <p>The last three outlier (AO) events are obvious. But the first event is a double event: at the same time we have a level shift (LS) and a temporal change (TC). The level shift causes the drop, and then a temporal change jumps and decays back to the new level. It is the best way the model has found to explain what happened there using the AO, LS and TC events.</p>
 <p><img src="Hydropressure_files/figure-html/hydropressure-interesting-example-2-1.png" width="700"></p>
-<p>There were some major <a href="https://nl.wikipedia.org/wiki/Overstromingen_in_Belgie_2010">floods in Flanders in november 2010</a>. DYLP006X_80773 lies in the ‘flooding Dijle’, so this is a typical example of a flood event. It is not detected as an event because the differences <span class="math inline">\(x_t - x_{t-1}\)</span> are within the expected <span class="math inline">\(\epsilon (\Delta t)\)</span> range.</p>
+<p>There were some major <a href="https://nl.wikipedia.org/wiki/Overstromingen_in_Belgie_2010" class="external-link">floods in Flanders in november 2010</a>. DYLP006X_80773 lies in the ‘flooding Dijle’, so this is a typical example of a flood event. It is not detected as an event because the differences <span class="math inline">\(x_t - x_{t-1}\)</span> are within the expected <span class="math inline">\(\epsilon (\Delta t)\)</span> range.</p>
 <p><img src="Hydropressure_files/figure-html/hydropressure-interesting-example-3-1.png" width="700"></p>
 <p>In this case, a LS event is detected, but not a TC event as one might expect. The reason why is because after the drop, it stays low for several points (LS), and then gradually starts decaying back (TC). Exponential decay is strongest at the start, so TC doesn’t fit well for the first couple of points where the decay effect should be the strongest. Eventually, the algorithm chooses a TC or a LS event based on the likelihood, and in this case a LS event has won.</p>
 </div>
 </div>
-<div id="future-work" class="section level2">
-<h2 class="hasAnchor">
-<a href="#future-work" class="anchor"></a>Future work</h2>
+<div class="section level2">
+<h2 id="future-work">Future work<a class="anchor" aria-label="anchor" href="#future-work"></a>
+</h2>
 <ul>
 <li>Adjust model for tidal effects.</li>
 <li>Better <span class="math inline">\(\epsilon (\Delta t)\)</span> treshold estimation than current +20 % of min/max value.</li>
@@ -297,21 +294,21 @@ L(\mathbf{\theta} ; \mathbf{x}) = p(\mathbf{x} | \mathbf{\theta}) = \prod_{t=2}^
 <li>Show thresholds on diagnostic plots for differences(x).</li>
 </ul>
 </div>
-<div id="references" class="section level2 unnumbered">
-<h2 class="hasAnchor">
-<a href="#references" class="anchor"></a>References</h2>
+<div class="section level2 unnumbered">
+<h2 class="unnumbered" id="references">References<a class="anchor" aria-label="anchor" href="#references"></a>
+</h2>
 <div id="refs" class="references hanging-indent">
 <div id="ref-Chen1993">
-<p>Chen, Chung, and Lon-Mu Liu. 1993. “Joint Estimation of Model Parameters and Outlier Effects in Time Series.” <em>Journal of the American Statistical Association</em> 88 (421): 284–97. <a href="https://doi.org/10.1080/01621459.1993.10594321">https://doi.org/10.1080/01621459.1993.10594321</a>.</p>
+<p>Chen, Chung, and Lon-Mu Liu. 1993. “Joint Estimation of Model Parameters and Outlier Effects in Time Series.” <em>Journal of the American Statistical Association</em> 88 (421): 284–97. <a href="https://doi.org/10.1080/01621459.1993.10594321" class="external-link">https://doi.org/10.1080/01621459.1993.10594321</a>.</p>
 </div>
 <div id="ref-Fox1972">
-<p>Fox, Anthony J. 1972. “Outliers in Time Series.” <em>Journal of the Royal Statistical Society. Series B (Methodological)</em> 34 (3): 350–63. <a href="http://www.jstor.org/stable/2985071">http://www.jstor.org/stable/2985071</a>.</p>
+<p>Fox, Anthony J. 1972. “Outliers in Time Series.” <em>Journal of the Royal Statistical Society. Series B (Methodological)</em> 34 (3): 350–63. <a href="http://www.jstor.org/stable/2985071" class="external-link">http://www.jstor.org/stable/2985071</a>.</p>
 </div>
 <div id="ref-Galeano2013">
-<p>Galeano, Pedro, and Daniel Pena. 2013. “Finding Outliers in Linear and Nonlinear Time Series.” In <em>Robustness and Complex Data Structures: Festschrift in Honour of Ursula Gather</em>, edited by Claudia Becker, Roland Fried, and Sonja Kuhnt, 243–60. Berlin, Heidelberg: Springer Berlin Heidelberg. <a href="https://doi.org/10.1007/978-3-642-35494-6_15">https://doi.org/10.1007/978-3-642-35494-6_15</a>.</p>
+<p>Galeano, Pedro, and Daniel Pena. 2013. “Finding Outliers in Linear and Nonlinear Time Series.” In <em>Robustness and Complex Data Structures: Festschrift in Honour of Ursula Gather</em>, edited by Claudia Becker, Roland Fried, and Sonja Kuhnt, 243–60. Berlin, Heidelberg: Springer Berlin Heidelberg. <a href="https://doi.org/10.1007/978-3-642-35494-6_15" class="external-link">https://doi.org/10.1007/978-3-642-35494-6_15</a>.</p>
 </div>
 <div id="ref-tsoutliers">
-<p>López-de-Lacalle, Javier. 2019. <em>Tsoutliers: Detection of Outliers in Time Series</em>. <a href="https://CRAN.R-project.org/package=tsoutliers">https://CRAN.R-project.org/package=tsoutliers</a>.</p>
+<p>López-de-Lacalle, Javier. 2019. <em>Tsoutliers: Detection of Outliers in Time Series</em>. <a href="https://CRAN.R-project.org/package=tsoutliers" class="external-link">https://CRAN.R-project.org/package=tsoutliers</a>.</p>
 </div>
 </div>
 </div>
@@ -328,11 +325,13 @@ L(\mathbf{\theta} ; \mathbf{x}) = p(\mathbf{x} | \mathbf{\theta}) = \prod_{t=2}^
 
 
       <footer><div class="copyright">
-  <p>Developed by Davor Josipovic.</p>
+  <p></p>
+<p>Developed by Davor Josipovic.</p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
+  <p></p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.2.</p>
 </div>
 
       </footer>

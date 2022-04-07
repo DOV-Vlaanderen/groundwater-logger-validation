@@ -21,6 +21,8 @@
 <![endif]-->
 </head>
 <body data-spy="scroll" data-target="#toc">
+    
+
     <div class="container template-article">
       <header><div class="navbar navbar-default navbar-fixed-top" role="navigation">
   <div class="container">
@@ -39,12 +41,6 @@
 
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
-<li>
-  <a href="../index.html">
-    <span class="fas fa-home fa-lg"></span>
-     
-  </a>
-</li>
 <li>
   <a href="../articles/gwloggeR.html">Get started</a>
 </li>
@@ -97,7 +93,8 @@
       <a href="../articles/Development.html">Guide</a>
     </li>
     <li class="divider">
-    <li>
+    </li>
+<li>
       <a href="../News.html">Change log</a>
     </li>
   </ul>
@@ -105,7 +102,7 @@
       </ul>
 <ul class="nav navbar-nav navbar-right">
 <li>
-  <a href="https://github.com/DOV-Vlaanderen/groundwater-logger-validation/">
+  <a href="https://github.com/DOV-Vlaanderen/groundwater-logger-validation/" class="external-link">
     <span class="fab fa-github fa-lg"></span>
      
   </a>
@@ -126,14 +123,14 @@
 
       
 
-      </header><script src="Development_files/header-attrs-2.13/header-attrs.js"></script><script src="Development_files/accessible-code-block-0.0.1/empty-anchor.js"></script><div class="row">
+      </header><script src="Development_files/accessible-code-block-0.0.1/empty-anchor.js"></script><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>Development guide</h1>
             
-            <h4 class="date">2022-04-07</h4>
+            <h4 data-toc-skip class="date">2022-04-07</h4>
       
-      <small class="dont-index">Source: <a href="https://github.com/DOV-Vlaanderen/groundwater-logger-validation/tree/master/gwloggeR/vignettes/Development.Rmd"><code>vignettes/Development.Rmd</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/DOV-Vlaanderen/groundwater-logger-validation/tree/master/gwloggeR/vignettes/Development.Rmd" class="external-link"><code>vignettes/Development.Rmd</code></a></small>
       <div class="hidden name"><code>Development.Rmd</code></div>
 
     </div>
@@ -141,37 +138,37 @@
     
     
 <p>Here we describe some general guidelines for maintenance and development of <code>gwloggeR</code>.</p>
-<div id="general" class="section level2">
-<h2 class="hasAnchor">
-<a href="#general" class="anchor"></a>General</h2>
-<p><code>gwloggeR</code> is developed as part of a larger git-repository: <a href="https://github.com/DOV-Vlaanderen/groundwater-logger-validation" class="uri">https://github.com/DOV-Vlaanderen/groundwater-logger-validation</a>.</p>
+<div class="section level2">
+<h2 id="general">General<a class="anchor" aria-label="anchor" href="#general"></a>
+</h2>
+<p><code>gwloggeR</code> is developed as part of a larger git-repository: <a href="https://github.com/DOV-Vlaanderen/groundwater-logger-validation" class="external-link uri">https://github.com/DOV-Vlaanderen/groundwater-logger-validation</a>.</p>
 <p>So first we need to checkout this repository somewhere locally.</p>
 <pre><code>git checkout https://github.com/DOV-Vlaanderen/groundwater-logger-validation.git</code></pre>
-<div id="projects" class="section level3">
-<h3 class="hasAnchor">
-<a href="#projects" class="anchor"></a>Projects</h3>
+<div class="section level3">
+<h3 id="projects">Projects<a class="anchor" aria-label="anchor" href="#projects"></a>
+</h3>
 <p>The repository consists of 3 project roots:</p>
 <ul>
 <li>
-<a href="https://github.com/DOV-Vlaanderen/groundwater-logger-validation/tree/master/src/r"><code>./src/r</code></a> which is mainly used for data analysis with R. The project file <code>groundwater.rproj</code>, when opened in Rstudio, will also load <a href="https://github.com/DOV-Vlaanderen/groundwater-logger-validation/blob/master/src/r/.Rprofile"><code>src/r/.Rprofile</code></a> which will setup the environment for data analysis.</li>
+<a href="https://github.com/DOV-Vlaanderen/groundwater-logger-validation/tree/master/src/r" class="external-link"><code>./src/r</code></a> which is mainly used for data analysis with R. The project file <code>groundwater.rproj</code>, when opened in Rstudio, will also load <a href="https://github.com/DOV-Vlaanderen/groundwater-logger-validation/blob/master/src/r/.Rprofile" class="external-link"><code>src/r/.Rprofile</code></a> which will setup the environment for data analysis.</li>
 <li>
-<a href="https://github.com/DOV-Vlaanderen/groundwater-logger-validation/tree/master/gwloggeR"><code>./gwloggeR</code></a> is the <code>gwloggeR</code> package source repository used for development and testing. Open <code>gwloggeR.Rproj</code> with Rstudio.</li>
+<a href="https://github.com/DOV-Vlaanderen/groundwater-logger-validation/tree/master/gwloggeR" class="external-link"><code>./gwloggeR</code></a> is the <code>gwloggeR</code> package source repository used for development and testing. Open <code>gwloggeR.Rproj</code> with Rstudio.</li>
 <li>
-<a href="https://github.com/DOV-Vlaanderen/groundwater-logger-validation/tree/master/gwloggeR.data"><code>./gwloggeR.data</code></a> is a small convenience package developed for uniform data loading from the <code>./data/raw</code> directory. Currently it has no explicit Rstudio project file.</li>
+<a href="https://github.com/DOV-Vlaanderen/groundwater-logger-validation/tree/master/gwloggeR.data" class="external-link"><code>./gwloggeR.data</code></a> is a small convenience package developed for uniform data loading from the <code>./data/raw</code> directory. Currently it has no explicit Rstudio project file.</li>
 </ul>
 <p>Note that cross-linking of files between projects based on relative paths is allowed since all projects reside in the same repository.</p>
 <p>Always double-check the <code>.Rprofile</code> file and adjust the paths accordingly.</p>
 </div>
 </div>
-<div id="testing" class="section level2">
-<h2 class="hasAnchor">
-<a href="#testing" class="anchor"></a>Testing</h2>
-<p>There is a dedicated <a href="https://github.com/DOV-Vlaanderen/groundwater-logger-validation/tree/master/gwloggeR/tests">README</a> about testing <code>gwloggeR</code>.</p>
+<div class="section level2">
+<h2 id="testing">Testing<a class="anchor" aria-label="anchor" href="#testing"></a>
+</h2>
+<p>There is a dedicated <a href="https://github.com/DOV-Vlaanderen/groundwater-logger-validation/tree/master/gwloggeR/tests" class="external-link">README</a> about testing <code>gwloggeR</code>.</p>
 <p>Before releasing a version, make sure to not only run the <code>testthat</code> procedures (<code>Ctrl</code> + <code>Shift</code> + <code>T</code>), but also the extensive <em>analytics</em> tests to make sure that the package results conform with past expected results (i.e. the package still operates as intended on previously analyzed data).</p>
 </div>
-<div id="documentation" class="section level2">
-<h2 class="hasAnchor">
-<a href="#documentation" class="anchor"></a>Documentation</h2>
+<div class="section level2">
+<h2 id="documentation">Documentation<a class="anchor" aria-label="anchor" href="#documentation"></a>
+</h2>
 <p>The <code>gwloggeR</code> documentation is built using <code>roxygen2</code>. If you are using RStudio and <code>roxygen2</code> is installed, then pressing <code>Ctrl</code> + <code>Shift</code> + <code>B</code> will:</p>
 <ul>
 <li>Update Rd files (i.e. R documentation files)</li>
@@ -180,33 +177,33 @@
 </ul>
 <p>This command will also install <code>gwloggeR</code> in the R <code>lib\</code> directory and restart R.</p>
 <p>On each update of <code>gwloggeR</code> source files, make sure to run this before committing.</p>
-<div id="readme-rmd" class="section level3">
-<h3 class="hasAnchor">
-<a href="#readme-rmd" class="anchor"></a>README.Rmd</h3>
+<div class="section level3">
+<h3 id="readme-rmd">README.Rmd<a class="anchor" aria-label="anchor" href="#readme-rmd"></a>
+</h3>
 <p>This is a special case that must be knitted to <code>README.md</code>. In RStudio one can use <code>Ctrl</code> + <code>Shift</code> + <code>K</code>. Knitting must be done before the website is built.</p>
 </div>
 </div>
-<div id="website" class="section level2">
-<h2 class="hasAnchor">
-<a href="#website" class="anchor"></a>Website</h2>
-<p>For <code>gwloggeR</code> <a href="https://dov-vlaanderen.github.io/groundwater-logger-validation/gwloggeR">website</a> we use <code>pkgdown</code>.</p>
-<p>We do not use <a href="https://pkgdown.r-lib.org/reference/deploy_site_github.html"><code>travis</code></a> for automatic website deployment. Each time one updates files that have an impact on the website, one should manually execute the following commands:</p>
+<div class="section level2">
+<h2 id="website">Website<a class="anchor" aria-label="anchor" href="#website"></a>
+</h2>
+<p>For <code>gwloggeR</code> <a href="https://dov-vlaanderen.github.io/groundwater-logger-validation/gwloggeR" class="external-link">website</a> we use <code>pkgdown</code>.</p>
+<p>We do not use <a href="https://pkgdown.r-lib.org/reference/deploy_site_github.html" class="external-link"><code>travis</code></a> for automatic website deployment. Each time one updates files that have an impact on the website, one should manually execute the following commands:</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu">pkgdown</span><span class="fu">::</span><span class="fu"><a href="https://pkgdown.r-lib.org/reference/clean_site.html">clean_site</a></span><span class="op">(</span><span class="op">)</span>
-<span class="fu">pkgdown</span><span class="fu">::</span><span class="fu"><a href="https://pkgdown.r-lib.org/reference/build_site.html">build_site</a></span><span class="op">(</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span class="fu">pkgdown</span><span class="fu">::</span><span class="fu"><a href="https://pkgdown.r-lib.org/reference/clean_site.html" class="external-link">clean_site</a></span><span class="op">(</span><span class="op">)</span>
+<span class="fu">pkgdown</span><span class="fu">::</span><span class="fu"><a href="https://pkgdown.r-lib.org/reference/build_site.html" class="external-link">build_site</a></span><span class="op">(</span><span class="op">)</span></code></pre></div>
 <p>On each update of <code>gwloggeR</code> source files, make sure to run these commands before committing.</p>
 </div>
-<div id="deployment" class="section level2">
-<h2 class="hasAnchor">
-<a href="#deployment" class="anchor"></a>Deployment</h2>
+<div class="section level2">
+<h2 id="deployment">Deployment<a class="anchor" aria-label="anchor" href="#deployment"></a>
+</h2>
 <p>Before deployment of a new version, certain steps need to be taken.</p>
 <ul>
 <li>Update the <a href="#documentation">Documentation</a>.</li>
 <li>Make sure you complete <a href="#testing">Testing</a>, and also re-run the more elaborate <em>analytics</em> tests.</li>
 <li>Make binary: <code>devtools::build(path = './release/bin/win', binary = TRUE)</code>
 </li>
-<li>Update the <a href="https://github.com/DOV-Vlaanderen/groundwater-logger-validation/blob/master/gwloggeR/News.md">News.md</a> file. Each new version should be a top level section, besides the <em>Development version</em> and <em>Future version</em> sections.</li>
-<li>Update the <a href="https://github.com/DOV-Vlaanderen/groundwater-logger-validation/blob/master/gwloggeR/DESCRIPTION">DESCRIPTION</a> file, mainly the <code>Version</code> and <code>Date</code> tags.</li>
+<li>Update the <a href="https://github.com/DOV-Vlaanderen/groundwater-logger-validation/blob/master/gwloggeR/News.md" class="external-link">News.md</a> file. Each new version should be a top level section, besides the <em>Development version</em> and <em>Future version</em> sections.</li>
+<li>Update the <a href="https://github.com/DOV-Vlaanderen/groundwater-logger-validation/blob/master/gwloggeR/DESCRIPTION" class="external-link">DESCRIPTION</a> file, mainly the <code>Version</code> and <code>Date</code> tags.</li>
 <li>Rebuild the <a href="#website">Website</a> and deploy it on the <code>gh-pages</code> branch. (This is the branch that GitHub uses as source for this <code>gwloggeR</code> website.)</li>
 <li>Push both <code>master</code> and <code>gh-pages</code> branch to github.</li>
 <li>Final step is to set the tag for the current version from the shell and push it to github.</li>
@@ -228,11 +225,13 @@
 
 
       <footer><div class="copyright">
-  <p>Developed by Davor Josipovic.</p>
+  <p></p>
+<p>Developed by Davor Josipovic.</p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
+  <p></p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.2.</p>
 </div>
 
       </footer>

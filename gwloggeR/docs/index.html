@@ -26,6 +26,8 @@
 <![endif]-->
 </head>
 <body data-spy="scroll" data-target="#toc">
+    
+
     <div class="container template-home">
       <header><div class="navbar navbar-default navbar-fixed-top" role="navigation">
   <div class="container">
@@ -44,12 +46,6 @@
 
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
-<li>
-  <a href="index.html">
-    <span class="fas fa-home fa-lg"></span>
-     
-  </a>
-</li>
 <li>
   <a href="articles/gwloggeR.html">Get started</a>
 </li>
@@ -102,7 +98,8 @@
       <a href="articles/Development.html">Guide</a>
     </li>
     <li class="divider">
-    <li>
+    </li>
+<li>
       <a href="News.html">Change log</a>
     </li>
   </ul>
@@ -110,7 +107,7 @@
       </ul>
 <ul class="nav navbar-nav navbar-right">
 <li>
-  <a href="https://github.com/DOV-Vlaanderen/groundwater-logger-validation/">
+  <a href="https://github.com/DOV-Vlaanderen/groundwater-logger-validation/" class="external-link">
     <span class="fab fa-github fa-lg"></span>
      
   </a>
@@ -133,33 +130,33 @@
 
       </header><div class="row">
   <div class="contents col-md-9">
-<div id="gwlogger" class="section level1">
-<div class="page-header"><h1 class="hasAnchor">
-<a href="#gwlogger" class="anchor"></a>gwloggeR</h1></div>
+<div class="section level1">
+<div class="page-header"><h1 id="gwlogger">gwloggeR<a class="anchor" aria-label="anchor" href="#gwlogger"></a>
+</h1></div>
 <p><code>gwloggeR</code> is a R-package for automatic flagging of outliers and drifts in raw air pressure data and outliers, level shifts and temporal changes in raw hydrostatic pressure data. Here is a visual example of the latter:</p>
 <p><img src="reference/figures/example-1.png"><!-- --></p>
 <p>Keep reading to learn how to start using <code>gwloggeR</code>.</p>
-<div id="installation" class="section level2">
-<h2 class="hasAnchor">
-<a href="#installation" class="anchor"></a>Installation</h2>
+<div class="section level2">
+<h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
+</h2>
 <p><code>gwloggeR</code> package is not available on CRAN, only on GitHub. The easiest way to install it is to get the released binary with the following command:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html">install.packages</a></span><span class="op">(</span><span class="st">'https://github.com/DOV-Vlaanderen/groundwater-logger-validation/raw/master/gwloggeR/release/bin/win/gwloggeR_0.2.0.zip'</span>, repos <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></code></pre></div>
-<p>For all released binaries, see the <a href="https://github.com/DOV-Vlaanderen/groundwater-logger-validation/tree/master/gwloggeR/release">release</a> folder. More information about these releases one can find in the <a href="News.html">News</a> section.</p>
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">'https://github.com/DOV-Vlaanderen/groundwater-logger-validation/raw/master/gwloggeR/release/bin/win/gwloggeR_0.2.0.zip'</span>, repos <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></code></pre></div>
+<p>For all released binaries, see the <a href="https://github.com/DOV-Vlaanderen/groundwater-logger-validation/tree/master/gwloggeR/release" class="external-link">release</a> folder. More information about these releases one can find in the <a href="News.html">News</a> section.</p>
 <p>More experienced users can install from source with the <code>devtools</code> package and referring to the git repository holding the <code>gwloggeR</code> source code:</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu">devtools</span><span class="fu">::</span><span class="fu"><a href="https://devtools.r-lib.org/reference/remote-reexports.html">install_github</a></span><span class="op">(</span><span class="st">"DOV-Vlaanderen/groundwater-logger-validation"</span>, subdir <span class="op">=</span> <span class="st">"gwloggeR"</span>, ref <span class="op">=</span> <span class="st">"x.x.x"</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span class="fu">devtools</span><span class="fu">::</span><span class="fu"><a href="https://devtools.r-lib.org/reference/remote-reexports.html" class="external-link">install_github</a></span><span class="op">(</span><span class="st">"DOV-Vlaanderen/groundwater-logger-validation"</span>, subdir <span class="op">=</span> <span class="st">"gwloggeR"</span>, ref <span class="op">=</span> <span class="st">"x.x.x"</span><span class="op">)</span></code></pre></div>
 <p>Note the <code>ref = "x.x.x"</code> option. Replace it with the version you want to install. Normally this will be the number of the latest stable release as displayed in the top left corner of this page. By omitting the <code>ref</code> option the latest development version will be installed.</p>
 </div>
-<div id="usage" class="section level2">
-<h2 class="hasAnchor">
-<a href="#usage" class="anchor"></a>Usage</h2>
+<div class="section level2">
+<h2 id="usage">Usage<a class="anchor" aria-label="anchor" href="#usage"></a>
+</h2>
 <p>For general use, consult the <a href="https://dov-vlaanderen.github.io/groundwater-logger-validation/gwloggeR/docs/articles/gwloggeR.html">getting started</a> tutorial.</p>
 <p>For advanced understanding, consult the specific vignettes in the Articles section.</p>
 </div>
-<div id="development" class="section level2">
-<h2 class="hasAnchor">
-<a href="#development" class="anchor"></a>Development</h2>
+<div class="section level2">
+<h2 id="development">Development<a class="anchor" aria-label="anchor" href="#development"></a>
+</h2>
 <p>Developers and maintainers of this package can find some general guidelines in the <a href="https://dov-vlaanderen.github.io/groundwater-logger-validation/gwloggeR/docs/articles/Development.html">Development guide</a>.</p>
 </div>
 </div>
@@ -167,39 +164,51 @@
 
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <div class="links">
-<h2>Links</h2>
+<h2 data-toc-skip>Links</h2>
 <ul class="list-unstyled">
-<li>Browse source code at <br><a href="https://github.com/DOV-Vlaanderen/groundwater-logger-validation/">https://​github.com/​DOV-Vlaanderen/​groundwater-logger-validation/​</a>
-</li>
-<li>Report a bug at <br><a href="https://github.com/DOV-Vlaanderen/groundwater-logger-validation/issues">https://​github.com/​DOV-Vlaanderen/​groundwater-logger-validation/​issues</a>
-</li>
+<li><a href="https://github.com/DOV-Vlaanderen/groundwater-logger-validation/" class="external-link">Browse source code</a></li>
+<li><a href="https://github.com/DOV-Vlaanderen/groundwater-logger-validation/issues" class="external-link">Report a bug</a></li>
 </ul>
 </div>
+
 <div class="license">
-<h2>License</h2>
+<h2 data-toc-skip>License</h2>
 <ul class="list-unstyled">
 <li>
-<a href="https://opensource.org/licenses/mit-license.php">MIT</a> + file <a href="LICENSE-text.html">LICENSE</a>
+<a href="https://opensource.org/licenses/mit-license.php" class="external-link">MIT</a> + file <a href="LICENSE-text.html">LICENSE</a>
 </li>
 </ul>
 </div>
-<div class="developers">
-<h2>Developers</h2>
+
+
+<div class="citation">
+<h2 data-toc-skip>Citation</h2>
 <ul class="list-unstyled">
-<li>Davor Josipovic <br><small class="roles"> Maintainer, author </small> <a href="https://orcid.org/0000-0003-1204-8637" target="orcid.widget" aria-label="ORCID"><span class="fab fa-orcid orcid" aria-hidden="true"></span></a> </li>
+<li><a href="authors.html#citation">Citing gwloggeR</a></li>
 </ul>
 </div>
+
+<div class="developers">
+<h2 data-toc-skip>Developers</h2>
+<ul class="list-unstyled">
+<li>Davor Josipovic <br><small class="roles"> Maintainer, author </small> <a href="https://orcid.org/0000-0003-1204-8637" target="orcid.widget" aria-label="ORCID" class="external-link"><span class="fab fa-orcid orcid" aria-hidden="true"></span></a> </li>
+</ul>
+</div>
+
+
 
   </div>
 </div>
 
 
       <footer><div class="copyright">
-  <p>Developed by Davor Josipovic.</p>
+  <p></p>
+<p>Developed by Davor Josipovic.</p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
+  <p></p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.2.</p>
 </div>
 
       </footer>
