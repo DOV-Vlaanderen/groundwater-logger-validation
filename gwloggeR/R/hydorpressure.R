@@ -209,8 +209,8 @@ ProgressTable <- function() {
   }
 
   hashkey <- function(types, indexes) {
-    hashkey <- digest::digest(key(types, indexes, raw = TRUE),
-                              serialize = FALSE, algo = 'md5')
+    digest::digest(key(types, indexes, raw = TRUE),
+                   serialize = FALSE, algo = 'md5')
   }
 
   interface$update <- function(result) {
