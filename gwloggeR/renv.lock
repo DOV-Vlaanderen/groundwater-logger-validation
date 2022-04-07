@@ -4,7 +4,7 @@
     "Repositories": [
       {
         "Name": "CRAN",
-        "URL": "https://cran.rstudio.com"
+        "URL": "https://cran-archive.r-project.org"
       }
     ]
   },
@@ -15,6 +15,32 @@
       "Source": "Repository",
       "Repository": "CRAN",
       "Hash": "a5e659078fb9936c9026aaff97fa2e2a",
+      "Requirements": []
+    },
+    "chron": {
+      "Package": "chron",
+      "Version": "2.3-4",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "d556d4fd47e3b0c0589a7276167b1612",
+      "Requirements": []
+    },
+    "data.table": {
+      "Package": "data.table",
+      "Version": "1.9.6",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "359067ca87d8df0b4b1adcb4015b5e6f",
+      "Requirements": [
+        "chron"
+      ]
+    },
+    "digest": {
+      "Package": "digest",
+      "Version": "0.6.10",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "7715182218443113d18ab048c00b577d",
       "Requirements": []
     },
     "renv": {
