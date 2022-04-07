@@ -89,7 +89,9 @@ Logger <- function(name) {
 
   readfile.inbo <- function(csv.file) {
     cols.selected <- c('DRME_ID', 'DRME_OCR_UTC_DTE', 'DRME_DRU', 'DRME_TPU')
-    df <- data.table::fread(csv.file, dec = ",", select = cols.selected)
+    df <- data.table::fread(csv.file, select = cols.selected, sep = ",")
+    df[, DRME_DRU := as.numeric(gsub(pattern = ",", replacement = ".", x = DRME_DRU))]
+    df[, DRME_TPU := as.numeric(gsub(pattern = ",", replacement = ".", x = DRME_TPU))]
     df[, MEASUREMENT_ID := DRME_ID]
     df[, TIMESTAMP_UTC := as.POSIXct(gsub("(.*):", "\\1", DRME_OCR_UTC_DTE),
                                      format = "%d/%m/%Y %H:%M:%S %z", tz = 'UTC')]
