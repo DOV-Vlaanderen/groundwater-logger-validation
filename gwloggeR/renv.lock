@@ -17,12 +17,36 @@
       "Hash": "a5e659078fb9936c9026aaff97fa2e2a",
       "Requirements": []
     },
+    "RColorBrewer": {
+      "Package": "RColorBrewer",
+      "Version": "1.1-2",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "e031418365a7f7a766181ab5a41a5716",
+      "Requirements": []
+    },
+    "Rcpp": {
+      "Package": "Rcpp",
+      "Version": "0.12.10",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "252f075de7dc0e3e12c39bb67ff60eaf",
+      "Requirements": []
+    },
     "chron": {
       "Package": "chron",
       "Version": "2.3-4",
       "Source": "Repository",
       "Repository": "CRAN",
       "Hash": "d556d4fd47e3b0c0589a7276167b1612",
+      "Requirements": []
+    },
+    "colorspace": {
+      "Package": "colorspace",
+      "Version": "1.3-2",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "538e05e27bc9ad472173fb983c32b08d",
       "Requirements": []
     },
     "data.table": {
@@ -35,6 +59,14 @@
         "chron"
       ]
     },
+    "dichromat": {
+      "Package": "dichromat",
+      "Version": "2.0-0",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "fe1a3788cf243db3eca07ae661860793",
+      "Requirements": []
+    },
     "digest": {
       "Package": "digest",
       "Version": "0.6.10",
@@ -43,6 +75,85 @@
       "Hash": "7715182218443113d18ab048c00b577d",
       "Requirements": []
     },
+    "ggplot2": {
+      "Package": "ggplot2",
+      "Version": "2.2.1",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "131685825d880e00276880f93c6f7091",
+      "Requirements": [
+        "MASS",
+        "digest",
+        "gtable",
+        "lazyeval",
+        "plyr",
+        "reshape2",
+        "scales",
+        "tibble"
+      ]
+    },
+    "gridExtra": {
+      "Package": "gridExtra",
+      "Version": "2.2.1",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "3128df2704cf5c16a1f895cb0ae318fa",
+      "Requirements": [
+        "gtable"
+      ]
+    },
+    "gtable": {
+      "Package": "gtable",
+      "Version": "0.2.0",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "8816a66528f6507ccb362429ca6e095a",
+      "Requirements": []
+    },
+    "labeling": {
+      "Package": "labeling",
+      "Version": "0.3",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "73832978c1de350df58108c745ed0e3e",
+      "Requirements": []
+    },
+    "lazyeval": {
+      "Package": "lazyeval",
+      "Version": "0.2.0",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "66dbf2f258a8bd88d7147a4eb9b04cb1",
+      "Requirements": []
+    },
+    "magrittr": {
+      "Package": "magrittr",
+      "Version": "1.5",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "1bb58822a20301cee84a41678e25d9b7",
+      "Requirements": []
+    },
+    "munsell": {
+      "Package": "munsell",
+      "Version": "0.4.3",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "4d84bf1cf48b91774f92644a20c083cc",
+      "Requirements": [
+        "colorspace"
+      ]
+    },
+    "plyr": {
+      "Package": "plyr",
+      "Version": "1.8.4",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "23026346e3e0f023f326919320627a01",
+      "Requirements": [
+        "Rcpp"
+      ]
+    },
     "renv": {
       "Package": "renv",
       "Version": "0.15.4",
@@ -50,6 +161,63 @@
       "Repository": "CRAN",
       "Hash": "c1078316e1d4f70275fc1ea60c0bc431",
       "Requirements": []
+    },
+    "reshape2": {
+      "Package": "reshape2",
+      "Version": "1.4.2",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "d8df3beb76db9db19b48145a5820fbc8",
+      "Requirements": [
+        "Rcpp",
+        "plyr",
+        "stringr"
+      ]
+    },
+    "scales": {
+      "Package": "scales",
+      "Version": "0.4.1",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "5531ac9916b270925b136461ed1da8ca",
+      "Requirements": [
+        "RColorBrewer",
+        "Rcpp",
+        "dichromat",
+        "labeling",
+        "munsell",
+        "plyr"
+      ]
+    },
+    "stringi": {
+      "Package": "stringi",
+      "Version": "1.1.5",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "6fac947394531ae2eeeac68b904b4400",
+      "Requirements": []
+    },
+    "stringr": {
+      "Package": "stringr",
+      "Version": "1.2.0",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "4ca449eeec598fd1e9da258a60878778",
+      "Requirements": [
+        "magrittr",
+        "stringi"
+      ]
+    },
+    "tibble": {
+      "Package": "tibble",
+      "Version": "1.3.0",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "d7a39c2cf2c43af398748821dacbc546",
+      "Requirements": [
+        "Rcpp",
+        "lazyeval"
+      ]
     }
   }
 }
