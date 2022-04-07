@@ -54,8 +54,8 @@ Logger <- function(name) {
     df <- data.table::fread(mov.file, dec = ".", skip = nrowskip + 1L, nrows = nlines, sep = " ")
     df[, MEASUREMENT_ID := 1:.N]
     df[, TIMESTAMP_UTC := as.POSIXct(paste(V1, V2),
-                                     format = c("%Y/%m/%d %H:%M:%OS",
-                                                "%Y-%m-%d %H:%M:%OS"),
+                                     tryFormats = c("%Y/%m/%d %H:%M:%OS",
+                                                    "%Y-%m-%d %H:%M:%OS"),
                                      tz = 'UTC')]
     df[, PRESSURE_VALUE := V3]
     df[, PRESSURE_UNIT := "cmH2O"]
