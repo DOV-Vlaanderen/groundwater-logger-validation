@@ -46,7 +46,7 @@
       <ul class="nav navbar-nav">
 <li>
   <a href="index.html">
-    <span class="fas fa fas fa-home fa-lg"></span>
+    <span class="fas fa-home fa-lg"></span>
      
   </a>
 </li>
@@ -57,7 +57,7 @@
   <a href="reference/index.html">Reference</a>
 </li>
 <li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     Articles
      
     <span class="caret"></span>
@@ -65,7 +65,7 @@
   <ul class="dropdown-menu" role="menu">
 <li class="dropdown-header">Algorithms</li>
     <li class="dropdown-submenu">
-      <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Air pressure</a>
+      <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">Air pressure</a>
       <ul class="dropdown-menu" role="menu">
 <li>
           <a href="articles/Airpressure.html">Outliers</a>
@@ -76,7 +76,7 @@
       </ul>
 </li>
     <li class="dropdown-submenu">
-      <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Hydrostatic pressure</a>
+      <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">Hydrostatic pressure</a>
       <ul class="dropdown-menu" role="menu">
 <li>
           <a href="articles/Hydropressure.html#outliers">Outliers</a>
@@ -92,7 +92,7 @@
   </ul>
 </li>
 <li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     Development
      
     <span class="caret"></span>
@@ -111,7 +111,7 @@
 <ul class="nav navbar-nav navbar-right">
 <li>
   <a href="https://github.com/DOV-Vlaanderen/groundwater-logger-validation/">
-    <span class="fab fa fab fa-github fa-lg"></span>
+    <span class="fab fa-github fa-lg"></span>
      
   </a>
 </li>
@@ -143,14 +143,12 @@
 <h2 class="hasAnchor">
 <a href="#installation" class="anchor"></a>Installation</h2>
 <p><code>gwloggeR</code> package is not available on CRAN, only on GitHub. The easiest way to install it is to get the released binary with the following command:</p>
-<div class="sourceCode" id="cb1"><pre class="downlit">
-<span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html">install.packages</a></span>(<span class="st">'https://github.com/DOV-Vlaanderen/groundwater-logger-validation/raw/master/gwloggeR/release/bin/win/gwloggeR_0.2.0.zip'</span>, repos = <span class="kw">NULL</span>)
-</pre></div>
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html">install.packages</a></span><span class="op">(</span><span class="st">'https://github.com/DOV-Vlaanderen/groundwater-logger-validation/raw/master/gwloggeR/release/bin/win/gwloggeR_0.2.0.zip'</span>, repos <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></code></pre></div>
 <p>For all released binaries, see the <a href="https://github.com/DOV-Vlaanderen/groundwater-logger-validation/tree/master/gwloggeR/release">release</a> folder. More information about these releases one can find in the <a href="News.html">News</a> section.</p>
 <p>More experienced users can install from source with the <code>devtools</code> package and referring to the git repository holding the <code>gwloggeR</code> source code:</p>
-<div class="sourceCode" id="cb2"><pre class="downlit">
-<span class="kw">devtools</span>::<span class="fu"><a href="https://devtools.r-lib.org//reference/remote-reexports.html">install_github</a></span>(<span class="st">"DOV-Vlaanderen/groundwater-logger-validation"</span>, subdir = <span class="st">"gwloggeR"</span>, ref = <span class="st">"x.x.x"</span>)
-</pre></div>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu">devtools</span><span class="fu">::</span><span class="fu"><a href="https://devtools.r-lib.org/reference/remote-reexports.html">install_github</a></span><span class="op">(</span><span class="st">"DOV-Vlaanderen/groundwater-logger-validation"</span>, subdir <span class="op">=</span> <span class="st">"gwloggeR"</span>, ref <span class="op">=</span> <span class="st">"x.x.x"</span><span class="op">)</span></code></pre></div>
 <p>Note the <code>ref = "x.x.x"</code> option. Replace it with the version you want to install. Normally this will be the number of the latest stable release as displayed in the top left corner of this page. By omitting the <code>ref</code> option the latest development version will be installed.</p>
 </div>
 <div id="usage" class="section level2">

@@ -41,7 +41,7 @@
       <ul class="nav navbar-nav">
 <li>
   <a href="../index.html">
-    <span class="fas fa fas fa-home fa-lg"></span>
+    <span class="fas fa-home fa-lg"></span>
      
   </a>
 </li>
@@ -52,7 +52,7 @@
   <a href="../reference/index.html">Reference</a>
 </li>
 <li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     Articles
      
     <span class="caret"></span>
@@ -60,7 +60,7 @@
   <ul class="dropdown-menu" role="menu">
 <li class="dropdown-header">Algorithms</li>
     <li class="dropdown-submenu">
-      <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Air pressure</a>
+      <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">Air pressure</a>
       <ul class="dropdown-menu" role="menu">
 <li>
           <a href="../articles/Airpressure.html">Outliers</a>
@@ -71,7 +71,7 @@
       </ul>
 </li>
     <li class="dropdown-submenu">
-      <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Hydrostatic pressure</a>
+      <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">Hydrostatic pressure</a>
       <ul class="dropdown-menu" role="menu">
 <li>
           <a href="../articles/Hydropressure.html#outliers">Outliers</a>
@@ -87,7 +87,7 @@
   </ul>
 </li>
 <li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     Development
      
     <span class="caret"></span>
@@ -106,7 +106,7 @@
 <ul class="nav navbar-nav navbar-right">
 <li>
   <a href="https://github.com/DOV-Vlaanderen/groundwater-logger-validation/">
-    <span class="fab fa fab fa-github fa-lg"></span>
+    <span class="fab fa-github fa-lg"></span>
      
   </a>
 </li>
@@ -126,13 +126,12 @@
 
       
 
-      </header><script src="Airpressure-Drift_files/header-attrs-2.5/header-attrs.js"></script><script src="Airpressure-Drift_files/accessible-code-block-0.0.1/empty-anchor.js"></script><link href="Airpressure-Drift_files/anchor-sections-1.0/anchor-sections.css" rel="stylesheet">
-<script src="Airpressure-Drift_files/anchor-sections-1.0/anchor-sections.js"></script><div class="row">
+      </header><script src="Airpressure-Drift_files/accessible-code-block-0.0.1/empty-anchor.js"></script><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>Air pressure: drift</h1>
             
-            <h4 class="date">2020-12-14</h4>
+            <h4 class="date">2020-11-17</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/DOV-Vlaanderen/groundwater-logger-validation/tree/master/gwloggeR/vignettes/Airpressure-Drift.Rmd"><code>vignettes/Airpressure-Drift.Rmd</code></a></small>
       <div class="hidden name"><code>Airpressure-Drift.Rmd</code></div>
@@ -147,7 +146,7 @@
 <a href="#drift" class="anchor"></a>Drift</h2>
 <p>In <span class="citation">WMO (<a href="#ref-WMO8" role="doc-biblioref">2018</a>)</span> drift is defined as “a continuous or incremental change over time in indication due to changes in metrological properties of a measuring instrument.” Here is a visual example of a clearly drifting air pressure series:</p>
 <div class="figure">
-<span id="fig:zdr"></span>
+<span style="display:block;" id="fig:zdr"></span>
 <img src="Airpressure-Drift_files/figure-html/zdr-1.png" alt="A drifting barometer series."><p class="caption">
 Figure 1: A drifting barometer series.
 </p>
@@ -171,7 +170,7 @@ where <span class="math inline">\(a_t \sim \mathcal{N}(0, \sigma^2)\)</span>. Fo
 </h3>
 <p>Interesting is how the autoregressive parameter <span class="math inline">\(\phi\)</span> behaves in function of <span class="math inline">\(\Delta t\)</span>, the time interval between measurements. If we were to measure the air pressure each minute, we would see that subsequent measurements are almost identical – apart from intrinsic barometer error resulting in a very small <span class="math inline">\(\sigma^2\)</span>. The series would behave almost as a random walk. <em>Almost</em>, because although <span class="math inline">\(\phi\)</span> would be close to 1, it would never be exactly 1. One way to see this is that the air pressure is stationary, while a random walk is not. The <span class="math inline">\(\phi = 1 - \epsilon\)</span>, however small <span class="math inline">\(\epsilon\)</span> may be, will pull the series towards <span class="math inline">\(\mu\)</span>, and thus result in a stationary series.</p>
 <div class="figure">
-<span id="fig:unnamed-chunk-3"></span>
+<span style="display:block;" id="fig:unnamed-chunk-3"></span>
 <img src="Airpressure-Drift_files/figure-html/unnamed-chunk-3-1.png" alt="Having $\phi$ smaller than 1 (left) results in a stationary series around $\mu$, while a random walk (right) will have no bounds. Both series have variance of $a_t$ fixed to 25."><p class="caption">
 Figure 2: Having <span class="math inline">\(\phi\)</span> smaller than 1 (left) results in a stationary series around <span class="math inline">\(\mu\)</span>, while a random walk (right) will have no bounds. Both series have variance of <span class="math inline">\(a_t\)</span> fixed to 25.
 </p>
@@ -202,7 +201,7 @@ d_t &amp;= z_t - r_t \\
 </h3>
 <p>We assumed in our model definition that <span class="math inline">\(a_t \sim \mathcal{N}(0, \sigma^2)\)</span>. This makes <span class="math inline">\(b_t \sim \mathcal{N}(0, 2\sigma^2 - 2\text{cov}(a_{z,t}, a_{r,t}))\)</span>. In <a href="https://github.com/DOV-Vlaanderen/groundwater-logger-validation/blob/master/src/r/drifts/analysis_19.r">script 19</a> we estimated <span class="math inline">\(\sigma^2 \approx 25\)</span> and <span class="math inline">\(\text{var}(b_t) \approx 2.2\)</span>. This suggests that <span class="math inline">\(\text{cov}(a_{z,t}, a_{r,t}) \approx 23.9\)</span> and thus a very high correlation between <span class="math inline">\(z_t\)</span> and <span class="math inline">\(r_t\)</span>. This effect can be seen in the following plot:</p>
 <div class="figure">
-<span id="fig:unnamed-chunk-4"></span>
+<span style="display:block;" id="fig:unnamed-chunk-4"></span>
 <img src="Airpressure-Drift_files/figure-html/unnamed-chunk-4-1.png" alt="Comparison of variance for of $z_t$ and $r_t$ (left) and $d_t$ (right) on equal scale. If $z_t$ and $r_t$ were not correlated, then the variance of $d_t$ (blue) would be 2 times larger than that of $z_t$ (black)."><p class="caption">
 Figure 3: Comparison of variance for of <span class="math inline">\(z_t\)</span> and <span class="math inline">\(r_t\)</span> (left) and <span class="math inline">\(d_t\)</span> (right) on equal scale. If <span class="math inline">\(z_t\)</span> and <span class="math inline">\(r_t\)</span> were not correlated, then the variance of <span class="math inline">\(d_t\)</span> (blue) would be 2 times larger than that of <span class="math inline">\(z_t\)</span> (black).
 </p>
@@ -218,16 +217,15 @@ d_t - \mu_d -  \delta(t-t_\delta)I(t\ge t_\delta) - \mathbf{\beta} \mathbf{x_t}
   = \phi[d_{t-1} - \mu_d -  \delta(t-1-t_\delta)I(t-1\ge t_\delta) - \mathbf{\beta} \mathbf{x_{t-1}} ] + b_t
 \]</span>
 where <span class="math inline">\(\mathbf{x_t}\)</span> are the exogenous yearly seasonal sine and cosine components and <span class="math inline">\(\mu_d\)</span>, <span class="math inline">\(\mathbf{\beta}\)</span>, <span class="math inline">\(\sigma_d^2\)</span>, <span class="math inline">\(\delta\)</span> and <span class="math inline">\(t_\delta\)</span> are to be estimated.</p>
-<p>Let’s use the series from Figure <a href="#fig:zdr">1</a> and show how these estimates can be recovered with the <code><a href="../reference/detect_drift.html">detect_drift(verbose=TRUE)</a></code> parameter.</p>
-<div class="sourceCode" id="cb1"><pre class="downlit">
-<span class="co"># zdr is the drifting series and zndr is the reference series. ts.dr are the corresponding timestamps </span>
+<p>Let’s use the series from Figure <a href="#fig:zdr">1</a> and show how these estimates can be recovered with the <code>detect_drift(verbose=TRUE)</code> parameter.</p>
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co"># zdr is the drifting series and zndr is the reference series. ts.dr are the corresponding timestamps </span>
 <span class="co"># We focus on the attributes of the returned vector when verbose=TRUE.</span>
-<span class="fu"><a href="https://rdrr.io/r/base/attributes.html">attributes</a></span>(<span class="kw">gwloggeR</span>::<span class="fu"><a href="../reference/detect_drift.html">detect_drift</a></span>(x = <span class="kw">zdr</span>, timestamps = <span class="kw">ts.dr</span>,
-                                  reference = <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span>(x = <span class="kw">zndr</span>, timestamps = <span class="kw">ts.dr</span>)),
-                                  verbose = <span class="fl">TRUE</span>, plot = <span class="fl">TRUE</span>))
-</pre></div>
+<span class="fu"><a href="https://rdrr.io/r/base/attributes.html">attributes</a></span><span class="op">(</span><span class="fu">gwloggeR</span><span class="fu">::</span><span class="fu"><a href="../reference/detect_drift.html">detect_drift</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">zdr</span>, timestamps <span class="op">=</span> <span class="va">ts.dr</span>,
+                                  reference <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">zndr</span>, timestamps <span class="op">=</span> <span class="va">ts.dr</span><span class="op">)</span><span class="op">)</span>,
+                                  verbose <span class="op">=</span> <span class="cn">TRUE</span>, plot <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span></code></pre></div>
 <div class="figure">
-<span id="fig:attributes"></span>
+<span style="display:block;" id="fig:attributes"></span>
 <img src="Airpressure-Drift_files/figure-html/attributes-1.png" alt="Diagnostic plots. For more information, consult the 'Diagnostic plots' section in `?gwloggeR::detect_drift`" width="100%"><p class="caption">
 Figure 4: Diagnostic plots. For more information, consult the ‘Diagnostic plots’ section in <code><a href="../reference/detect_drift.html">?gwloggeR::detect_drift</a></code>
 </p>
@@ -259,7 +257,7 @@ Figure 4: Diagnostic plots. For more information, consult the ‘Diagnostic plot
 #&gt; $significance
 #&gt; [1] 0</code></pre>
 <p><span class="math inline">\(t_\delta\)</span> is the timestamp at which the drift starts. In this case it is estimated at 2013-10-26 UTC. The <span class="math inline">\(\delta\)</span> is the drift rate, here estimated as 2.9 cmH2O/year. The <span class="math inline">\(\mathbf{\beta}\)</span> expresses the yearly seasonality as sine and cosine components, here estimated as -0.09 and 0.02 respectively. And lastly, <span class="math inline">\(\sigma^2 = \text{Var}(b_t)\)</span> is here estimated as 1.49².</p>
-<p>From the output we gather that the drift significance is 0. It can be interpreted as the probability that there is no drift (i.e. the null-hypothesis). In other words, the smaller this value, the stronger the evidence that there is a drift. So what is a good threshold (i.e. alpha) for the significance? By default alpha is set to 1/100 which can be interpreted as one wrong detection of drift out of 100 non-drifting cases. One can modify alpha by supplying is as a parameter (e.g. <code><a href="../reference/detect_drift.html">detect_drift(alpha=0.001)</a></code>).</p>
+<p>From the output we gather that the drift significance is 0. It can be interpreted as the probability that there is no drift (i.e. the null-hypothesis). In other words, the smaller this value, the stronger the evidence that there is a drift. So what is a good threshold (i.e. alpha) for the significance? By default alpha is set to 1/100 which can be interpreted as one wrong detection of drift out of 100 non-drifting cases. One can modify alpha by supplying is as a parameter (e.g. <code>detect_drift(alpha=0.001)</code>).</p>
 <p>For more information about the diagnostic plots in Figure <a href="#fig:attributes">4</a>, consult the ‘Diagnostic plots’ section in <code><a href="../reference/detect_drift.html">?gwloggeR::detect_drift</a></code>.</p>
 <div id="estimation-of-delta-and-t_delta" class="section level3">
 <h3 class="hasAnchor">
