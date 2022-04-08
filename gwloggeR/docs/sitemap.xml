@@ -1,13 +1,46 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
+    <loc>https://dov-vlaanderen.github.io/groundwater-logger-validation/gwloggeR/docs/404.html</loc>
+  </url>
+  <url>
+    <loc>https://dov-vlaanderen.github.io/groundwater-logger-validation/gwloggeR/docs/articles/Airpressure-Drift.html</loc>
+  </url>
+  <url>
+    <loc>https://dov-vlaanderen.github.io/groundwater-logger-validation/gwloggeR/docs/articles/Airpressure.html</loc>
+  </url>
+  <url>
+    <loc>https://dov-vlaanderen.github.io/groundwater-logger-validation/gwloggeR/docs/articles/Development.html</loc>
+  </url>
+  <url>
+    <loc>https://dov-vlaanderen.github.io/groundwater-logger-validation/gwloggeR/docs/articles/gwloggeR.html</loc>
+  </url>
+  <url>
+    <loc>https://dov-vlaanderen.github.io/groundwater-logger-validation/gwloggeR/docs/articles/Hydropressure.html</loc>
+  </url>
+  <url>
+    <loc>https://dov-vlaanderen.github.io/groundwater-logger-validation/gwloggeR/docs/articles/index.html</loc>
+  </url>
+  <url>
+    <loc>https://dov-vlaanderen.github.io/groundwater-logger-validation/gwloggeR/docs/authors.html</loc>
+  </url>
+  <url>
     <loc>https://dov-vlaanderen.github.io/groundwater-logger-validation/gwloggeR/docs/index.html</loc>
   </url>
   <url>
-    <loc>https://dov-vlaanderen.github.io/groundwater-logger-validation/gwloggeR/docs/reference/apriori.hydropressure.difference.samples.html</loc>
+    <loc>https://dov-vlaanderen.github.io/groundwater-logger-validation/gwloggeR/docs/LICENSE-text.html</loc>
+  </url>
+  <url>
+    <loc>https://dov-vlaanderen.github.io/groundwater-logger-validation/gwloggeR/docs/news/index.html</loc>
+  </url>
+  <url>
+    <loc>https://dov-vlaanderen.github.io/groundwater-logger-validation/gwloggeR/docs/News.html</loc>
   </url>
   <url>
     <loc>https://dov-vlaanderen.github.io/groundwater-logger-validation/gwloggeR/docs/reference/Apriori.html</loc>
+  </url>
+  <url>
+    <loc>https://dov-vlaanderen.github.io/groundwater-logger-validation/gwloggeR/docs/reference/apriori.hydropressure.difference.samples.html</loc>
   </url>
   <url>
     <loc>https://dov-vlaanderen.github.io/groundwater-logger-validation/gwloggeR/docs/reference/coalesce.html</loc>
@@ -73,6 +106,9 @@
     <loc>https://dov-vlaanderen.github.io/groundwater-logger-validation/gwloggeR/docs/reference/gwloggeR-package.html</loc>
   </url>
   <url>
+    <loc>https://dov-vlaanderen.github.io/groundwater-logger-validation/gwloggeR/docs/reference/index.html</loc>
+  </url>
+  <url>
     <loc>https://dov-vlaanderen.github.io/groundwater-logger-validation/gwloggeR/docs/reference/indicator.html</loc>
   </url>
   <url>
@@ -110,20 +146,5 @@
   </url>
   <url>
     <loc>https://dov-vlaanderen.github.io/groundwater-logger-validation/gwloggeR/docs/reference/Version.html</loc>
-  </url>
-  <url>
-    <loc>https://dov-vlaanderen.github.io/groundwater-logger-validation/gwloggeR/docs/articles/Airpressure-Drift.html</loc>
-  </url>
-  <url>
-    <loc>https://dov-vlaanderen.github.io/groundwater-logger-validation/gwloggeR/docs/articles/Airpressure.html</loc>
-  </url>
-  <url>
-    <loc>https://dov-vlaanderen.github.io/groundwater-logger-validation/gwloggeR/docs/articles/Development.html</loc>
-  </url>
-  <url>
-    <loc>https://dov-vlaanderen.github.io/groundwater-logger-validation/gwloggeR/docs/articles/gwloggeR.html</loc>
-  </url>
-  <url>
-    <loc>https://dov-vlaanderen.github.io/groundwater-logger-validation/gwloggeR/docs/articles/Hydropressure.html</loc>
   </url>
 </urlset>

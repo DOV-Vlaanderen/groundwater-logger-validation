@@ -40,8 +40,12 @@ timestamps <- seq(as.POSIXct('2000-01-01'), length.out = length(x), by = '15 min
 # plot(x)
 
 testthat::test_that('Hydrostatic pressure detect function finds all the events.', {
-  res <- detect(x = x, timestamps = timestamps)[order(index, type)]
-  testthat::expect_known_value(object = res, file = './test-hydropressure-detect.rds')
+  res <- detect(x = x, timestamps = timestamps)
+  # Here we compare the data, not the attributes which are removed by []
+  testthat::expect_equal(
+    object = res[order(index, type),],
+    readRDS('./test-hydropressure-detect.rds')[order(index, type),]
+  )
 })
 
 testthat::test_that('Hydrostatic pressure LS is detected.', {

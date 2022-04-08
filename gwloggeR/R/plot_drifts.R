@@ -184,7 +184,7 @@ plot_drifts.differences <- function(dra, drift, dr = NULL, xlim = range(dra$time
     p <- p + ggplot2::geom_line(mapping = ggplot2::aes(x = dra$timestamps, y = mu),
                                 col = 'black', size = 1.5, alpha = 1)
 
-  p <- p + ggplot2::geom_vline(xintercept = bp.ts,
+  p <- p + ggplot2::geom_vline(xintercept = as.numeric(bp.ts),
                                col = plot_drifts.sigcolor(attr(drift, 'significance')),
                                linetype = 'dashed', size = 1.2)
 

@@ -1,6 +1,6 @@
 ---
 title: "Hydrostatic pressure"
-date: "`r Sys.Date()`"
+date: "2019-9-22"
 output: 
   rmarkdown::html_vignette:
     fig_width: 7

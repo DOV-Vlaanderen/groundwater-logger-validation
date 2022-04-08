@@ -1,6 +1,6 @@
 ---
 title: "Air pressure: drift"
-date: "`r Sys.Date()`"
+date: "2020-11-17"
 output: 
   bookdown::html_document2: 
     base_format: rmarkdown::html_vignette

@@ -74,7 +74,7 @@ Logger <- function(name) {
     df <- data.table::fread(txt.file, dec = ".", skip = nrowskip + 1L, sep = ",")
     df[, MEASUREMENT_ID := 1:.N]
     df[, TIMESTAMP_UTC := as.POSIXct(paste(V2, V3),
-                                     tryFormats = c("%Y%m%d %H"),
+                                     format = c("%Y%m%d %H"),
                                      tz = 'UTC')]
     df[, PRESSURE_VALUE := P.Pa_to_cmH2O(V5*10)] # hPa = 100Pa, but data is in 0.1hPa
     df[, PRESSURE_UNIT := "cmH2O"]
@@ -89,7 +89,9 @@ Logger <- function(name) {
 
   readfile.inbo <- function(csv.file) {
     cols.selected <- c('DRME_ID', 'DRME_OCR_UTC_DTE', 'DRME_DRU', 'DRME_TPU')
-    df <- data.table::fread(csv.file, dec = ",", select = cols.selected)
+    df <- data.table::fread(csv.file, select = cols.selected, sep = ",")
+    df[, DRME_DRU := as.numeric(gsub(pattern = ",", replacement = ".", x = DRME_DRU))]
+    df[, DRME_TPU := as.numeric(gsub(pattern = ",", replacement = ".", x = DRME_TPU))]
     df[, MEASUREMENT_ID := DRME_ID]
     df[, TIMESTAMP_UTC := as.POSIXct(gsub("(.*):", "\\1", DRME_OCR_UTC_DTE),
                                      format = "%d/%m/%Y %H:%M:%S %z", tz = 'UTC')]
