@@ -19,11 +19,13 @@ test.detect_function <- function(fun, ..., RESULT.PATH, ATTRIB.PATH = NULL, IMG.
       if (!is.null(LOG.PATH)) {
         dir.create(dirname(LOG.PATH), showWarnings = FALSE, recursive = TRUE)
         log.file <- file(LOG.PATH, open = 'wt')
-        on.exit(close(log.file), add = TRUE, after = FALSE)
         sink(file = log.file, split = TRUE, type = 'output')
-        on.exit(sink(), add = TRUE, after = FALSE)
         sink(file = log.file, type = 'message') # cannot split message stream :( !
-        on.exit(sink(type = 'message'), add = TRUE, after = FALSE)
+
+        # Because r3.2.5 doesn't have after = FALSE argument
+        on.exit(sink(type = 'message'), add = TRUE)
+        on.exit(sink(), add = TRUE)
+        on.exit(close(log.file), add = TRUE)
       }
 
       fun(...)
