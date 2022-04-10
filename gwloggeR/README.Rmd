@@ -43,7 +43,7 @@ Keep reading to learn how to start using `gwloggeR`.
 `gwloggeR` package is not available on CRAN, only on GitHub. The easiest way to install it is to get the released binary with the following command:
 
 ```{r, eval=FALSE}
-install.packages('https://github.com/DOV-Vlaanderen/groundwater-logger-validation/raw/master/gwloggeR/release/bin/win/gwloggeR_0.2.0.zip', repos = NULL)
+install.packages('https://github.com/DOV-Vlaanderen/groundwater-logger-validation/raw/master/gwloggeR/release/bin/win/gwloggeR_0.2.1.zip', repos = NULL)
 ```
 
 For all released binaries, see the [release](https://github.com/DOV-Vlaanderen/groundwater-logger-validation/tree/master/gwloggeR/release) folder. More information about these releases one can find in the [News](News.md) section.

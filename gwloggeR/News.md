@@ -4,15 +4,18 @@
 * Caching of algorithm results.
 * Use travis-ci for website building and build testing.
 * Code documentation
-* Prebuild binaries so not a whole repository has to be downloaded for installation
+* Set minimal R version to 3.2.5 (cf. branch r3.2.5 for testing)
 
-# Development version
+# gwloggeR 0.2.1
+
+* Fixed compatibility with R3.2.5 and old data.table v1.9.6 and ggplot2 v2.2.1
 
 # gwloggeR 0.2.0
 
 * Issue fixed: #47.
 * Interface: `detect_drift()` implementation based on #67 and #70.
 * Documentation: [Air pressure: drift](https://dov-vlaanderen.github.io/groundwater-logger-validation/gwloggeR/docs/articles/Airpressure-Drift.html).
+* Prebuild binaries so not a whole repository has to be downloaded for installation
 
 # gwloggeR 0.1.5
 

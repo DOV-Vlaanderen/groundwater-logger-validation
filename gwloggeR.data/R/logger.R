@@ -53,10 +53,15 @@ Logger <- function(name) {
     nlines <- as.integer(header[nrowskip + 1L])
     df <- data.table::fread(mov.file, dec = ".", skip = nrowskip + 1L, nrows = nlines, sep = " ")
     df[, MEASUREMENT_ID := 1:.N]
+    # Determining TIMESTAMP_UTC: better is with tryFormats , cf. commit d81fbe6b
+    # but it is unsupported in r3.2.5, hence a double try.
     df[, TIMESTAMP_UTC := as.POSIXct(paste(V1, V2),
-                                     tryFormats = c("%Y/%m/%d %H:%M:%OS",
-                                                    "%Y-%m-%d %H:%M:%OS"),
+                                     format = c("%Y/%m/%d %H:%M:%OS"),
                                      tz = 'UTC')]
+    df[is.na(TIMESTAMP_UTC),
+       TIMESTAMP_UTC := as.POSIXct(paste(V1, V2),
+                                   format = c("%Y-%m-%d %H:%M:%OS"),
+                                   tz = 'UTC')]
     df[, PRESSURE_VALUE := V3]
     df[, PRESSURE_UNIT := "cmH2O"]
     df[, TEMPERATURE_VALUE := V4]

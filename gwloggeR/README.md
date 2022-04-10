@@ -19,7 +19,7 @@ way to install it is to get the released binary with the following
 command:
 
 ``` r
-install.packages('https://github.com/DOV-Vlaanderen/groundwater-logger-validation/raw/master/gwloggeR/release/bin/win/gwloggeR_0.2.0.zip', repos = NULL)
+install.packages('https://github.com/DOV-Vlaanderen/groundwater-logger-validation/raw/master/gwloggeR/release/bin/win/gwloggeR_0.2.1.zip', repos = NULL)
 ```
 
 For all released binaries, see the
