@@ -25,7 +25,8 @@ plot.add.levelshifts <- function(plot) {
     ggplot2::geom_point(data = data[idx.start[-1L],], color = 'red') +
     ggplot2::annotate("rect", xmin = data[idx.start, x], xmax = data[idx.end, x],
                       ymin = -Inf, ymax = Inf, alpha = 0.1, fill = col) +
-    ggplot2::geom_vline(xintercept = data[idx.start[-1L], x], linetype = 'dashed')
+    # Old ggplot geom_vline doesn't support posixct x, hence as.numeric(x)
+    ggplot2::geom_vline(xintercept = data[idx.start[-1L], as.numeric(x)], linetype = 'dashed')
 }
 
 
