@@ -54,6 +54,9 @@ plot.add.tempchanges <- function(plot) {
   idx.red <- which(data$tempchanges)
   idx.black <- setdiff(unique(pmax(idx.red - 1L, 1L)), idx.red)
 
+  # If idx is empty, old data.table 1.9.6 doesn't create the group colum, hence
+  # we set it explicitely to NA, then overwrite with TRUE.
+  data[, group := NA]
   data[c(idx.red, idx.black), group := TRUE]
   data[, group := data.table::rleid(group)]
 
