@@ -6,7 +6,9 @@
 * Code documentation
 * Prebuild binaries so not a whole repository has to be downloaded for installation
 
-# Development version
+# gwloggeR 0.2.1
+
+* Fixed compatibility with R3.2.5 and old data.table v1.9.6 and ggplot2 v2.2.1
 
 # gwloggeR 0.2.0
 
